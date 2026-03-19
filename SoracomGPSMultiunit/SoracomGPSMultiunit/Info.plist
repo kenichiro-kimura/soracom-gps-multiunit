@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>GPS マルチユニットシミュレータは、位置情報を SORACOM プラットフォームに送信するために使用します。</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>GPS マルチユニットシミュレータは、バックグラウンドでも位置情報を SORACOM プラットフォームに継続して送信するために使用します。</string>
+	<key>NSMotionUsageDescription</key>
+	<string>GPS マルチユニットシミュレータは、加速度センサーデータを SORACOM プラットフォームに送信するために使用します。</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+</dict>
+</plist>

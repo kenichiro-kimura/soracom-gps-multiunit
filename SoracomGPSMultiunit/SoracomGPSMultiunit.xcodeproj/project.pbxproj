@@ -1,0 +1,547 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C200000000000000000000C2 /* SoracomGPSMultiunitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C100000000000000000000C1 /* SoracomGPSMultiunitApp.swift */; };
+		C400000000000000000000C4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300000000000000000000C3 /* ContentView.swift */; };
+		C600000000000000000000C6 /* SensorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C500000000000000000000C5 /* SensorData.swift */; };
+		C800000000000000000000C8 /* MetadataConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C700000000000000000000C7 /* MetadataConfig.swift */; };
+		CA00000000000000000000CA /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C900000000000000000000C9 /* AppSettings.swift */; };
+		CC00000000000000000000CC /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB00000000000000000000CB /* LocationService.swift */; };
+		CE00000000000000000000CE /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD00000000000000000000CD /* MotionService.swift */; };
+		D000000000000000000000D0 /* SoracomArcService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF00000000000000000000CF /* SoracomArcService.swift */; };
+		D200000000000000000000D2 /* MetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D100000000000000000000D1 /* MetadataService.swift */; };
+		D400000000000000000000D4 /* DataSendingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D300000000000000000000D3 /* DataSendingService.swift */; };
+		D600000000000000000000D6 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D500000000000000000000D5 /* MainViewModel.swift */; };
+		D800000000000000000000D8 /* DeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D700000000000000000000D7 /* DeviceView.swift */; };
+		DA00000000000000000000DA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D900000000000000000000D9 /* SettingsView.swift */; };
+		DC00000000000000000000DC /* SendLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB00000000000000000000DB /* SendLogView.swift */; };
+		DE00000000000000000000DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD00000000000000000000DD /* Assets.xcassets */; };
+		E000000000000000000000E0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF00000000000000000000DF /* Preview Assets.xcassets */; };
+		E200000000000000000000E2 /* SoracomGPSMultiunitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E100000000000000000000E1 /* SoracomGPSMultiunitTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B200000000000000000000B2 /* SoracomGPSMultiunit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoracomGPSMultiunit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B300000000000000000000B3 /* SoracomGPSMultiunitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoracomGPSMultiunitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C100000000000000000000C1 /* SoracomGPSMultiunitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoracomGPSMultiunitApp.swift; sourceTree = "<group>"; };
+		C300000000000000000000C3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C500000000000000000000C5 /* SensorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorData.swift; sourceTree = "<group>"; };
+		C700000000000000000000C7 /* MetadataConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataConfig.swift; sourceTree = "<group>"; };
+		C900000000000000000000C9 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		CB00000000000000000000CB /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		CD00000000000000000000CD /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
+		CF00000000000000000000CF /* SoracomArcService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoracomArcService.swift; sourceTree = "<group>"; };
+		D100000000000000000000D1 /* MetadataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataService.swift; sourceTree = "<group>"; };
+		D300000000000000000000D3 /* DataSendingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSendingService.swift; sourceTree = "<group>"; };
+		D500000000000000000000D5 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		D700000000000000000000D7 /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceView.swift; sourceTree = "<group>"; };
+		D900000000000000000000D9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DB00000000000000000000DB /* SendLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendLogView.swift; sourceTree = "<group>"; };
+		DD00000000000000000000DD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DF00000000000000000000DF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E100000000000000000000E1 /* SoracomGPSMultiunitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoracomGPSMultiunitTests.swift; sourceTree = "<group>"; };
+		F100000000000000000000F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F200000000000000000000F2 /* Libsoratun.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Libsoratun.h; sourceTree = "<group>"; };
+		F300000000000000000000F3 /* SoracomGPSMultiunit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SoracomGPSMultiunit-Bridging-Header.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A600000000000000000000A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A800000000000000000000A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B400000000000000000000B4 /* SoracomGPSMultiunit */ = {
+			isa = PBXGroup;
+			children = (
+				E000000000000000000000E3 /* SoracomGPSMultiunit */,
+				E600000000000000000000E6 /* SoracomGPSMultiunitTests */,
+				B500000000000000000000B5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B500000000000000000000B5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B200000000000000000000B2 /* SoracomGPSMultiunit.app */,
+				B300000000000000000000B3 /* SoracomGPSMultiunitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E000000000000000000000E3 /* SoracomGPSMultiunit */ = {
+			isa = PBXGroup;
+			children = (
+				C100000000000000000000C1 /* SoracomGPSMultiunitApp.swift */,
+				C300000000000000000000C3 /* ContentView.swift */,
+				E100000000000000000000E4 /* Models */,
+				E200000000000000000000E5 /* Services */,
+				E300000000000000000000E7 /* ViewModels */,
+				E400000000000000000000E8 /* Views */,
+				E500000000000000000000E9 /* Libsoratun */,
+				DD00000000000000000000DD /* Assets.xcassets */,
+				F100000000000000000000F1 /* Info.plist */,
+				EA00000000000000000000EA /* Preview Content */,
+			);
+			path = SoracomGPSMultiunit;
+			sourceTree = "<group>";
+		};
+		E100000000000000000000E4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C500000000000000000000C5 /* SensorData.swift */,
+				C700000000000000000000C7 /* MetadataConfig.swift */,
+				C900000000000000000000C9 /* AppSettings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E200000000000000000000E5 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CB00000000000000000000CB /* LocationService.swift */,
+				CD00000000000000000000CD /* MotionService.swift */,
+				CF00000000000000000000CF /* SoracomArcService.swift */,
+				D100000000000000000000D1 /* MetadataService.swift */,
+				D300000000000000000000D3 /* DataSendingService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E300000000000000000000E7 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				D500000000000000000000D5 /* MainViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E400000000000000000000E8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D700000000000000000000D7 /* DeviceView.swift */,
+				D900000000000000000000D9 /* SettingsView.swift */,
+				DB00000000000000000000DB /* SendLogView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E500000000000000000000E9 /* Libsoratun */ = {
+			isa = PBXGroup;
+			children = (
+				F200000000000000000000F2 /* Libsoratun.h */,
+				F300000000000000000000F3 /* SoracomGPSMultiunit-Bridging-Header.h */,
+			);
+			path = Libsoratun;
+			sourceTree = "<group>";
+		};
+		E600000000000000000000E6 /* SoracomGPSMultiunitTests */ = {
+			isa = PBXGroup;
+			children = (
+				E100000000000000000000E1 /* SoracomGPSMultiunitTests.swift */,
+			);
+			path = SoracomGPSMultiunitTests;
+			sourceTree = "<group>";
+		};
+		EA00000000000000000000EA /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				DF00000000000000000000DF /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A200000000000000000000A2 /* SoracomGPSMultiunit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A900000000000000000000A9 /* Build configuration list for PBXNativeTarget "SoracomGPSMultiunit" */;
+			buildPhases = (
+				A400000000000000000000A4 /* Sources */,
+				A600000000000000000000A6 /* Frameworks */,
+				A500000000000000000000A5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SoracomGPSMultiunit;
+			productName = SoracomGPSMultiunit;
+			productReference = B200000000000000000000B2 /* SoracomGPSMultiunit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A300000000000000000000A3 /* SoracomGPSMultiunitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB00000000000000000000AB /* Build configuration list for PBXNativeTarget "SoracomGPSMultiunitTests" */;
+			buildPhases = (
+				A700000000000000000000A7 /* Sources */,
+				A800000000000000000000A8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB00000000000000000000EB /* PBXTargetDependency */,
+			);
+			name = SoracomGPSMultiunitTests;
+			productName = SoracomGPSMultiunitTests;
+			productReference = B300000000000000000000B3 /* SoracomGPSMultiunitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A100000000000000000000A1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1530;
+				LastUpgradeCheck = 1530;
+				TargetAttributes = {
+					A200000000000000000000A2 = {
+						CreatedOnToolsVersion = 15.3;
+					};
+					A300000000000000000000A3 = {
+						CreatedOnToolsVersion = 15.3;
+						TestTargetID = A200000000000000000000A2;
+					};
+				};
+			};
+			buildConfigurationList = AA00000000000000000000AA /* Build configuration list for PBXProject "SoracomGPSMultiunit" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = ja;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				ja,
+				Base,
+				en,
+			);
+			mainGroup = B400000000000000000000B4;
+			productRefGroup = B500000000000000000000B5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A200000000000000000000A2 /* SoracomGPSMultiunit */,
+				A300000000000000000000A3 /* SoracomGPSMultiunitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A500000000000000000000A5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DE00000000000000000000DE /* Assets.xcassets in Resources */,
+				E000000000000000000000E0 /* Preview Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A400000000000000000000A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C200000000000000000000C2 /* SoracomGPSMultiunitApp.swift in Sources */,
+				C400000000000000000000C4 /* ContentView.swift in Sources */,
+				C600000000000000000000C6 /* SensorData.swift in Sources */,
+				C800000000000000000000C8 /* MetadataConfig.swift in Sources */,
+				CA00000000000000000000CA /* AppSettings.swift in Sources */,
+				CC00000000000000000000CC /* LocationService.swift in Sources */,
+				CE00000000000000000000CE /* MotionService.swift in Sources */,
+				D000000000000000000000D0 /* SoracomArcService.swift in Sources */,
+				D200000000000000000000D2 /* MetadataService.swift in Sources */,
+				D400000000000000000000D4 /* DataSendingService.swift in Sources */,
+				D600000000000000000000D6 /* MainViewModel.swift in Sources */,
+				D800000000000000000000D8 /* DeviceView.swift in Sources */,
+				DA00000000000000000000DA /* SettingsView.swift in Sources */,
+				DC00000000000000000000DC /* SendLogView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A700000000000000000000A7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E200000000000000000000E2 /* SoracomGPSMultiunitTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB00000000000000000000EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A200000000000000000000A2 /* SoracomGPSMultiunit */;
+			targetProxy = EC00000000000000000000EC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXContainerItemProxy section */
+		EC00000000000000000000EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A100000000000000000000A1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A200000000000000000000A2;
+			remoteInfo = SoracomGPSMultiunit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin XCBuildConfiguration section */
+		AC00000000000000000000AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AD00000000000000000000AD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AE00000000000000000000AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SoracomGPSMultiunit/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SoracomGPSMultiunit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = jp.soracom.gps-multiunit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SoracomGPSMultiunit/Libsoratun/SoracomGPSMultiunit-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		AF00000000000000000000AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SoracomGPSMultiunit/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SoracomGPSMultiunit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = jp.soracom.gps-multiunit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "SoracomGPSMultiunit/Libsoratun/SoracomGPSMultiunit-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B000000000000000000000B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = jp.soracom.gps-multiunit.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoracomGPSMultiunit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoracomGPSMultiunit";
+			};
+			name = Debug;
+		};
+		B100000000000000000000B1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = jp.soracom.gps-multiunit.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoracomGPSMultiunit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/SoracomGPSMultiunit";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA00000000000000000000AA /* Build configuration list for PBXProject "SoracomGPSMultiunit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC00000000000000000000AC /* Debug */,
+				AD00000000000000000000AD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A900000000000000000000A9 /* Build configuration list for PBXNativeTarget "SoracomGPSMultiunit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AE00000000000000000000AE /* Debug */,
+				AF00000000000000000000AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB00000000000000000000AB /* Build configuration list for PBXNativeTarget "SoracomGPSMultiunitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B000000000000000000000B0 /* Debug */,
+				B100000000000000000000B1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = A100000000000000000000A1 /* Project object */;
+}
