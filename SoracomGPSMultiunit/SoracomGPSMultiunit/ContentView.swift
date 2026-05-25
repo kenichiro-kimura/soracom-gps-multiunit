@@ -48,7 +48,7 @@ struct ContentView: View {
                 }
                 .padding(.bottom, 32)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color(.systemBackground))
             .navigationTitle("GPS Multi Unit")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
