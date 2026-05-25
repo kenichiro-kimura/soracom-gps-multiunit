@@ -75,10 +75,59 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
         }
         // JSON として有効かチェック
         guard let data = trimmed.data(using: .utf8),
-              (try? JSONSerialization.jsonObject(with: data)) != nil else {
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw SoracomArcError.invalidConfiguration("JSON として解析できません")
         }
-        self.arcConfigJSON = trimmed
+        // soratun 形式 → libsoratun 形式へ自動変換
+        // soratun 形式: { "privateKey", "address", "publicKey", "allowedIPs", "endpoint" }
+        // libsoratun 形式: { "privateKey", "arcSession": { "arcServerPeerPublicKey", ... } }
+        let effectiveJSONString: String
+        if json["arcSession"] == nil, json["endpoint"] is String {
+            guard let converted = Self.convertSoratunFormat(json),
+                  let convertedData = try? JSONSerialization.data(withJSONObject: converted),
+                  let convertedString = String(data: convertedData, encoding: .utf8) else {
+                throw SoracomArcError.invalidConfiguration("soratun 形式の JSON を libsoratun 形式に変換できませんでした")
+            }
+            effectiveJSONString = convertedString
+        } else {
+            effectiveJSONString = trimmed
+        }
+
+        // arcSession フィールドの存在チェック
+        // libsoratun の newTunnel は config.ArcSession が nil だとクラッシュするため、
+        // Swift 側で事前にチェックして分かりやすいエラーを返す
+        guard let effectiveData = effectiveJSONString.data(using: .utf8),
+              let effectiveJSON = try? JSONSerialization.jsonObject(with: effectiveData) as? [String: Any],
+              effectiveJSON["arcSession"] is [String: Any] else {
+            throw SoracomArcError.invalidConfiguration(
+                "arcSession フィールドがありません。soratun の arc.json を貼り付けてください。"
+            )
+        }
+        self.arcConfigJSON = effectiveJSONString
+    }
+
+    /// soratun 形式の JSON を libsoratun 形式に変換する
+    private static func convertSoratunFormat(_ json: [String: Any]) -> [String: Any]? {
+        guard let privateKey = json["privateKey"] as? String,
+              let address = json["address"] as? String,
+              let publicKey = json["publicKey"] as? String,
+              let allowedIPs = json["allowedIPs"] as? [String],
+              let endpoint = json["endpoint"] as? String else {
+            return nil
+        }
+        // "10.217.133.173/32" → "10.217.133.173" (CIDR → IP のみ)
+        let clientIP = address.components(separatedBy: "/").first ?? address
+        let arcSession: [String: Any] = [
+            "arcServerPeerPublicKey": publicKey,
+            "arcServerEndpoint": endpoint,
+            "arcAllowedIPs": allowedIPs,
+            "arcClientPeerIpAddress": clientIP
+        ]
+        return [
+            "privateKey": privateKey,
+            "logLevel": 1,
+            "arcSession": arcSession
+        ]
     }
 
     func sendHTTP(path: String, method: String, body: String) async throws -> String {
