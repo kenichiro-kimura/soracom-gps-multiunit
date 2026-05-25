@@ -80,9 +80,9 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
         }
         // soratun 形式 → libsoratun 形式へ自動変換
         // soratun 形式: { "privateKey", "address", "publicKey", "allowedIPs", "endpoint" }
-        // libsoratun 形式: { "privateKey", "arcSession": { "arcServerPeerPublicKey", ... } }
+        // libsoratun 形式: { "privateKey", "arcSessionStatus": { "arcServerPeerPublicKey", ... } }
         let effectiveJSONString: String
-        if json["arcSession"] == nil, json["endpoint"] is String {
+        if json["arcSessionStatus"] == nil, json["endpoint"] is String {
             guard let converted = Self.convertSoratunFormat(json),
                   let convertedData = try? JSONSerialization.data(withJSONObject: converted),
                   let convertedString = String(data: convertedData, encoding: .utf8) else {
@@ -98,9 +98,9 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
         // Swift 側で事前にチェックして分かりやすいエラーを返す
         guard let effectiveData = effectiveJSONString.data(using: .utf8),
               let effectiveJSON = try? JSONSerialization.jsonObject(with: effectiveData) as? [String: Any],
-              effectiveJSON["arcSession"] is [String: Any] else {
+              effectiveJSON["arcSessionStatus"] is [String: Any] else {
             throw SoracomArcError.invalidConfiguration(
-                "arcSession フィールドがありません。soratun の arc.json を貼り付けてください。"
+                "arcSessionStatus フィールドがありません。soratun の arc.json を貼り付けてください。"
             )
         }
         self.arcConfigJSON = effectiveJSONString
@@ -126,7 +126,7 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
         return [
             "privateKey": privateKey,
             "logLevel": 1,
-            "arcSession": arcSession
+            "arcSessionStatus": arcSession
         ]
     }
 
