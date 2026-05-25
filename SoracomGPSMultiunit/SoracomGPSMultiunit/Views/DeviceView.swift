@@ -53,21 +53,23 @@ struct DeviceView: View {
         .shadow(color: soracomTeal.opacity(0.40), radius: 14, x: 0, y: 7)
     }
 
-    // MARK: - ステータス LED（小さい円形）
+    // MARK: - ステータス LED（白枠の小四角）
 
     private var statusLed: some View {
         ZStack {
-            Circle()
-                .fill(Color(white: 0.55))
-                .frame(width: 20, height: 20)
-            Circle()
-                .fill(ledColor(for: viewModel.connectionStatus))
-                .frame(width: 12, height: 12)
+            // 白い外枠
+            RoundedRectangle(cornerRadius: 3)
+                .fill(Color.white)
+                .frame(width: 20, height: 14)
+            // LED 本体
+            RoundedRectangle(cornerRadius: 2)
+                .fill(ledColor(for: viewModel.ledState))
+                .frame(width: 14, height: 8)
                 .shadow(
-                    color: viewModel.connectionStatus == .connected
-                        ? Color.green.opacity(0.8)
-                        : (viewModel.connectionStatus == .failed
-                            ? Color.red.opacity(0.8) : .clear),
+                    color: viewModel.ledState == .solidGreen || viewModel.ledState == .blinkGreen
+                        ? Color.green.opacity(0.9)
+                        : (viewModel.ledState == .solidRed
+                            ? Color.red.opacity(0.9) : .clear),
                     radius: 5
                 )
         }
@@ -128,12 +130,12 @@ struct DeviceView: View {
 
     // MARK: - ヘルパー
 
-    private func ledColor(for status: ConnectionStatus) -> Color {
-        switch status {
-        case .disconnected: return .gray
-        case .connecting: return .yellow
-        case .connected: return .green
-        case .failed: return .red
+    private func ledColor(for state: LedState) -> Color {
+        switch state {
+        case .off:         return Color(white: 0.1)
+        case .blinkGreen:  return .green
+        case .solidGreen:  return .green
+        case .solidRed:    return .red
         }
     }
 

@@ -35,6 +35,9 @@ class MainViewModel: ObservableObject {
     /// 送信中フラグ
     @Published var isSending: Bool = false
 
+    /// LED 表示状態
+    @Published var ledState: LedState = .off
+
     /// メタデータ取得状態
     @Published var isLoadingMetadata: Bool = false
 
@@ -208,7 +211,17 @@ class MainViewModel: ObservableObject {
     func sendData(type: SendType) async {
         guard !isSending else { return }
         isSending = true
-        defer { isSending = false }
+        defer {
+            isSending = false
+        }
+
+        // 送信前の点滅シーケンス（緑1秒・消灯1秒 × 4回）
+        for _ in 0..<4 {
+            ledState = .blinkGreen
+            try? await Task.sleep(for: .seconds(1))
+            ledState = .off
+            try? await Task.sleep(for: .seconds(1))
+        }
 
         let sensorData = collectSensorData(type: type)
         lastSensorData = sensorData
@@ -218,6 +231,10 @@ class MainViewModel: ObservableObject {
                               error: "SORACOM Arc が設定されていません")
             addLog(log)
             lastError = log.error
+            // エラー表示（赤5秒 → 消灯）
+            ledState = .solidRed
+            try? await Task.sleep(for: .seconds(5))
+            ledState = .off
             return
         }
 
@@ -228,11 +245,19 @@ class MainViewModel: ObservableObject {
             addLog(log)
             lastSentAt = Date()
             lastError = nil
+            // 成功表示（緑5秒 → 消灯）
+            ledState = .solidGreen
+            try? await Task.sleep(for: .seconds(5))
+            ledState = .off
         } catch {
             let log = SendLog(timestamp: Date(), data: sensorData, success: false,
                               error: error.localizedDescription)
             addLog(log)
             lastError = error.localizedDescription
+            // エラー表示（赤5秒 → 消灯）
+            ledState = .solidRed
+            try? await Task.sleep(for: .seconds(5))
+            ledState = .off
         }
     }
 
@@ -306,6 +331,18 @@ class MainViewModel: ObservableObject {
 }
 
 // MARK: - Supporting Types
+
+/// LED の表示状態
+enum LedState: Equatable {
+    /// 消灯
+    case off
+    /// 送信前点滅（緑）
+    case blinkGreen
+    /// 通信成功（緑点灯）
+    case solidGreen
+    /// 通信エラー（赤点灯）
+    case solidRed
+}
 
 /// 接続ステータス
 enum ConnectionStatus: Equatable {
