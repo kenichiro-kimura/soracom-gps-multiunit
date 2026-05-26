@@ -260,8 +260,8 @@ class MainViewModel: ObservableObject {
         let lon: Double?
 
         if sendLocation, let loc = location {
-            lat = (loc.coordinate.latitude * 10).rounded() / 10
-            lon = (loc.coordinate.longitude * 10).rounded() / 10
+            lat = (loc.coordinate.latitude * 1_000_000).rounded() / 1_000_000
+            lon = (loc.coordinate.longitude * 1_000_000).rounded() / 1_000_000
         } else {
             lat = nil
             lon = nil

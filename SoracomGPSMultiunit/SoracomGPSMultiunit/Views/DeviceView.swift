@@ -215,7 +215,7 @@ struct DeviceView: View {
             if let lat = data.lat, let lon = data.lon {
                 sensorPair(
                     label: "GPS",
-                    value: String(format: "%.5f, %.5f", lat, lon),
+                    value: String(format: "%.6f, %.6f", lat, lon),
                     icon: "location.fill"
                 )
             } else {
