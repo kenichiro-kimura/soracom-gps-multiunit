@@ -284,9 +284,9 @@ class MainViewModel: ObservableObject {
             lon: lon,
             temp: generateTemperature(),
             humi: generateHumidity(),
-            x: acceleration.x,
-            y: acceleration.y,
-            z: acceleration.z,
+            x: (acceleration.x * 10000).rounded() / 10,
+            y: (acceleration.y * 10000).rounded() / 10,
+            z: (acceleration.z * 10000).rounded() / 10,
             bat: settings.batValue,
             rs: settings.rsValue,
             type: type

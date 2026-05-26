@@ -9,13 +9,11 @@ final class SoracomGPSMultiunitTests: XCTestCase {
         let data = SensorData(
             lat: 35.12345,
             lon: 139.12345,
-            alt: 10.0,
-            speed: 0.0,
             temp: 25.5,
             humi: 60.0,
-            x: 0.01,
-            y: -0.02,
-            z: 0.98,
+            x: 10.0,
+            y: -20.0,
+            z: 980.0,
             bat: nil,
             rs: nil,
             type: .periodic
@@ -38,13 +36,11 @@ final class SoracomGPSMultiunitTests: XCTestCase {
         {
             "lat": 35.12345,
             "lon": 139.12345,
-            "alt": 10.0,
-            "speed": 0.0,
             "temp": 25.5,
             "humi": 60.0,
-            "x": 0.01,
-            "y": -0.02,
-            "z": 0.98,
+            "x": 10,
+            "y": -20,
+            "z": 980,
             "type": 1
         }
         """

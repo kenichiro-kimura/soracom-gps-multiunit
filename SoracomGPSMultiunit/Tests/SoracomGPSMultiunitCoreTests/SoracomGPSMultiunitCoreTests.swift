@@ -7,13 +7,11 @@ final class SensorDataTests: XCTestCase {
         let data = SensorData(
             lat: 35.12345,
             lon: 139.12345,
-            alt: 10.0,
-            speed: 0.0,
             temp: 25.5,
             humi: 60.0,
-            x: 0.01,
-            y: -0.02,
-            z: 0.98,
+            x: 10.0,
+            y: -20.0,
+            z: 980.0,
             bat: nil,
             rs: nil,
             type: .periodic
@@ -36,13 +34,11 @@ final class SensorDataTests: XCTestCase {
         {
             "lat": 35.12345,
             "lon": 139.12345,
-            "alt": 10.0,
-            "speed": 0.0,
             "temp": 25.5,
             "humi": 60.0,
-            "x": 0.01,
-            "y": -0.02,
-            "z": 0.98,
+            "x": 10,
+            "y": -20,
+            "z": 980,
             "type": 1
         }
         """
@@ -62,8 +58,8 @@ final class SensorDataTests: XCTestCase {
     }
 
     func testSensorDataEquality() {
-        let data1 = SensorData(temp: 25.0, humi: 60.0, x: 0.0, y: 0.0, z: 1.0, type: .periodic)
-        let data2 = SensorData(temp: 25.0, humi: 60.0, x: 0.0, y: 0.0, z: 1.0, type: .periodic)
+        let data1 = SensorData(temp: 25.0, humi: 60.0, x: 0.0, y: 0.0, z: 1000.0, type: .periodic)
+        let data2 = SensorData(temp: 25.0, humi: 60.0, x: 0.0, y: 0.0, z: 1000.0, type: .periodic)
         XCTAssertEqual(data1, data2)
     }
 }
@@ -199,7 +195,7 @@ final class DataSendingServiceTests: XCTestCase {
 
         let data = SensorData(
             lat: 35.0, lon: 139.0, temp: 25.0, humi: 60.0,
-            x: 0.0, y: 0.0, z: 1.0, type: .manual
+            x: 0.0, y: 0.0, z: 1000.0, type: .manual
         )
         let response = try await service.send(data)
         XCTAssertEqual(response, "{}")
