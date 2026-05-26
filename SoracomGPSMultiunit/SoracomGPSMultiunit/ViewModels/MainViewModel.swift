@@ -215,7 +215,13 @@ class MainViewModel: ObservableObject {
             isSending = false
         }
 
-        // 送信前の点滅シーケンス（緑1秒・消灯1秒 × 4回）
+        let sensorData = collectSensorData(type: type)
+        lastSensorData = sensorData
+
+        // 通信と点滅シーケンスを並行して開始
+        async let sendResultTask = performSend(sensorData)
+
+        // 送信中の点滅シーケンス（緑1秒・消灯1秒 × 4回）
         for _ in 0..<4 {
             ledState = .blinkGreen
             try? await Task.sleep(for: .seconds(1))
@@ -223,11 +229,10 @@ class MainViewModel: ObservableObject {
             try? await Task.sleep(for: .seconds(1))
         }
 
-        let sensorData = collectSensorData(type: type)
-        lastSensorData = sensorData
-
-        do {
-            let response = try await dataSendingService.send(sensorData)
+        // 点滅完了後、通信結果に応じて LED を更新
+        let result = await sendResultTask
+        switch result {
+        case .success(let response):
             let log = SendLog(timestamp: Date(), data: sensorData, success: true,
                               response: response)
             addLog(log)
@@ -237,7 +242,7 @@ class MainViewModel: ObservableObject {
             ledState = .solidGreen
             try? await Task.sleep(for: .seconds(5))
             ledState = .off
-        } catch {
+        case .failure(let error):
             let log = SendLog(timestamp: Date(), data: sensorData, success: false,
                               error: error.localizedDescription)
             addLog(log)
@@ -246,6 +251,16 @@ class MainViewModel: ObservableObject {
             ledState = .solidRed
             try? await Task.sleep(for: .seconds(5))
             ledState = .off
+        }
+    }
+
+    /// 送信処理を Result で包んで返す（点滅シーケンスとの並行実行用）
+    private func performSend(_ sensorData: SensorData) async -> Result<String, Error> {
+        do {
+            let response = try await dataSendingService.send(sensorData)
+            return .success(response)
+        } catch {
+            return .failure(error)
         }
     }
 
