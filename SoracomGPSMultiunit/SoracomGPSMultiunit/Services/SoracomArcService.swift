@@ -211,12 +211,18 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
                 // libsoratun の C 関数を呼び出す
                 // NOTE: Send() はブリッジングヘッダー経由で宣言されており、
                 // Simulator・実機ともに同じコードで呼び出す
+                // タイムアウトは libsoratun 側で管理されているため Swift 側での設定は不要
                 guard let resultPtr = Send(config, method, path, body) else {
                     continuation.resume(throwing: SoracomArcError.sendFailed("レスポンスが null でした"))
                     return
                 }
                 let result = String(cString: resultPtr)
                 free(resultPtr)
+                // 先頭が "2" で始まらない場合は通信エラー
+                guard result.first == "2" else {
+                    continuation.resume(throwing: SoracomArcError.sendFailed("不正なレスポンス: \(result)"))
+                    return
+                }
                 continuation.resume(returning: result)
             }
         }
