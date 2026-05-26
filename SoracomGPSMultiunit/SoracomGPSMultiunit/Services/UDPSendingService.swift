@@ -9,7 +9,7 @@ class UDPSendingService {
     static let unifiedEndpointHost = "uni.soracom.io"
     static let unifiedEndpointPort: UInt16 = 23080
     /// UDP 通信のタイムアウト（秒）
-    static let udpTimeout: TimeInterval = 10.0
+    static let udpTimeout: TimeInterval = 6.0
 
     func send(_ data: Data) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
