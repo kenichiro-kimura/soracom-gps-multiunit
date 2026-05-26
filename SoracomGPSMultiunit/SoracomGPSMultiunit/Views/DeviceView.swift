@@ -113,19 +113,12 @@ struct DeviceView: View {
     // MARK: - SORACOM ブランディング
 
     private var branding: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("SORACOM")
-                .font(.system(size: 11, weight: .bold))
-                .foregroundColor(.white)
-            Text("Edition")
-                .font(.system(size: 8))
-                .foregroundColor(.white.opacity(0.9))
-            Image(systemName: "star.fill")
-                .font(.system(size: 9))
-                .foregroundColor(.white)
-        }
-        .padding(.leading, 16)
-        .padding(.bottom, 12)
+        Image("SoracomUGLogo")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 72, height: 72)
+            .padding(.leading, 12)
+            .padding(.bottom, 10)
     }
 
     // MARK: - ヘルパー
