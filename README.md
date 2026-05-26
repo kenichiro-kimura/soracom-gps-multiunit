@@ -63,15 +63,10 @@ gomobile init
 git clone https://github.com/0x6b/libsoratun
 cd libsoratun
 
-# iOS 向け静的ライブラリとしてビルド (iOS実機 + シミュレータ)
-CGO_ENABLED=1 GOOS=ios GOARCH=arm64 go build -buildmode=c-archive -o libsoratun-ios.a .
-CGO_ENABLED=1 GOOS=ios GOARCH=amd64 GOFLAGS=-tags=ios go build -buildmode=c-archive -o libsoratun-sim.a .
-
-# XCFramework を作成
-xcodebuild -create-xcframework \
-  -library libsoratun-ios.a -headers . \
-  -library libsoratun-sim.a -headers . \
-  -output libsoratun.xcframework
+# iOS 向け静的ライブラリとしてビルド (iOS実機 + シミュレータ)して XCFramework を作成
+cp $(PROJECT_DIR)/SoracomGPSMultiunit/bin/buildlibsoratun.sh .
+chmod +x buildlibsoratun.sh
+./buildlibsoratun.sh
 ```
 
 ビルドした `libsoratun.xcframework` を `SoracomGPSMultiunit/SoracomGPSMultiunit/Libsoratun/` に配置し、
