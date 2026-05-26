@@ -19,6 +19,7 @@
 		D000000000000000000000D0 /* SoracomArcService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF00000000000000000000CF /* SoracomArcService.swift */; };
 		D200000000000000000000D2 /* MetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D100000000000000000000D1 /* MetadataService.swift */; };
 		D400000000000000000000D4 /* DataSendingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D300000000000000000000D3 /* DataSendingService.swift */; };
+		EE00000000000000000000EE /* UDPSendingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED00000000000000000000ED /* UDPSendingService.swift */; };
 		D600000000000000000000D6 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D500000000000000000000D5 /* MainViewModel.swift */; };
 		D800000000000000000000D8 /* DeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D700000000000000000000D7 /* DeviceView.swift */; };
 		DA00000000000000000000DA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D900000000000000000000D9 /* SettingsView.swift */; };
@@ -66,6 +67,7 @@
 		CF00000000000000000000CF /* SoracomArcService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoracomArcService.swift; sourceTree = "<group>"; };
 		D100000000000000000000D1 /* MetadataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataService.swift; sourceTree = "<group>"; };
 		D300000000000000000000D3 /* DataSendingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSendingService.swift; sourceTree = "<group>"; };
+		ED00000000000000000000ED /* UDPSendingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDPSendingService.swift; sourceTree = "<group>"; };
 		D500000000000000000000D5 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		D700000000000000000000D7 /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceView.swift; sourceTree = "<group>"; };
 		D900000000000000000000D9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				CF00000000000000000000CF /* SoracomArcService.swift */,
 				D100000000000000000000D1 /* MetadataService.swift */,
 				D300000000000000000000D3 /* DataSendingService.swift */,
+				ED00000000000000000000ED /* UDPSendingService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -318,6 +321,7 @@
 				D000000000000000000000D0 /* SoracomArcService.swift in Sources */,
 				D200000000000000000000D2 /* MetadataService.swift in Sources */,
 				D400000000000000000000D4 /* DataSendingService.swift in Sources */,
+				EE00000000000000000000EE /* UDPSendingService.swift in Sources */,
 				D600000000000000000000D6 /* MainViewModel.swift in Sources */,
 				D800000000000000000000D8 /* DeviceView.swift in Sources */,
 				DA00000000000000000000DA /* SettingsView.swift in Sources */,
