@@ -159,7 +159,7 @@ struct SettingsView: View {
         Section {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("arc.json")
+                    Text("WireGuard 設定")
                         .font(.subheadline.monospaced())
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -183,13 +183,13 @@ struct SettingsView: View {
         } header: {
             Label("SORACOM Arc 設定", systemImage: "lock.shield")
         } footer: {
-            Text("SORACOM コンソールで仮想 SIM を作成し、soratun で生成した arc.json の内容を貼り付けてください。")
+            Text("SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。")
                 .font(.caption)
         }
-        .alert("arc.json について", isPresented: $showArcConfigInfo) {
+        .alert("WireGuard 設定について", isPresented: $showArcConfigInfo) {
             Button("OK") { }
         } message: {
-            Text("arc.json は SORACOM Arc (WireGuard VPN) への接続設定ファイルです。\n\nSORACOM コンソールで仮想 SIM を作成し、soratun ツールで arc.json を生成してください。\n\n詳細: https://users.soracom.io/ja-jp/docs/arc/")
+            Text("SORACOM Arc (WireGuard VPN) への接続設定を WireGuard 形式で入力します。\n\n[Interface]\nPrivateKey = ...\nAddress = ...\n\n[Peer]\nPublicKey = ...\nAllowedIPs = ...\nEndpoint = ...\n\nSORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得してください。\n\n詳細: https://users.soracom.io/ja-jp/docs/arc/")
         }
     }
 

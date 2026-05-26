@@ -21,15 +21,15 @@ GPS マルチユニット SORACOM Edition と同じ JSON 形式でデータを�
 
 ```json
 {
-  "lat": 35.12345,
-  "lon": 139.12345,
-  "alt": 10.0,
-  "speed": 0.0,
+  "lat": 35.1,
+  "lon": 139.1,
   "temp": 25.5,
   "humi": 60.0,
-  "x": 0.01,
-  "y": -0.02,
-  "z": 0.98,
+  "x": 0.0,
+  "y": -200.0,
+  "z": 980.0,
+  "rs": 3,
+  "bat": 4,
   "type": 0
 }
 ```
@@ -77,12 +77,24 @@ xcodebuild -create-xcframework \
 ビルドした `libsoratun.xcframework` を `SoracomGPSMultiunit/SoracomGPSMultiunit/Libsoratun/` に配置し、
 Xcode プロジェクトの "Frameworks, Libraries, and Embedded Content" に追加してください。
 
-### 2. arc.json の取得
+### 2. WireGuard 接続情報の取得
 
-1. [SORACOM コンソール](https://console.soracom.io/) にログインし、仮想 SIM を作成
-2. [soratun](https://github.com/soracom/soratun/) をインストール
-3. `soratun arc gen-config` で `arc.json` を生成
-4. アプリの設定画面から `arc.json` の内容を貼り付け
+1. [SORACOM コンソール](https://console.soracom.io/) にログインし、バーチャル SIM を作成
+2. SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得
+3. アプリの設定画面から WireGuard 接続情報を貼り付け
+
+取得した WireGuard 設定は以下の形式になります:
+
+```ini
+[Interface]
+PrivateKey = <プライベートキー>
+Address = <クライアント IP アドレス>/32
+
+[Peer]
+PublicKey = <サーバー公開キー>
+AllowedIPs = <許可 IP>
+Endpoint = <サーバーエンドポイント>
+```
 
 ### 3. ビルドと実行
 
@@ -100,14 +112,15 @@ Xcode でプロジェクトを開き、iPhone または シミュレータで実
 1. アプリを起動すると GPS マルチユニットの外観が表示されます
 2. 設定画面 (⚙️ アイコン) から以下を設定:
    - 温度・湿度のベース値と変動幅
-   - arc.json の内容
+   - 電波強度 (rs) とバッテリー残量 (bat) の値
+   - SORACOM Arc の WireGuard 接続情報
 3. SORACOM Arc に接続されると、メタデータサービスから自動送信設定を取得します
 4. デバイスのボタン (矢印アイコン) をタップすると手動送信できます
 5. 自動送信トグルをオンにすると設定間隔で自動送信されます
 
 ## アーキテクチャ
 
-```
+```text
 SoracomGPSMultiunit/
 ├── Models/
 │   ├── SensorData.swift        # センサーデータモデル

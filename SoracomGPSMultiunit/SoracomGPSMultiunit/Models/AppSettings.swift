@@ -27,7 +27,7 @@ class AppSettings: ObservableObject {
 
     // MARK: - SORACOM Arc 設定
 
-    /// SORACOM Arc 設定 JSON (arc.json の内容)
+    /// SORACOM Arc 設定 (WireGuard 形式)
     @Published var arcConfigJSON: String {
         didSet { UserDefaults.standard.set(arcConfigJSON, forKey: Keys.arcConfigJSON) }
     }
