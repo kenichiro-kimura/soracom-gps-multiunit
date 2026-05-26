@@ -270,33 +270,25 @@ class MainViewModel: ObservableObject {
 
         let lat: Double?
         let lon: Double?
-        let alt: Double?
-        let speed: Double?
 
         if sendLocation, let loc = location {
             lat = loc.coordinate.latitude
             lon = loc.coordinate.longitude
-            alt = loc.altitude
-            speed = max(0, loc.speed) * 3.6 // m/s → km/h
         } else {
             lat = nil
             lon = nil
-            alt = nil
-            speed = nil
         }
 
         return SensorData(
             lat: lat,
             lon: lon,
-            alt: alt,
-            speed: speed,
             temp: generateTemperature(),
             humi: generateHumidity(),
             x: acceleration.x,
             y: acceleration.y,
             z: acceleration.z,
-            bat: nil,
-            rs: nil,
+            bat: settings.batValue,
+            rs: settings.rsValue,
             type: type
         )
     }

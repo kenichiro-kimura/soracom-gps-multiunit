@@ -13,6 +13,7 @@ struct SettingsView: View {
             Form {
                 temperatureSection
                 humiditySection
+                signalBatterySection
                 autoSendSection
                 arcConfigSection
                 aboutSection
@@ -96,6 +97,28 @@ struct SettingsView: View {
             Label("湿度設定", systemImage: "humidity")
         } footer: {
             Text("iPhoneには湿度センサーがないため、ベース値にランダムな変動を加えた値を送信します。")
+                .font(.caption)
+        }
+    }
+
+    // MARK: - Signal / Battery Section
+
+    private var signalBatterySection: some View {
+        Section {
+            Stepper(
+                "電波強度 (rs): \(settings.rsValue == -1 ? "圏外" : String(settings.rsValue))",
+                value: $settings.rsValue,
+                in: -1...4
+            )
+            Stepper(
+                "バッテリー (bat): \(settings.batValue == -1 ? "充電中" : String(settings.batValue))",
+                value: $settings.batValue,
+                in: -1...3
+            )
+        } header: {
+            Label("電波強度・バッテリー設定", systemImage: "antenna.radiowaves.left.and.right")
+        } footer: {
+            Text("送信する電波強度と電池残量の値を設定します。rs: -1 (圏外) 〜 4、bat: -1 (充電中) / 1 〜 3 (電池残量)。")
                 .font(.caption)
         }
     }

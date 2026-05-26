@@ -32,6 +32,18 @@ class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(arcConfigJSON, forKey: Keys.arcConfigJSON) }
     }
 
+    // MARK: - 電波強度・バッテリー設定
+
+    /// 電波強度 (0-5)
+    @Published var rsValue: Int {
+        didSet { UserDefaults.standard.set(rsValue, forKey: Keys.rsValue) }
+    }
+
+    /// バッテリーレベル (0-5)
+    @Published var batValue: Int {
+        didSet { UserDefaults.standard.set(batValue, forKey: Keys.batValue) }
+    }
+
     // MARK: - フォールバック設定
 
     /// メタデータサービスが利用できない場合の自動送信間隔 (秒)
@@ -54,6 +66,8 @@ class AppSettings: ObservableObject {
         humidityBase = defaults.object(forKey: Keys.humidityBase) as? Double ?? 60.0
         humidityVariation = defaults.object(forKey: Keys.humidityVariation) as? Double ?? 5.0
         arcConfigJSON = defaults.string(forKey: Keys.arcConfigJSON) ?? ""
+        rsValue = defaults.object(forKey: Keys.rsValue) as? Int ?? 3
+        batValue = defaults.object(forKey: Keys.batValue) as? Int ?? 3
         defaultSendingInterval = defaults.object(forKey: Keys.defaultSendingInterval) as? Int ?? 60
         defaultAutoSend = defaults.object(forKey: Keys.defaultAutoSend) as? Bool ?? false
     }
@@ -66,6 +80,8 @@ class AppSettings: ObservableObject {
         static let humidityBase = "humidityBase"
         static let humidityVariation = "humidityVariation"
         static let arcConfigJSON = "arcConfigJSON"
+        static let rsValue = "rsValue"
+        static let batValue = "batValue"
         static let defaultSendingInterval = "defaultSendingInterval"
         static let defaultAutoSend = "defaultAutoSend"
     }
