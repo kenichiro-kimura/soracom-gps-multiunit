@@ -226,18 +226,6 @@ class MainViewModel: ObservableObject {
         let sensorData = collectSensorData(type: type)
         lastSensorData = sensorData
 
-        guard arcService.isConfigured else {
-            let log = SendLog(timestamp: Date(), data: sensorData, success: false,
-                              error: "SORACOM Arc が設定されていません")
-            addLog(log)
-            lastError = log.error
-            // エラー表示（赤5秒 → 消灯）
-            ledState = .solidRed
-            try? await Task.sleep(for: .seconds(5))
-            ledState = .off
-            return
-        }
-
         do {
             let response = try await dataSendingService.send(sensorData)
             let log = SendLog(timestamp: Date(), data: sensorData, success: true,
