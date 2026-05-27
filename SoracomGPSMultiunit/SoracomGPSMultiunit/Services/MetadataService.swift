@@ -49,9 +49,13 @@ class MetadataService {
             throw MetadataServiceError.invalidResponse
         }
 
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return try decoder.decode(SubscriberMetadata.self, from: data)
+        do {
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            return try decoder.decode(SubscriberMetadata.self, from: data)
+        } catch {
+            throw MetadataServiceError.decodingFailed(error.localizedDescription)
+        }
     }
 }
 

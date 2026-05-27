@@ -63,14 +63,17 @@ class MainViewModel: ObservableObject {
 
     private var autoSendTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
+    private let ledDelay: TimeInterval
 
     // MARK: - Init
 
     init(
         settings: AppSettings,
-        arcService: SoracomArcServiceProtocol? = nil
+        arcService: SoracomArcServiceProtocol? = nil,
+        ledDelay: TimeInterval = 1.0
     ) {
         self.settings = settings
+        self.ledDelay = ledDelay
         let arc = arcService ?? LibsoratunArcService()
         self.arcService = arc
         self.locationService = LocationService()
@@ -250,9 +253,9 @@ class MainViewModel: ObservableObject {
         // 送信中の点滅シーケンス（緑1秒・消灯1秒 × 4回）
         for _ in 0..<4 {
             ledState = .blinkGreen
-            try? await Task.sleep(for: .seconds(1))
+            try? await Task.sleep(for: .seconds(ledDelay))
             ledState = .off
-            try? await Task.sleep(for: .seconds(1))
+            try? await Task.sleep(for: .seconds(ledDelay))
         }
 
         // 点滅完了後、通信結果に応じて LED を更新
@@ -266,7 +269,7 @@ class MainViewModel: ObservableObject {
             lastError = nil
             // 成功表示（緑5秒 → 消灯）
             ledState = .solidGreen
-            try? await Task.sleep(for: .seconds(5))
+            try? await Task.sleep(for: .seconds(ledDelay > 0 ? 5 : 0))
             ledState = .off
         case .failure(let error):
             let log = SendLog(timestamp: Date(), data: sensorData, success: false,
@@ -275,7 +278,7 @@ class MainViewModel: ObservableObject {
             lastError = error.localizedDescription
             // エラー表示（赤5秒 → 消灯）
             ledState = .solidRed
-            try? await Task.sleep(for: .seconds(5))
+            try? await Task.sleep(for: .seconds(ledDelay > 0 ? 5 : 0))
             ledState = .off
         }
     }

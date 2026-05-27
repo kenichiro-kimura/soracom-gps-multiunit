@@ -218,10 +218,10 @@ final class SoracomGPSMultiunitTests: XCTestCase {
     func testMainViewModelManualSend() async {
         let settings = AppSettings()
         let mock = MockArcService()
-        let viewModel = MainViewModel(settings: settings, arcService: mock)
+        let viewModel = MainViewModel(settings: settings, arcService: mock, ledDelay: 0)
 
         viewModel.manualSend()
-        // Allow async task to complete
+        // Allow async task to complete (no LED delays with ledDelay: 0)
         try? await Task.sleep(nanoseconds: 500_000_000)
 
         XCTAssertNotNil(viewModel.lastSensorData)

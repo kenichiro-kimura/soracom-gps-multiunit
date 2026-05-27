@@ -10,7 +10,7 @@ enum SoracomArcError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notConfigured:
-            return "SORACOM Arc が設定されていません。設定画面から arc.json を入力してください。"
+            return "SORACOM Arc が設定されていません。設定画面から WireGuard 接続情報を入力してください。"
         case .invalidConfiguration(let message):
             return "設定が無効です: \(message)"
         case .sendFailed(let message):

@@ -7,7 +7,7 @@ GPS マルチユニット SORACOM Edition シミュレータ
 ## 機能
 
 - 📱 GPS マルチユニットの外観を再現した UI
-- 📍 iPhone の GPS から位置情報 (緯度/経度/高度/速度) を取得して送信
+- 📍 iPhone の GPS から位置情報 (緯度/経度) を取得して送信
 - 🏃 Core Motion から三軸加速度センサーデータを取得して送信
 - 🌡️ 温度・湿度はセンサーで取得できないため、設定画面で指定したベース値にランダムな変動を加えた値を送信
 - 🔄 SORACOM メタデータサービスから設定を取得し、自動送信と手動送信、送信間隔を切り替え
@@ -29,7 +29,7 @@ GPS マルチユニット SORACOM Edition と同じ JSON 形式でデータを�
   "y": -200.0,
   "z": 980.0,
   "rs": 3,
-  "bat": 4,
+  "bat": 3,
   "type": 0
 }
 ```
@@ -64,7 +64,7 @@ git clone https://github.com/0x6b/libsoratun
 cd libsoratun
 
 # iOS 向け静的ライブラリとしてビルド (iOS実機 + シミュレータ)して XCFramework を作成
-cp $(PROJECT_DIR)/SoracomGPSMultiunit/bin/buildlibsoratun.sh .
+cp <リポジトリルート>/SoracomGPSMultiunit/bin/buildlibsoratun.sh .
 chmod +x buildlibsoratun.sh
 ./buildlibsoratun.sh
 ```
