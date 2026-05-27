@@ -6,7 +6,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
 
     @State private var showArcConfigInfo = false
-    @State private var arcConfigText = ""
 
     var body: some View {
         NavigationStack {
@@ -24,9 +23,6 @@ struct SettingsView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("完了") { dismiss() }
                 }
-            }
-            .onAppear {
-                arcConfigText = settings.arcConfigJSON
             }
         }
     }
