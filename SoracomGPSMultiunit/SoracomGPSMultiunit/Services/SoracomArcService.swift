@@ -218,8 +218,8 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
                 }
                 let result = String(cString: resultPtr)
                 free(resultPtr)
-                // 先頭が "2" で始まらない場合は通信エラー
-                guard result.first == "2" else {
+                // 先頭が "2" (HTTP 2xx) または "{" (JSON) で始まる場合は成功
+                guard result.first == "2" || result.first == "{" else {
                     continuation.resume(throwing: SoracomArcError.sendFailed("不正なレスポンス: \(result)"))
                     return
                 }

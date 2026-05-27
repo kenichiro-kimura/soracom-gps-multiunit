@@ -68,8 +68,8 @@ class UDPSendingService {
                                 resumeOnce(.failure(UDPSendingError.invalidResponse("レスポンスが空でした")))
                                 return
                             }
-                            // 先頭バイトが '2' (0x32) で始まらない場合は通信エラー
-                            guard responseData[0] == 0x32 else {
+                            // 先頭バイトが '2' (0x32, HTTP 2xx) または '{' (0x7B, JSON) で始まる場合は成功
+                            guard responseData[0] == 0x32 || responseData[0] == 0x7B else {
                                 let responseStr = String(data: responseData, encoding: .utf8) ?? responseData.map { String(format: "%02x", $0) }.joined()
                                 resumeOnce(.failure(UDPSendingError.invalidResponse("不正なレスポンス: \(responseStr)")))
                                 return
