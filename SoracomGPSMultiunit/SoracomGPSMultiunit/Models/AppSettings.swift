@@ -1,5 +1,42 @@
 import Foundation
 import Combine
+import Security
+
+// MARK: - Keychain Helper
+
+private enum KeychainHelper {
+    static func save(_ value: String, forKey key: String) {
+        let data = Data(value.utf8)
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data
+        ]
+        SecItemDelete(query as CFDictionary)
+        SecItemAdd(query as CFDictionary, nil)
+    }
+
+    static func load(forKey key: String) -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess, let data = result as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    static func delete(forKey key: String) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: key
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
+}
 
 /// アプリ設定
 class AppSettings: ObservableObject {
@@ -27,9 +64,9 @@ class AppSettings: ObservableObject {
 
     // MARK: - SORACOM Arc 設定
 
-    /// SORACOM Arc 設定 (WireGuard 形式)
+    /// SORACOM Arc 設定 (WireGuard 形式) — Keychain に保存
     @Published var arcConfigJSON: String {
-        didSet { UserDefaults.standard.set(arcConfigJSON, forKey: Keys.arcConfigJSON) }
+        didSet { KeychainHelper.save(arcConfigJSON, forKey: Keys.arcConfigJSON) }
     }
 
     // MARK: - 電波強度・バッテリー設定
@@ -65,7 +102,7 @@ class AppSettings: ObservableObject {
         temperatureVariation = defaults.object(forKey: Keys.temperatureVariation) as? Double ?? 2.0
         humidityBase = defaults.object(forKey: Keys.humidityBase) as? Double ?? 60.0
         humidityVariation = defaults.object(forKey: Keys.humidityVariation) as? Double ?? 5.0
-        arcConfigJSON = defaults.string(forKey: Keys.arcConfigJSON) ?? ""
+        arcConfigJSON = KeychainHelper.load(forKey: Keys.arcConfigJSON) ?? ""
         rsValue = defaults.object(forKey: Keys.rsValue) as? Int ?? 3
         batValue = defaults.object(forKey: Keys.batValue) as? Int ?? 3
         defaultSendingInterval = defaults.object(forKey: Keys.defaultSendingInterval) as? Int ?? 60
