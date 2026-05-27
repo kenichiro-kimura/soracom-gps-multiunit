@@ -150,8 +150,8 @@ final class AppSettings: ObservableObject {
             try KeychainHelper.delete(forKey: Keys.arcConfigJSON)
             arcConfigJSON = ""
         } else {
-            try KeychainHelper.save(value, forKey: Keys.arcConfigJSON)
-            arcConfigJSON = value
+            try KeychainHelper.save(trimmed, forKey: Keys.arcConfigJSON)
+            arcConfigJSON = trimmed
         }
     }
 
