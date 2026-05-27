@@ -191,20 +191,24 @@ struct DeviceView: View {
             HStack(spacing: 20) {
                 sensorPair(
                     label: "温度",
-                    value: String(format: "%.1f°C", data.temp),
+                    value: data.temp.map { String(format: "%.1f°C", $0) } ?? "無効",
                     icon: "thermometer.medium"
                 )
                 sensorPair(
                     label: "湿度",
-                    value: String(format: "%.1f%%", data.humi),
+                    value: data.humi.map { String(format: "%.1f%%", $0) } ?? "無効",
                     icon: "drop.fill"
                 )
             }
-            sensorPair(
-                label: "加速度",
-                value: String(format: "X:%.2f Y:%.2f Z:%.2f", data.x, data.y, data.z),
-                icon: "gyroscope"
-            )
+            if let x = data.x, let y = data.y, let z = data.z {
+                sensorPair(
+                    label: "加速度",
+                    value: String(format: "X:%.2f Y:%.2f Z:%.2f", x, y, z),
+                    icon: "gyroscope"
+                )
+            } else {
+                sensorPair(label: "加速度", value: "無効", icon: "gyroscope")
+            }
             if let lat = data.lat, let lon = data.lon {
                 sensorPair(
                     label: "GPS",

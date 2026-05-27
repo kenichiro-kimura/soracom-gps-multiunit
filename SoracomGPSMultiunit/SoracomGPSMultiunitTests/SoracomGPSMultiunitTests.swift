@@ -192,9 +192,9 @@ final class SoracomGPSMultiunitTests: XCTestCase {
             viewModel.manualSend()
         }
         // Temperature should always be within base ± variation
-        if let data = viewModel.lastSensorData {
-            XCTAssertGreaterThanOrEqual(data.temp, settings.temperatureBase - settings.temperatureVariation - 0.1)
-            XCTAssertLessThanOrEqual(data.temp, settings.temperatureBase + settings.temperatureVariation + 0.1)
+        if let data = viewModel.lastSensorData, let temp = data.temp {
+            XCTAssertGreaterThanOrEqual(temp, settings.temperatureBase - settings.temperatureVariation - 0.1)
+            XCTAssertLessThanOrEqual(temp, settings.temperatureBase + settings.temperatureVariation + 0.1)
         }
     }
 
