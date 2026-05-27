@@ -108,9 +108,9 @@ struct SendLogRow: View {
             }
             if let x = log.data.x, let y = log.data.y, let z = log.data.z {
                 HStack(spacing: 16) {
-                    DataCell(label: "X", value: String(format: "%.3fG", x))
-                    DataCell(label: "Y", value: String(format: "%.3fG", y))
-                    DataCell(label: "Z", value: String(format: "%.3fG", z))
+                    DataCell(label: "X", value: String(format: "%.0f mG", x))
+                    DataCell(label: "Y", value: String(format: "%.0f mG", y))
+                    DataCell(label: "Z", value: String(format: "%.0f mG", z))
                 }
             }
             if let lat = log.data.lat, let lon = log.data.lon {

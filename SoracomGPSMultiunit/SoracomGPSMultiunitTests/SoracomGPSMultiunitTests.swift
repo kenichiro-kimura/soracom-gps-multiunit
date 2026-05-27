@@ -64,9 +64,25 @@ final class SoracomGPSMultiunitTests: XCTestCase {
     func testMetadataConfigDecoding() throws {
         let json = """
         {
-            "autoSend": true,
-            "sendingInterval": 30,
-            "sendLocation": false
+            "SensorData": {
+                "acc": {"i1": "ON"},
+                "loc": {"i1": "OFF"},
+                "tem": {"i1": "ON"},
+                "hum": {"i1": "ON"},
+                "bat": {"i1": "ON"}
+            },
+            "Common": {
+                "C1": ["null"],
+                "C2": ["null"],
+                "C3": ["null"],
+                "C4": ["null"],
+                "C5": [30],
+                "C6": ["null"],
+                "C7": "0"
+            },
+            "Setting": {
+                "itr": {"i2": 620}
+            }
         }
         """
         let decoder = JSONDecoder()
@@ -74,35 +90,50 @@ final class SoracomGPSMultiunitTests: XCTestCase {
         let config = try decoder.decode(MetadataConfig.self, from: json.data(using: .utf8)!)
 
         XCTAssertTrue(config.autoSend)
-        XCTAssertEqual(config.sendingInterval, 30)
+        XCTAssertEqual(config.sendingIntervalSeconds, 1800)
         XCTAssertFalse(config.sendLocation)
     }
 
-    func testMetadataConfigDefaults() {
-        let config = MetadataConfig()
-        XCTAssertTrue(config.autoSend)
-        XCTAssertEqual(config.sendingInterval, 60)
+    func testMetadataConfigDisablesAutoSendForInactiveSchedule() throws {
+        let json = """
+        {
+            "SensorData": {
+                "acc": {"i1": "OFF"},
+                "loc": {"i1": "ON"},
+                "tem": {"i1": "ON"},
+                "hum": {"i1": "OFF"},
+                "bat": {"i1": "ON"}
+            },
+            "Common": {
+                "C1": ["null"],
+                "C2": ["null"],
+                "C3": ["null"],
+                "C4": ["null"],
+                "C5": [-20000],
+                "C6": ["null"],
+                "C7": "0"
+            },
+            "Setting": {
+                "itr": {"i2": 500}
+            }
+        }
+        """
+        let config = try JSONDecoder().decode(MetadataConfig.self, from: json.data(using: .utf8)!)
+
+        XCTAssertFalse(config.autoSend)
+        XCTAssertNil(config.sendingIntervalSeconds)
         XCTAssertTrue(config.sendLocation)
     }
 
     // MARK: - AppSettings Tests
 
     func testAppSettingsDefaults() {
-        let defaults = UserDefaults.standard
-        let domainName = Bundle.main.bundleIdentifier ?? "SoracomGPSMultiunitTests"
-        let originalDomain = defaults.persistentDomain(forName: domainName)
+        let suiteName = "SoracomGPSMultiunitTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
 
-        defaults.removePersistentDomain(forName: domainName)
-
-        defer {
-            if let originalDomain {
-                defaults.setPersistentDomain(originalDomain, forName: domainName)
-            } else {
-                defaults.removePersistentDomain(forName: domainName)
-            }
-        }
-
-        let settings = AppSettings()
+        let settings = AppSettings(userDefaults: defaults)
         XCTAssertEqual(settings.temperatureBase, 25.0)
         XCTAssertEqual(settings.temperatureVariation, 2.0)
         XCTAssertEqual(settings.humidityBase, 60.0)
@@ -136,11 +167,14 @@ final class SoracomGPSMultiunitTests: XCTestCase {
     func testLibsoratunArcServiceConfigurationWithValidJSON() throws {
         let service = LibsoratunArcService()
         let validJSON = """
-        {
-            "privateKey": "base64key==",
-            "publicKey": "base64key==",
-            "endpoint": "10.0.0.1:11010"
-        }
+        [Interface]
+        PrivateKey = base64key==
+        Address = 10.0.0.2/32
+
+        [Peer]
+        PublicKey = base64pub==
+        AllowedIPs = 100.127.0.0/16, 192.168.0.0/24
+        Endpoint = 10.0.0.1:11010
         """
         XCTAssertNoThrow(try service.configure(with: validJSON))
         XCTAssertTrue(service.isConfigured)
@@ -210,14 +244,6 @@ final class SoracomGPSMultiunitTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(temp, settings.temperatureBase - settings.temperatureVariation - 0.1)
             XCTAssertLessThanOrEqual(temp, settings.temperatureBase + settings.temperatureVariation + 0.1)
         }
-    }
-
-    // MARK: - Comparable Extension Tests
-
-    func testClampedExtension() {
-        XCTAssertEqual((-10.0).clamped(to: 0...100), 0.0)
-        XCTAssertEqual(110.0.clamped(to: 0...100), 100.0)
-        XCTAssertEqual(50.0.clamped(to: 0...100), 50.0)
     }
 
     // MARK: - ConnectionStatus Tests

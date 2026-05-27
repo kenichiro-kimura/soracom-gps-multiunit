@@ -5,7 +5,14 @@ struct SettingsView: View {
     @ObservedObject var settings: AppSettings
     @Environment(\.dismiss) var dismiss
 
+    @State private var arcConfigText: String
     @State private var showArcConfigInfo = false
+    @State private var arcConfigSaveError: String?
+
+    init(settings: AppSettings) {
+        self.settings = settings
+        _arcConfigText = State(initialValue: settings.arcConfigJSON)
+    }
 
     var body: some View {
         NavigationStack {
@@ -21,9 +28,19 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完了") { dismiss() }
+                    Button("完了", action: saveAndDismiss)
                 }
             }
+        }
+        .alert("保存できませんでした", isPresented: Binding(
+            get: { arcConfigSaveError != nil },
+            set: { if !$0 { arcConfigSaveError = nil } }
+        )) {
+            Button("OK") {
+                arcConfigSaveError = nil
+            }
+        } message: {
+            Text(arcConfigSaveError ?? "")
         }
     }
 
@@ -168,7 +185,7 @@ struct SettingsView: View {
                     .buttonStyle(.plain)
                 }
 
-                TextEditor(text: $settings.arcConfigJSON)
+                TextEditor(text: $arcConfigText)
                     .font(.system(size: 12, design: .monospaced))
                     .frame(minHeight: 140)
                     .scrollContentBackground(.hidden)
@@ -206,6 +223,15 @@ struct SettingsView: View {
             ) {
                 Label("GitHub リポジトリ", systemImage: "arrow.up.right.square")
             }
+        }
+    }
+
+    private func saveAndDismiss() {
+        do {
+            try settings.saveArcConfigJSON(arcConfigText)
+            dismiss()
+        } catch {
+            arcConfigSaveError = error.localizedDescription
         }
     }
 }

@@ -336,7 +336,7 @@ class MainViewModel: ObservableObject {
         let variation = Double.random(
             in: -settings.humidityVariation...settings.humidityVariation
         )
-        let value = (settings.humidityBase + variation).clamped(to: 0...100)
+        let value = Swift.min(Swift.max(settings.humidityBase + variation, 0), 100)
         return (value * 10).rounded() / 10
     }
 
@@ -406,13 +406,5 @@ struct SendLog: Identifiable {
         self.success = success
         self.response = response
         self.error = error
-    }
-}
-
-// MARK: - Comparable extensions
-
-extension Comparable {
-    func clamped(to range: ClosedRange<Self>) -> Self {
-        min(max(self, range.lowerBound), range.upperBound)
     }
 }

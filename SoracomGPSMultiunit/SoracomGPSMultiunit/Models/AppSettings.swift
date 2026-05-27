@@ -4,109 +4,155 @@ import Security
 
 // MARK: - Keychain Helper
 
+private enum KeychainError: LocalizedError {
+    case unexpectedStatus(OSStatus)
+
+    var errorDescription: String? {
+        switch self {
+        case .unexpectedStatus(let status):
+            return "Keychain access failed with status \(status)."
+        }
+    }
+}
+
 private enum KeychainHelper {
-    static func save(_ value: String, forKey key: String) {
-        let data = Data(value.utf8)
-        let query: [String: Any] = [
+    private static let service = Bundle.main.bundleIdentifier ?? "com.gmail.kenichirokimura.gpsmultiunit"
+    private static let accessibility = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+
+    private static func baseQuery(forKey key: String) -> [String: Any] {
+        [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key,
-            kSecValueData as String: data
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key
         ]
-        SecItemDelete(query as CFDictionary)
-        SecItemAdd(query as CFDictionary, nil)
+    }
+
+    static func save(_ value: String, forKey key: String) throws {
+        let data = Data(value.utf8)
+        var query = baseQuery(forKey: key)
+        query[kSecValueData as String] = data
+        query[kSecAttrAccessible as String] = accessibility
+
+        let addStatus = SecItemAdd(query as CFDictionary, nil)
+        switch addStatus {
+        case errSecSuccess:
+            return
+        case errSecDuplicateItem:
+            let attributes: [String: Any] = [
+                kSecValueData as String: data,
+                kSecAttrAccessible as String: accessibility
+            ]
+            let updateStatus = SecItemUpdate(baseQuery(forKey: key) as CFDictionary, attributes as CFDictionary)
+            guard updateStatus == errSecSuccess else {
+                throw KeychainError.unexpectedStatus(updateStatus)
+            }
+        default:
+            throw KeychainError.unexpectedStatus(addStatus)
+        }
     }
 
     static func load(forKey key: String) -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key,
+        var query = baseQuery(forKey: key)
+        query.merge([
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
-        ]
+        ]) { _, new in new }
+
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         guard status == errSecSuccess, let data = result as? Data else { return nil }
         return String(data: data, encoding: .utf8)
     }
 
-    static func delete(forKey key: String) {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key
-        ]
-        SecItemDelete(query as CFDictionary)
+    static func delete(forKey key: String) throws {
+        let status = SecItemDelete(baseQuery(forKey: key) as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw KeychainError.unexpectedStatus(status)
+        }
     }
 }
 
 /// アプリ設定
-class AppSettings: ObservableObject {
+final class AppSettings: ObservableObject {
+    private let defaults: UserDefaults
+
     // MARK: - 温度/湿度設定
 
     /// 温度ベース値 (°C)
     @Published var temperatureBase: Double {
-        didSet { UserDefaults.standard.set(temperatureBase, forKey: Keys.temperatureBase) }
+        didSet { defaults.set(temperatureBase, forKey: Keys.temperatureBase) }
     }
 
     /// 温度ランダム変動範囲 (±°C)
     @Published var temperatureVariation: Double {
-        didSet { UserDefaults.standard.set(temperatureVariation, forKey: Keys.temperatureVariation) }
+        didSet { defaults.set(temperatureVariation, forKey: Keys.temperatureVariation) }
     }
 
     /// 湿度ベース値 (%)
     @Published var humidityBase: Double {
-        didSet { UserDefaults.standard.set(humidityBase, forKey: Keys.humidityBase) }
+        didSet { defaults.set(humidityBase, forKey: Keys.humidityBase) }
     }
 
     /// 湿度ランダム変動範囲 (±%)
     @Published var humidityVariation: Double {
-        didSet { UserDefaults.standard.set(humidityVariation, forKey: Keys.humidityVariation) }
+        didSet { defaults.set(humidityVariation, forKey: Keys.humidityVariation) }
     }
 
     // MARK: - SORACOM Arc 設定
 
     /// SORACOM Arc 設定 (WireGuard 形式) — Keychain に保存
-    @Published var arcConfigJSON: String {
-        didSet { KeychainHelper.save(arcConfigJSON, forKey: Keys.arcConfigJSON) }
-    }
+    @Published var arcConfigJSON: String
 
     // MARK: - 電波強度・バッテリー設定
 
     /// 電波強度 (-1 - 4)
     @Published var rsValue: Int {
-        didSet { UserDefaults.standard.set(rsValue, forKey: Keys.rsValue) }
+        didSet { defaults.set(rsValue, forKey: Keys.rsValue) }
     }
 
-    /// バッテリーレベル (0-5)
+    /// バッテリーレベル (-1 - 3)
     @Published var batValue: Int {
-        didSet { UserDefaults.standard.set(batValue, forKey: Keys.batValue) }
+        didSet { defaults.set(batValue, forKey: Keys.batValue) }
     }
 
     // MARK: - フォールバック設定
 
     /// メタデータサービスが利用できない場合の自動送信間隔 (秒)
     @Published var defaultSendingInterval: Int {
-        didSet { UserDefaults.standard.set(defaultSendingInterval, forKey: Keys.defaultSendingInterval) }
+        didSet { defaults.set(defaultSendingInterval, forKey: Keys.defaultSendingInterval) }
     }
 
     /// メタデータサービスが利用できない場合の自動送信有効/無効
     @Published var defaultAutoSend: Bool {
-        didSet { UserDefaults.standard.set(defaultAutoSend, forKey: Keys.defaultAutoSend) }
+        didSet { defaults.set(defaultAutoSend, forKey: Keys.defaultAutoSend) }
     }
 
     // MARK: - Init
 
-    init() {
-        let defaults = UserDefaults.standard
+    init(userDefaults: UserDefaults = .standard) {
+        defaults = userDefaults
 
-        temperatureBase = defaults.object(forKey: Keys.temperatureBase) as? Double ?? 25.0
-        temperatureVariation = defaults.object(forKey: Keys.temperatureVariation) as? Double ?? 2.0
-        humidityBase = defaults.object(forKey: Keys.humidityBase) as? Double ?? 60.0
-        humidityVariation = defaults.object(forKey: Keys.humidityVariation) as? Double ?? 5.0
+        temperatureBase = userDefaults.object(forKey: Keys.temperatureBase) as? Double ?? 25.0
+        temperatureVariation = userDefaults.object(forKey: Keys.temperatureVariation) as? Double ?? 2.0
+        humidityBase = userDefaults.object(forKey: Keys.humidityBase) as? Double ?? 60.0
+        humidityVariation = userDefaults.object(forKey: Keys.humidityVariation) as? Double ?? 5.0
         arcConfigJSON = KeychainHelper.load(forKey: Keys.arcConfigJSON) ?? ""
-        rsValue = defaults.object(forKey: Keys.rsValue) as? Int ?? 3
-        batValue = defaults.object(forKey: Keys.batValue) as? Int ?? 3
-        defaultSendingInterval = defaults.object(forKey: Keys.defaultSendingInterval) as? Int ?? 60
-        defaultAutoSend = defaults.object(forKey: Keys.defaultAutoSend) as? Bool ?? false
+        rsValue = userDefaults.object(forKey: Keys.rsValue) as? Int ?? 3
+        batValue = userDefaults.object(forKey: Keys.batValue) as? Int ?? 3
+        defaultSendingInterval = userDefaults.object(forKey: Keys.defaultSendingInterval) as? Int ?? 60
+        defaultAutoSend = userDefaults.object(forKey: Keys.defaultAutoSend) as? Bool ?? false
+    }
+
+    func saveArcConfigJSON(_ value: String) throws {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if trimmed.isEmpty {
+            try KeychainHelper.delete(forKey: Keys.arcConfigJSON)
+            arcConfigJSON = ""
+        } else {
+            try KeychainHelper.save(value, forKey: Keys.arcConfigJSON)
+            arcConfigJSON = value
+        }
     }
 
     // MARK: - Keys

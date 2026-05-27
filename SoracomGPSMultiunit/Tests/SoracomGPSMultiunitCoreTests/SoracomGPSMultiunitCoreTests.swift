@@ -176,7 +176,15 @@ final class SoracomArcServiceTests: XCTestCase {
     func testLibsoratunArcServiceConfigureWithValidJSONSucceeds() throws {
         let service = LibsoratunArcService()
         let validJSON = """
-        {"privateKey": "base64key==", "endpoint": "10.0.0.1:11010"}
+        {
+            "privateKey": "base64key==",
+            "arcSessionStatus": {
+                "arcServerPeerPublicKey": "base64pub==",
+                "arcServerEndpoint": "10.0.0.1:11010",
+                "arcAllowedIPs": ["100.127.0.0/16", "192.168.0.0/24"],
+                "arcClientPeerIpAddress": "10.0.0.2"
+            }
+        }
         """
         XCTAssertNoThrow(try service.configure(with: validJSON))
         XCTAssertTrue(service.isConfigured)
@@ -211,13 +219,33 @@ final class MetadataServiceTests: XCTestCase {
     func testFetchConfigSuccess() async throws {
         let mock = MockArcService()
         mock.mockResponse = """
-        {"autoSend": true, "sendingInterval": 30, "sendLocation": false}
+        {
+            "SensorData": {
+                "acc": {"i1": "ON"},
+                "loc": {"i1": "OFF"},
+                "tem": {"i1": "ON"},
+                "hum": {"i1": "ON"},
+                "bat": {"i1": "ON"}
+            },
+            "Common": {
+                "C1": ["null"],
+                "C2": ["null"],
+                "C3": ["null"],
+                "C4": ["null"],
+                "C5": [30],
+                "C6": ["null"],
+                "C7": "0"
+            },
+            "Setting": {
+                "itr": {"i2": 620}
+            }
+        }
         """
         let service = MetadataService(arcService: mock)
         let config = try await service.fetchConfig()
 
         XCTAssertTrue(config.autoSend)
-        XCTAssertEqual(config.sendingInterval, 30)
+        XCTAssertEqual(config.sendingIntervalSeconds, 1800)
         XCTAssertFalse(config.sendLocation)
     }
 

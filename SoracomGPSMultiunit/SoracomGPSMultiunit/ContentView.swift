@@ -2,7 +2,7 @@ import SwiftUI
 
 /// ルートビュー
 struct ContentView: View {
-    @StateObject private var settings = AppSettings()
+    @StateObject private var settings: AppSettings
     @StateObject private var viewModel: MainViewModel
 
     @State private var selectedTab = 0
