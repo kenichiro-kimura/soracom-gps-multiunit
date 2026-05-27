@@ -71,7 +71,7 @@ class AppSettings: ObservableObject {
 
     // MARK: - 電波強度・バッテリー設定
 
-    /// 電波強度 (0-5)
+    /// 電波強度 (-1 - 4)
     @Published var rsValue: Int {
         didSet { UserDefaults.standard.set(rsValue, forKey: Keys.rsValue) }
     }
