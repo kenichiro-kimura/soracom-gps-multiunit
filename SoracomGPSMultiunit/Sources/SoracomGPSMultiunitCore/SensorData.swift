@@ -6,16 +6,16 @@ public struct SensorData: Codable, Equatable, Sendable {
     public let lat: Double?
     /// 経度 (度)。-180 〜 180、null: 測位失敗
     public let lon: Double?
-    /// 温度 (°C)。-20 〜 60
-    public let temp: Double
-    /// 湿度 (%)。0 〜 100
-    public let humi: Double
-    /// 加速度 X軸 (mG)。-8128 〜 8128
-    public let x: Double
-    /// 加速度 Y軸 (mG)。-8128 〜 8128
-    public let y: Double
-    /// 加速度 Z軸 (mG)。-8128 〜 8128
-    public let z: Double
+    /// 温度 (°C)。-20 〜 60。センサー無効時は nil
+    public let temp: Double?
+    /// 湿度 (%)。0 〜 100。センサー無効時は nil
+    public let humi: Double?
+    /// 加速度 X軸 (mG)。-8128 〜 8128。センサー無効時は nil
+    public let x: Double?
+    /// 加速度 Y軸 (mG)。-8128 〜 8128。センサー無効時は nil
+    public let y: Double?
+    /// 加速度 Z軸 (mG)。-8128 〜 8128。センサー無効時は nil
+    public let z: Double?
     /// 電池残量。-1: 充電中、1 〜 3: 電池残量
     public let bat: Int?
     /// 電波強度。-1: 圏外、0 〜 4: 電波強度
@@ -29,27 +29,26 @@ public struct SensorData: Codable, Equatable, Sendable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        // GPSが取得できない場合も lat/lon は null として出力する
-        try container.encode(lat, forKey: .lat)
-        try container.encode(lon, forKey: .lon)
+        try container.encodeIfPresent(lat, forKey: .lat)
+        try container.encodeIfPresent(lon, forKey: .lon)
         try container.encodeIfPresent(bat, forKey: .bat)
         try container.encodeIfPresent(rs, forKey: .rs)
-        try container.encode(temp, forKey: .temp)
-        try container.encode(humi, forKey: .humi)
-        try container.encode(x, forKey: .x)
-        try container.encode(y, forKey: .y)
-        try container.encode(z, forKey: .z)
+        try container.encodeIfPresent(temp, forKey: .temp)
+        try container.encodeIfPresent(humi, forKey: .humi)
+        try container.encodeIfPresent(x, forKey: .x)
+        try container.encodeIfPresent(y, forKey: .y)
+        try container.encodeIfPresent(z, forKey: .z)
         try container.encode(type, forKey: .type)
     }
 
     public init(
         lat: Double? = nil,
         lon: Double? = nil,
-        temp: Double,
-        humi: Double,
-        x: Double,
-        y: Double,
-        z: Double,
+        temp: Double? = nil,
+        humi: Double? = nil,
+        x: Double? = nil,
+        y: Double? = nil,
+        z: Double? = nil,
         bat: Int? = nil,
         rs: Int? = nil,
         type: SendType

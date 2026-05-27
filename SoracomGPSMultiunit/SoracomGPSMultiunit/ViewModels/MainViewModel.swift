@@ -23,6 +23,15 @@ class MainViewModel: ObservableObject {
     /// GPS 位置情報を送信に含めるか
     @Published var sendLocation: Bool = true
 
+    /// 温度を送信に含めるか
+    @Published var sendTemperature: Bool = true
+
+    /// 湿度を送信に含めるか
+    @Published var sendHumidity: Bool = true
+
+    /// 加速度データを送信に含めるか
+    @Published var sendAcceleration: Bool = true
+
     /// 接続ステータス
     @Published var connectionStatus: ConnectionStatus = .disconnected
 
@@ -113,6 +122,10 @@ class MainViewModel: ObservableObject {
             connectionStatus = .disconnected
             isAutoSendEnabled = settings.defaultAutoSend
             sendingInterval = settings.defaultSendingInterval
+            sendLocation = true
+            sendTemperature = true
+            sendHumidity = true
+            sendAcceleration = true
             if settings.defaultAutoSend {
                 startAutoSend()
             }
@@ -131,6 +144,10 @@ class MainViewModel: ObservableObject {
             // フォールバック設定を使用
             isAutoSendEnabled = settings.defaultAutoSend
             sendingInterval = settings.defaultSendingInterval
+            sendLocation = true
+            sendTemperature = true
+            sendHumidity = true
+            sendAcceleration = true
             if settings.defaultAutoSend {
                 startAutoSend()
             }
@@ -153,8 +170,13 @@ class MainViewModel: ObservableObject {
         do {
             let config = try await metadataService.fetchConfig()
             isAutoSendEnabled = config.autoSend
-            sendingInterval = config.sendingInterval
+            if let interval = config.sendingIntervalSeconds {
+                sendingInterval = interval
+            }
             sendLocation = config.sendLocation
+            sendTemperature = config.sendTemperature
+            sendHumidity = config.sendHumidity
+            sendAcceleration = config.sendAcceleration
 
             if config.autoSend {
                 startAutoSend()
@@ -163,6 +185,10 @@ class MainViewModel: ObservableObject {
             // メタデータが取得できない場合はフォールバック設定を使用
             isAutoSendEnabled = settings.defaultAutoSend
             sendingInterval = settings.defaultSendingInterval
+            sendLocation = true
+            sendTemperature = true
+            sendHumidity = true
+            sendAcceleration = true
             if settings.defaultAutoSend {
                 startAutoSend()
             }
@@ -285,11 +311,11 @@ class MainViewModel: ObservableObject {
         return SensorData(
             lat: lat,
             lon: lon,
-            temp: generateTemperature(),
-            humi: generateHumidity(),
-            x: (acceleration.x * 10000).rounded() / 10,
-            y: (acceleration.y * 10000).rounded() / 10,
-            z: (acceleration.z * 10000).rounded() / 10,
+            temp: sendTemperature ? generateTemperature() : nil,
+            humi: sendHumidity ? generateHumidity() : nil,
+            x: sendAcceleration ? (acceleration.x * 10000).rounded() / 10 : nil,
+            y: sendAcceleration ? (acceleration.y * 10000).rounded() / 10 : nil,
+            z: sendAcceleration ? (acceleration.z * 10000).rounded() / 10 : nil,
             bat: settings.batValue,
             rs: settings.rsValue,
             type: type

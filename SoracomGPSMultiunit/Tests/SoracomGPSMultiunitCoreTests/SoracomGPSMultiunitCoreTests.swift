@@ -66,31 +66,80 @@ final class SensorDataTests: XCTestCase {
 
 final class MetadataConfigTests: XCTestCase {
 
-    func testMetadataConfigDefaultValues() {
-        let config = MetadataConfig()
-        XCTAssertTrue(config.autoSend)
-        XCTAssertEqual(config.sendingInterval, 60)
-        XCTAssertTrue(config.sendLocation)
+    private let fullMetadataJSON = """
+    {
+        "SensorData": {
+            "acc": {"i1": "ON"},
+            "loc": {"i1": "ON"},
+            "tem": {"i1": "ON"},
+            "hum": {"i1": "ON"},
+            "bat": {"i1": "ON"}
+        },
+        "Common": {
+            "C1": ["null","null","null","null","null","1981/04/01","1981/04/01","1981/04/01","null","null"],
+            "C2": ["null","null","null","null","null","2059/12/31","2059/12/31","2059/12/31","null","null"],
+            "C3": ["null","null","null","null","null","00:00","00:00","00:00","null","null"],
+            "C4": ["null","null","null","null","null","23:59","23:59","23:59","null","null"],
+            "C5": [-20000,-20000,-20000,-20000,-20000,10,1440,2160,-20000,-20000],
+            "C6": ["null","null","null","null","null",["SUN","MON","TUE","WED","THU","FRI","SAT"],["SUN","MON","TUE","WED","THU","FRI","SAT"],["SUN","MON","TUE","WED","THU","FRI","SAT"],"null","null"],
+            "C7": "5,6,7"
+        },
+        "Setting": {
+            "itr": {"i2": 620}
+        }
     }
+    """
 
     func testMetadataConfigDecoding() throws {
+        let config = try JSONDecoder().decode(MetadataConfig.self,
+                                             from: fullMetadataJSON.data(using: .utf8)!)
+
+        XCTAssertTrue(config.sendLocation)
+        XCTAssertTrue(config.sendTemperature)
+        XCTAssertTrue(config.sendHumidity)
+        XCTAssertTrue(config.sendAcceleration)
+        XCTAssertTrue(config.autoSend)
+        XCTAssertEqual(config.sendingIntervalSeconds, 600)  // 10 分 × 60 秒
+        XCTAssertEqual(config.accelerometerThreshold, 620)
+    }
+
+    func testMetadataConfigSensorDisabled() throws {
         let json = """
         {
-            "autoSend": false,
-            "sendingInterval": 30,
-            "sendLocation": false
+            "SensorData": {
+                "acc": {"i1": "OFF"},
+                "loc": {"i1": "OFF"},
+                "tem": {"i1": "ON"},
+                "hum": {"i1": "ON"},
+                "bat": {"i1": "ON"}
+            },
+            "Common": {
+                "C1": ["null","null","null","null","null","1981/04/01","null","null","null","null"],
+                "C2": ["null","null","null","null","null","2059/12/31","null","null","null","null"],
+                "C3": ["null","null","null","null","null","00:00","null","null","null","null"],
+                "C4": ["null","null","null","null","null","23:59","null","null","null","null"],
+                "C5": [-20000,-20000,-20000,-20000,-20000,60,-20000,-20000,-20000,-20000],
+                "C6": ["null","null","null","null","null",["MON","TUE","WED","THU","FRI"],"null","null","null","null"],
+                "C7": "5"
+            },
+            "Setting": {
+                "itr": {"i2": 500}
+            }
         }
         """
         let config = try JSONDecoder().decode(MetadataConfig.self, from: json.data(using: .utf8)!)
 
-        XCTAssertFalse(config.autoSend)
-        XCTAssertEqual(config.sendingInterval, 30)
         XCTAssertFalse(config.sendLocation)
+        XCTAssertFalse(config.sendAcceleration)
+        XCTAssertTrue(config.sendTemperature)
+        XCTAssertEqual(config.sendingIntervalSeconds, 3600)  // 60 分 × 60 秒
+        XCTAssertEqual(config.accelerometerThreshold, 500)
     }
 
-    func testMetadataConfigEquality() {
-        let c1 = MetadataConfig(autoSend: true, sendingInterval: 60, sendLocation: true)
-        let c2 = MetadataConfig(autoSend: true, sendingInterval: 60, sendLocation: true)
+    func testMetadataConfigEquality() throws {
+        let data = fullMetadataJSON.data(using: .utf8)!
+        let c1 = try JSONDecoder().decode(MetadataConfig.self, from: data)
+        let c2 = try JSONDecoder().decode(MetadataConfig.self, from: data)
         XCTAssertEqual(c1, c2)
     }
 }
