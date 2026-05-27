@@ -100,14 +100,18 @@ struct SendLogRow: View {
 
     private var dataGrid: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 16) {
-                DataCell(label: "温度", value: String(format: "%.1f°C", log.data.temp))
-                DataCell(label: "湿度", value: String(format: "%.1f%%", log.data.humi))
+            if let temp = log.data.temp, let humi = log.data.humi {
+                HStack(spacing: 16) {
+                    DataCell(label: "温度", value: String(format: "%.1f°C", temp))
+                    DataCell(label: "湿度", value: String(format: "%.1f%%", humi))
+                }
             }
-            HStack(spacing: 16) {
-                DataCell(label: "X", value: String(format: "%.3fG", log.data.x))
-                DataCell(label: "Y", value: String(format: "%.3fG", log.data.y))
-                DataCell(label: "Z", value: String(format: "%.3fG", log.data.z))
+            if let x = log.data.x, let y = log.data.y, let z = log.data.z {
+                HStack(spacing: 16) {
+                    DataCell(label: "X", value: String(format: "%.3fG", x))
+                    DataCell(label: "Y", value: String(format: "%.3fG", y))
+                    DataCell(label: "Z", value: String(format: "%.3fG", z))
+                }
             }
             if let lat = log.data.lat, let lon = log.data.lon {
                 HStack(spacing: 16) {
