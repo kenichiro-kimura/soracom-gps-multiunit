@@ -166,6 +166,8 @@ final class SoracomGPSMultiunitTests: XCTestCase {
 
     func testLibsoratunArcServiceConfigurationWithValidJSON() throws {
         let service = LibsoratunArcService()
+        // The app service accepts the pasted WireGuard text from SettingsView,
+        // while the core package test covers its JSON-only implementation separately.
         let validJSON = """
         [Interface]
         PrivateKey = base64key==
