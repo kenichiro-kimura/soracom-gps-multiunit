@@ -88,6 +88,20 @@ final class SoracomGPSMultiunitTests: XCTestCase {
     // MARK: - AppSettings Tests
 
     func testAppSettingsDefaults() {
+        let defaults = UserDefaults.standard
+        let domainName = Bundle.main.bundleIdentifier ?? "SoracomGPSMultiunitTests"
+        let originalDomain = defaults.persistentDomain(forName: domainName)
+
+        defaults.removePersistentDomain(forName: domainName)
+
+        defer {
+            if let originalDomain {
+                defaults.setPersistentDomain(originalDomain, forName: domainName)
+            } else {
+                defaults.removePersistentDomain(forName: domainName)
+            }
+        }
+
         let settings = AppSettings()
         XCTAssertEqual(settings.temperatureBase, 25.0)
         XCTAssertEqual(settings.temperatureVariation, 2.0)
