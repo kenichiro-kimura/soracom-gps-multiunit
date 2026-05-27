@@ -41,7 +41,7 @@ GPS マルチユニット SORACOM Edition と同じ JSON 形式でデータを�
 
 ## 必要環境
 
-- iOS 16.0 以上
+- iOS 17.6 以上
 - Xcode 15.0 以上
 - SORACOM アカウント (仮想 SIM)
 - libsoratun iOS 向けビルド (後述)
