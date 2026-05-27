@@ -11,7 +11,7 @@ GPS マルチユニット SORACOM Edition シミュレータ
 - 🏃 Core Motion から三軸加速度センサーデータを取得して送信
 - 🌡️ 温度・湿度はセンサーで取得できないため、設定画面で指定したベース値にランダムな変動を加えた値を送信
 - 🔄 SORACOM メタデータサービスから設定を取得し、自動送信と手動送信、送信間隔を切り替え
-- 🔒 SORACOM Arc (WireGuard VPN) を使って [libsoratun](https://github.com/0x6b/libsoratun) 経由で安全に通信
+- 🔒 SORACOM Arc (WireGuard VPN) を使って [libsoratun](https://github.com/0x6b/libsoratun) 経由で安全に通信 (Arc が未設定・利用不可の場合はインターネット経由 UDP にフォールバック)
 - 📊 SORACOM Unified Endpoint にデータを送信
 - 📝 送信ログの表示
 
@@ -100,7 +100,7 @@ open SoracomGPSMultiunit.xcodeproj
 
 Xcode でプロジェクトを開き、iPhone または シミュレータで実行してください。
 
-> **Note**: libsoratun を追加せずにビルドした場合、SORACOM Arc 接続は動作しませんが、UI の確認は可能です。
+> **Note**: libsoratun を追加せずにビルドした場合、または Arc 接続情報が未設定・設定不備の場合は、SORACOM Arc 接続は動作せず、インターネット経由の UDP 送信にフォールバックします。
 
 ## 使い方
 
