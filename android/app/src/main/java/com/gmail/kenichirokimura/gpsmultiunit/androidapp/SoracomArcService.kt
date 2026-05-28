@@ -217,7 +217,8 @@ class LibsoratunArcService(
         if (response.isBlank()) {
             throw SoracomArcError.SendFailed("レスポンスが空でした。")
         }
-        if (response.first() != '2' && response.first() != '{') {
+        val firstCharacter = response.firstOrNull()
+        if (firstCharacter != '2' && firstCharacter != '{') {
             throw SoracomArcError.SendFailed("不正なレスポンス: $response")
         }
     }

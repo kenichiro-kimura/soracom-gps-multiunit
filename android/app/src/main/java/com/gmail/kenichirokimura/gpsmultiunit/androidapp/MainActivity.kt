@@ -385,7 +385,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("自動送信")
-                        Text("データ送信を設定秒数で繰り返します", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("データ送信を設定した秒数間隔で繰り返します", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Switch(
                         checked = currentSettings.autoSendEnabled,
