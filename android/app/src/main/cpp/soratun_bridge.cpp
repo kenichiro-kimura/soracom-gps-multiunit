@@ -2,14 +2,25 @@
 #include <dlfcn.h>
 
 #include <cstdlib>
+#include <mutex>
 #include <vector>
 
 namespace {
 
 using SendUdpFn = char* (*)(const char*, const char*, int, int, int);
 
-void* openLibsoratun() {
-    return dlopen("libsoratun.so", RTLD_NOW | RTLD_LOCAL);
+std::once_flag load_once;
+void* libsoratun_handle = nullptr;
+SendUdpFn send_udp_function = nullptr;
+
+bool ensureLibsoratunLoaded() {
+    std::call_once(load_once, []() {
+        libsoratun_handle = dlopen("libsoratun.so", RTLD_NOW | RTLD_LOCAL);
+        if (libsoratun_handle != nullptr) {
+            send_udp_function = reinterpret_cast<SendUdpFn>(dlsym(libsoratun_handle, "SendUDP"));
+        }
+    });
+    return libsoratun_handle != nullptr && send_udp_function != nullptr;
 }
 
 }  // namespace
@@ -20,12 +31,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeIsLib
     JNIEnv*,
     jobject
 ) {
-    void* handle = openLibsoratun();
-    if (handle == nullptr) {
-        return JNI_FALSE;
-    }
-    dlclose(handle);
-    return JNI_TRUE;
+    return ensureLibsoratunLoaded() ? JNI_TRUE : JNI_FALSE;
 }
 
 extern "C"
@@ -38,14 +44,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
     jint port,
     jint timeout_seconds
 ) {
-    void* handle = openLibsoratun();
-    if (handle == nullptr) {
-        return nullptr;
-    }
-
-    auto* send_udp = reinterpret_cast<SendUdpFn>(dlsym(handle, "SendUDP"));
-    if (send_udp == nullptr) {
-        dlclose(handle);
+    if (!ensureLibsoratunLoaded()) {
         return nullptr;
     }
 
@@ -54,7 +53,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
     std::vector<char> body_bytes(static_cast<size_t>(body_length));
     env->GetByteArrayRegion(body, 0, body_length, reinterpret_cast<jbyte*>(body_bytes.data()));
 
-    char* response = send_udp(
+    char* response = send_udp_function(
         config_chars,
         body_bytes.data(),
         static_cast<int>(body_length),
@@ -63,7 +62,6 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
     );
 
     env->ReleaseStringUTFChars(config_json, config_chars);
-    dlclose(handle);
 
     if (response == nullptr) {
         return nullptr;

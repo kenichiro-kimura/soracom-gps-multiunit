@@ -118,14 +118,13 @@ class LibsoratunArcService(
                 return@forEach
             }
 
-            val delimiter = " = "
-            val delimiterIndex = trimmed.indexOf(delimiter)
+            val delimiterIndex = trimmed.indexOf('=')
             if (delimiterIndex < 0) {
                 return@forEach
             }
 
-            val key = trimmed.substring(0, delimiterIndex)
-            val value = trimmed.substring(delimiterIndex + delimiter.length)
+            val key = trimmed.substring(0, delimiterIndex).trim()
+            val value = trimmed.substring(delimiterIndex + 1).trim()
 
             when (currentSection) {
                 "interface" -> when (key) {
