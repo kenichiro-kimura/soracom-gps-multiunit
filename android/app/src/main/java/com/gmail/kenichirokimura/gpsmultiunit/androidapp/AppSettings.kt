@@ -9,4 +9,5 @@ data class AppSettings(
     val batValue: Int = 3,
     val autoSendEnabled: Boolean = false,
     val sendingIntervalSeconds: Int = 60,
+    val arcConfig: String = "",
 )

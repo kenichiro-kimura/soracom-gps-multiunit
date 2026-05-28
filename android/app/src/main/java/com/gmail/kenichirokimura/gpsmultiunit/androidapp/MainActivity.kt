@@ -45,6 +45,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -53,9 +54,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -364,10 +363,29 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
         }
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("SORACOM Arc", fontWeight = FontWeight.SemiBold)
+                Text(
+                    "WireGuard 接続情報または soratun の arc.json を貼り付けます。`android/app/src/main/jniLibs/` に libsoratun.so を配置すると Arc 経由送信を試行します。",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                OutlinedTextField(
+                    value = currentSettings.arcConfig,
+                    onValueChange = {
+                        currentSettings = currentSettings.copy(arcConfig = it)
+                        onUpdateSettings(currentSettings)
+                    },
+                    modifier = Modifier.fillMaxWidth().height(180.dp),
+                    label = { Text("WireGuard / arc.json") },
+                )
+            }
+        }
+        Card(shape = RoundedCornerShape(16.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("自動送信")
-                        Text("UDP 送信を設定秒数で繰り返します", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("データ送信を設定秒数で繰り返します", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Switch(
                         checked = currentSettings.autoSendEnabled,
@@ -448,7 +466,7 @@ private fun SmallActionButton(text: String, enabled: Boolean, onClick: () -> Uni
 private fun connectionStatusLabel(status: ConnectionStatus): String = when (status) {
     ConnectionStatus.DISCONNECTED -> "送信待機"
     ConnectionStatus.SENDING -> "送信中"
-    ConnectionStatus.CONNECTED -> "UDP 送信成功"
+    ConnectionStatus.CONNECTED -> "送信成功"
     ConnectionStatus.FAILED -> "送信失敗"
 }
 

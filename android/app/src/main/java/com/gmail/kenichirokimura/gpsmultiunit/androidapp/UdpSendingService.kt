@@ -6,12 +6,16 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 
+interface DirectUdpSendingService {
+    suspend fun send(jsonBody: String): String
+}
+
 class UdpSendingService(
     private val host: String = UNIFIED_ENDPOINT_HOST,
     private val port: Int = UNIFIED_ENDPOINT_PORT,
     private val timeoutMillis: Int = UDP_TIMEOUT_MILLIS,
-) {
-    suspend fun send(jsonBody: String): String = withContext(Dispatchers.IO) {
+) : DirectUdpSendingService {
+    override suspend fun send(jsonBody: String): String = withContext(Dispatchers.IO) {
         val address = InetAddress.getByName(host)
         val payload = jsonBody.toByteArray(Charsets.UTF_8)
         DatagramSocket().use { socket ->

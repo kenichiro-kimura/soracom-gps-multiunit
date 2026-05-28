@@ -15,6 +15,7 @@ class SettingsRepository(context: Context) {
         batValue = preferences.getInt(KEY_BAT_VALUE, 3),
         autoSendEnabled = preferences.getBoolean(KEY_AUTO_SEND_ENABLED, false),
         sendingIntervalSeconds = preferences.getInt(KEY_SENDING_INTERVAL_SECONDS, 60),
+        arcConfig = preferences.getString(KEY_ARC_CONFIG, "") ?: "",
     )
 
     fun save(settings: AppSettings) {
@@ -27,6 +28,7 @@ class SettingsRepository(context: Context) {
             .putInt(KEY_BAT_VALUE, settings.batValue)
             .putBoolean(KEY_AUTO_SEND_ENABLED, settings.autoSendEnabled)
             .putInt(KEY_SENDING_INTERVAL_SECONDS, settings.sendingIntervalSeconds)
+            .putString(KEY_ARC_CONFIG, settings.arcConfig)
             .apply()
     }
 
@@ -40,5 +42,6 @@ class SettingsRepository(context: Context) {
         const val KEY_BAT_VALUE = "bat_value"
         const val KEY_AUTO_SEND_ENABLED = "auto_send_enabled"
         const val KEY_SENDING_INTERVAL_SECONDS = "sending_interval_seconds"
+        const val KEY_ARC_CONFIG = "arc_config"
     }
 }

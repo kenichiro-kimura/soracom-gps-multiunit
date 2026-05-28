@@ -26,7 +26,7 @@ import kotlin.math.round
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val settingsRepository = SettingsRepository(application)
-    private val udpSendingService = UdpSendingService()
+    private val dataSendingService = DataSendingService()
     private val locationManager = application.getSystemService(LocationManager::class.java)
     private val sensorManager = application.getSystemService(SensorManager::class.java)
 
@@ -170,7 +170,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _uiState.update { it.copy(lastSensorData = sensorData) }
 
             runCatching {
-                udpSendingService.send(sensorData.toJsonString())
+                dataSendingService.send(sensorData.toJsonString(), _uiState.value.settings)
             }.onSuccess { response ->
                 val log = SendLog(sensorData = sensorData, success = true, message = response)
                 _uiState.update {
