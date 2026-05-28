@@ -111,7 +111,7 @@ cd android
 
 Android Studio で `android/` を開くか、上記コマンドで APK をビルドしてください。Android 版は Jetpack Compose で UI を実装しており、GPS / 加速度センサー / 温湿度の疑似値 / 送信ログ / UDP 送信設定を Kotlin でネイティブ実装しています。
 
-> **Note**: Android 版は現時点ではインターネット経由の UDP 送信を実装しています。UI の方向性や送信ペイロードは iOS 版に合わせています。
+> **Note**: Android 版は現時点ではインターネット経由の UDP 送信を実装しています。UI の方向性や送信ペイロードは iOS 版に合わせていますが、SORACOM Arc / libsoratun 連携はまだ含めていません。Android で Arc を有効にするには、`libsoratun.so` を ABI ごとに同梱して JNI で呼び出すか、`gomobile bind` などで Android 向けバインディングを別途用意する必要があります。
 
 ## 使い方
 
