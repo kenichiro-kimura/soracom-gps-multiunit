@@ -10,6 +10,7 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.pow
 import kotlin.math.round
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -40,6 +42,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             lastLocation = location
         }
 
+        override fun onProviderEnabled(provider: String) = Unit
+
+        override fun onProviderDisabled(provider: String) = Unit
+
+        @Deprecated("Deprecated in Java")
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
     }
 
     private val sensorListener = object : SensorEventListener {
@@ -247,6 +255,6 @@ data class SendLog(
 )
 
 private fun Double.roundedTo(scale: Int): Double {
-    val multiplier = Math.pow(10.0, scale.toDouble())
+    val multiplier = 10.0.pow(scale.toDouble())
     return round(this * multiplier) / multiplier
 }
