@@ -3,6 +3,8 @@ package com.gmail.kenichirokimura.gpsmultiunit.androidapp
 internal interface LibsoratunNativeBridge {
     fun isLibsoratunAvailable(): Boolean
 
+    fun loadErrorMessage(): String? = null
+
     fun sendUdp(
         configJson: String,
         body: ByteArray,
@@ -12,18 +14,26 @@ internal interface LibsoratunNativeBridge {
 }
 
 internal object LibsoratunJni : LibsoratunNativeBridge {
-    init {
+    private val loadErrorMessage: String? = try {
         System.loadLibrary("soratunbridge")
+        null
+    } catch (_: UnsatisfiedLinkError) {
+        "soratunbridge の読み込みに失敗しました。`android/app/src/main/jniLibs/` に libsoratun.so を配置して再ビルドしてください。"
     }
 
-    override fun isLibsoratunAvailable(): Boolean = nativeIsLibsoratunAvailable()
+    override fun isLibsoratunAvailable(): Boolean = loadErrorMessage == null && nativeIsLibsoratunAvailable()
+
+    override fun loadErrorMessage(): String? = loadErrorMessage
 
     override fun sendUdp(
         configJson: String,
         body: ByteArray,
         port: Int,
         timeoutSeconds: Int,
-    ): String? = nativeSendUdp(configJson, body, port, timeoutSeconds)
+    ): String? {
+        check(loadErrorMessage == null) { loadErrorMessage }
+        return nativeSendUdp(configJson, body, port, timeoutSeconds)
+    }
 
     private external fun nativeIsLibsoratunAvailable(): Boolean
 

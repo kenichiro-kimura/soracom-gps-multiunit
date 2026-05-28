@@ -10,7 +10,12 @@ sealed class SoracomArcError(message: String) : IllegalStateException(message) {
     class NotConfigured : SoracomArcError("SORACOM Arc が設定されていません。設定画面から WireGuard 接続情報を入力してください。")
     class InvalidConfiguration(detail: String) : SoracomArcError("設定が無効です: $detail")
     class SendFailed(detail: String) : SoracomArcError("送信に失敗しました: $detail")
-    class LibraryUnavailable : SoracomArcError("libsoratun ライブラリが利用できません。")
+    class LibraryUnavailable(detail: String = DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE) : SoracomArcError(detail)
+
+    companion object {
+        const val DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE =
+            "libsoratun ライブラリが利用できません。`android/app/src/main/jniLibs/` に libsoratun.so を配置して再ビルドしてください。"
+    }
 }
 
 interface SoracomArcService {
@@ -45,7 +50,9 @@ class LibsoratunArcService(
     override suspend fun sendUdp(body: String, port: Int, timeoutSeconds: Int): String = withContext(Dispatchers.IO) {
         val config = arcConfigJson ?: throw SoracomArcError.NotConfigured()
         if (!nativeBridge.isLibsoratunAvailable()) {
-            throw SoracomArcError.LibraryUnavailable()
+            throw SoracomArcError.LibraryUnavailable(
+                nativeBridge.loadErrorMessage() ?: SoracomArcError.DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE
+            )
         }
 
         val result = nativeBridge.sendUdp(
@@ -140,25 +147,15 @@ class LibsoratunArcService(
         }
 
         val clientPrivateKey = privateKey
-            ?: throw SoracomArcError.InvalidConfiguration(
-                "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
-            )
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
         val clientAddress = address
-            ?: throw SoracomArcError.InvalidConfiguration(
-                "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
-            )
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
         val serverPublicKey = publicKey
-            ?: throw SoracomArcError.InvalidConfiguration(
-                "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
-            )
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
         val serverEndpoint = endpoint
-            ?: throw SoracomArcError.InvalidConfiguration(
-                "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
-            )
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
         if (allowedIps.isEmpty()) {
-            throw SoracomArcError.InvalidConfiguration(
-                "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
-            )
+            throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
         }
 
         return JSONObject(
@@ -223,5 +220,10 @@ class LibsoratunArcService(
         if (response.first() != '2' && response.first() != '{') {
             throw SoracomArcError.SendFailed("不正なレスポンス: $response")
         }
+    }
+
+    private companion object {
+        const val WIRE_GUARD_PARSE_ERROR =
+            "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
     }
 }
