@@ -160,7 +160,7 @@ class LibsoratunArcService(
         return JSONObject(
             mapOf(
                 "privateKey" to clientPrivateKey,
-                "logLevel" to 1,
+                "logLevel" to DEFAULT_LOG_LEVEL,
                 "arcSessionStatus" to JSONObject(
                     mapOf(
                         "arcServerPeerPublicKey" to serverPublicKey,
@@ -199,7 +199,7 @@ class LibsoratunArcService(
         return JSONObject(
             mapOf(
                 "privateKey" to privateKey,
-                "logLevel" to 1,
+                "logLevel" to DEFAULT_LOG_LEVEL,
                 "arcSessionStatus" to JSONObject(
                     mapOf(
                         "arcServerPeerPublicKey" to publicKey,
@@ -230,6 +230,7 @@ class LibsoratunArcService(
     }
 
     private companion object {
+        const val DEFAULT_LOG_LEVEL = 1
         const val WIRE_GUARD_PARSE_ERROR =
             "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
     }

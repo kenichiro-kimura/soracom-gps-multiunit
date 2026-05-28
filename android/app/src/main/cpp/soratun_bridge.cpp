@@ -1,8 +1,10 @@
+#include <android/log.h>
 #include <jni.h>
 #include <dlfcn.h>
 
 #include <cstdlib>
 #include <mutex>
+#include <string>
 #include <vector>
 
 namespace {
@@ -12,12 +14,23 @@ using SendUdpFn = char* (*)(const char*, const char*, int, int, int);
 std::once_flag load_once;
 void* libsoratun_handle = nullptr;
 SendUdpFn send_udp_function = nullptr;
+std::string libsoratun_load_error;
 
 bool ensureLibsoratunLoaded() {
     std::call_once(load_once, []() {
+        dlerror();
         libsoratun_handle = dlopen("libsoratun.so", RTLD_NOW | RTLD_LOCAL);
         if (libsoratun_handle != nullptr) {
             send_udp_function = reinterpret_cast<SendUdpFn>(dlsym(libsoratun_handle, "SendUDP"));
+            if (send_udp_function == nullptr) {
+                const char* error = dlerror();
+                libsoratun_load_error = error != nullptr ? error : "unknown dlsym error";
+                __android_log_print(ANDROID_LOG_ERROR, "soratunbridge", "Failed to resolve SendUDP: %s", libsoratun_load_error.c_str());
+            }
+        } else {
+            const char* error = dlerror();
+            libsoratun_load_error = error != nullptr ? error : "unknown dlopen error";
+            __android_log_print(ANDROID_LOG_ERROR, "soratunbridge", "Failed to load libsoratun.so: %s", libsoratun_load_error.c_str());
         }
     });
     return libsoratun_handle != nullptr && send_udp_function != nullptr;
