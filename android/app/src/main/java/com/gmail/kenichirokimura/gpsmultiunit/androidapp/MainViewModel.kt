@@ -10,7 +10,6 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,17 +40,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             lastLocation = location
         }
 
-        @Deprecated("Deprecated in Java")
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
     }
 
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
             if (event.sensor.type != Sensor.TYPE_ACCELEROMETER) return
             lastAcceleration = Triple(
-                metersPerSecondSquaredToMilliG(event.values[0]),
-                metersPerSecondSquaredToMilliG(event.values[1]),
-                metersPerSecondSquaredToMilliG(event.values[2]),
+                accelerationToMilliG(event.values[0]),
+                accelerationToMilliG(event.values[1]),
+                accelerationToMilliG(event.values[2]),
             )
         }
 
@@ -218,7 +215,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun metersPerSecondSquaredToMilliG(value: Float): Double {
+    private fun accelerationToMilliG(value: Float): Double {
         val milliG = value / SensorManager.GRAVITY_EARTH * 1000.0
         return round(milliG * 10.0) / 10.0
     }

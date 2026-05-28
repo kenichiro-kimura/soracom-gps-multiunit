@@ -38,7 +38,7 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -236,7 +236,7 @@ private fun SensorSummary(uiState: MainUiState) {
     Card(shape = RoundedCornerShape(20.dp)) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("最新センサー値", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Divider()
+            HorizontalDivider()
             val sensorData = uiState.lastSensorData
             SensorRow("温度", sensorData?.temp?.let { "%.1f°C".format(it) } ?: "未送信")
             SensorRow("湿度", sensorData?.humi?.let { "%.1f%%".format(it) } ?: "未送信")
@@ -296,7 +296,7 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                     Text(log.message, color = if (log.success) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error)
                     if (expanded) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        Divider()
+                        HorizontalDivider()
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(log.sensorData.toJsonString(), style = MaterialTheme.typography.bodySmall)
                     }
