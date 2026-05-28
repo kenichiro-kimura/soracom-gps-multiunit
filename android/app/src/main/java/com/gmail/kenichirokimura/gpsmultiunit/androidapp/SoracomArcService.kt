@@ -166,7 +166,7 @@ class LibsoratunArcService(
                         "arcServerPeerPublicKey" to serverPublicKey,
                         "arcServerEndpoint" to serverEndpoint,
                         "arcAllowedIPs" to JSONArray(allowedIps),
-                        "arcClientPeerIpAddress" to clientAddress.substringBefore("/"),
+                        "arcClientPeerIpAddress" to requireClientIpAddress(clientAddress),
                     )
                 ),
             )
@@ -205,7 +205,7 @@ class LibsoratunArcService(
                         "arcServerPeerPublicKey" to publicKey,
                         "arcServerEndpoint" to endpoint,
                         "arcAllowedIPs" to JSONArray(allowedIps),
-                        "arcClientPeerIpAddress" to address.substringBefore("/"),
+                        "arcClientPeerIpAddress" to requireClientIpAddress(address),
                     )
                 ),
             )
@@ -220,6 +220,13 @@ class LibsoratunArcService(
         if (firstCharacter != '2' && firstCharacter != '{') {
             throw SoracomArcError.SendFailed("不正なレスポンス: $response")
         }
+    }
+
+    private fun requireClientIpAddress(address: String): String {
+        if (!address.contains('/')) {
+            throw SoracomArcError.InvalidConfiguration("Address は CIDR 形式で指定してください。")
+        }
+        return address.substringBefore("/")
     }
 
     private companion object {

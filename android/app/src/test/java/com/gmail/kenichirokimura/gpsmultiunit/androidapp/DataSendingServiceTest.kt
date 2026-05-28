@@ -27,7 +27,7 @@ class DataSendingServiceTest {
 
         val response = service.send("""{"temp":25.0}""", AppSettings(arcConfig = "{invalid"))
 
-        assertEquals("204 (UDP フォールバック)", response)
+        assertEquals("204${DataSendingService.UDP_FALLBACK_SUFFIX}", response)
         assertEquals(1, udpService.sendCount)
     }
 

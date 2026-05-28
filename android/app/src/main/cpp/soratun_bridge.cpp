@@ -67,7 +67,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
         return nullptr;
     }
 
-    // libsoratun's exported SendUDP function returns a C string allocated via C.CString,
+    // libsoratun's exported SendUDP function returns a C string allocated via Go's C.CString,
     // so the caller must release it with free(3) after converting it to a Java string.
     jstring result = env->NewStringUTF(response);
     free(response);

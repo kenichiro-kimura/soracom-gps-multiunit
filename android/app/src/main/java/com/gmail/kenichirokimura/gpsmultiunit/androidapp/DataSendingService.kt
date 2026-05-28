@@ -21,6 +21,10 @@ class DataSendingService(
             }
         }
 
-        return "${udpSendingService.send(jsonBody)} (UDP フォールバック)"
+        return "${udpSendingService.send(jsonBody)}$UDP_FALLBACK_SUFFIX"
+    }
+
+    companion object {
+        const val UDP_FALLBACK_SUFFIX = " (UDP フォールバック)"
     }
 }
