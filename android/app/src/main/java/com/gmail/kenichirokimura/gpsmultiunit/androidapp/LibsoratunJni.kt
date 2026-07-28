@@ -1,6 +1,6 @@
 package com.gmail.kenichirokimura.gpsmultiunit.androidapp
 
-internal interface LibsoratunNativeBridge {
+interface LibsoratunNativeBridge {
     fun isLibsoratunAvailable(): Boolean
 
     fun loadErrorMessage(): String? = null
@@ -31,7 +31,7 @@ internal object LibsoratunJni : LibsoratunNativeBridge {
         port: Int,
         timeoutSeconds: Int,
     ): String? {
-        check(loadErrorMessage == null) { loadErrorMessage }
+        check(loadErrorMessage == null) { loadErrorMessage!! }
         return nativeSendUdp(configJson, body, port, timeoutSeconds)
     }
 
