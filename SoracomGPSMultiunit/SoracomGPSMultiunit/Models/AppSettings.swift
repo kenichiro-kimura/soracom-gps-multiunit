@@ -16,7 +16,7 @@ private enum KeychainError: LocalizedError {
 }
 
 private enum KeychainHelper {
-    private static let service = Bundle.main.bundleIdentifier ?? "com.gmail.kenichirokimura.gpsmultiunit"
+    private static let service = Bundle.main.bundleIdentifier ?? "org.sokohiki.kimura.app.soracom.gpsmultiunit"
     private static let accessibility = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
 
     private static func baseQuery(forKey key: String) -> [String: Any] {
