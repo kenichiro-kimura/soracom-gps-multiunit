@@ -98,6 +98,13 @@ final class AppSettings: ObservableObject {
         didSet { defaults.set(humidityVariation, forKey: Keys.humidityVariation) }
     }
 
+    // MARK: - 位置情報設定
+
+    /// 東京駅の固定位置を送信するか
+    @Published var useFixedLocation: Bool {
+        didSet { defaults.set(useFixedLocation, forKey: Keys.useFixedLocation) }
+    }
+
     // MARK: - SORACOM Arc 設定
 
     /// SORACOM Arc 設定 (WireGuard 形式) — Keychain に保存
@@ -136,6 +143,7 @@ final class AppSettings: ObservableObject {
         temperatureVariation = userDefaults.object(forKey: Keys.temperatureVariation) as? Double ?? 2.0
         humidityBase = userDefaults.object(forKey: Keys.humidityBase) as? Double ?? 60.0
         humidityVariation = userDefaults.object(forKey: Keys.humidityVariation) as? Double ?? 5.0
+        useFixedLocation = userDefaults.object(forKey: Keys.useFixedLocation) as? Bool ?? false
         arcConfigJSON = KeychainHelper.load(forKey: Keys.arcConfigJSON) ?? ""
         rsValue = userDefaults.object(forKey: Keys.rsValue) as? Int ?? 3
         batValue = userDefaults.object(forKey: Keys.batValue) as? Int ?? 3
@@ -162,6 +170,7 @@ final class AppSettings: ObservableObject {
         static let temperatureVariation = "temperatureVariation"
         static let humidityBase = "humidityBase"
         static let humidityVariation = "humidityVariation"
+        static let useFixedLocation = "useFixedLocation"
         static let arcConfigJSON = "arcConfigJSON"
         static let rsValue = "rsValue"
         static let batValue = "batValue"

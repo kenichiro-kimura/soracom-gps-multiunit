@@ -20,6 +20,7 @@ struct SettingsView: View {
                 temperatureSection
                 humiditySection
                 signalBatterySection
+                fixedLocationSection
                 autoSendSection
                 arcConfigSection
                 aboutSection
@@ -137,6 +138,19 @@ struct SettingsView: View {
     }
 
     // MARK: - Auto Send Section
+
+    // MARK: - Fixed Location Section
+
+    private var fixedLocationSection: some View {
+        Section {
+            Toggle("固定位置情報送信", isOn: $settings.useFixedLocation)
+        } header: {
+            Label("位置情報設定", systemImage: "location.fill")
+        } footer: {
+            Text("オンにすると、実際の位置情報の代わりに東京駅（35.681236, 139.767125）の固定位置を送信します。")
+                .font(.caption)
+        }
+    }
 
     private var autoSendSection: some View {
         Section {
