@@ -476,7 +476,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SoracomGPSMultiunit/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "SORACOM GPS MultiUnit";
+				INFOPLIST_KEY_CFBundleDisplayName = "GPSトラッカーシミュレーター";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -505,7 +505,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = SoracomGPSMultiunit/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "SORACOM GPS MultiUnit";
+				INFOPLIST_KEY_CFBundleDisplayName = "GPSトラッカーシミュレーター";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
