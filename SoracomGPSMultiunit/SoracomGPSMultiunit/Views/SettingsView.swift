@@ -224,6 +224,23 @@ struct SettingsView: View {
                 Label("GitHub リポジトリ", systemImage: "arrow.up.right.square")
             }
         }
+
+        Section("ライセンス") {
+            Text("SORACOM UGロゴを使用しています。")
+                .font(.caption)
+
+            Link(
+                destination: URL(string: "https://github.com/soracomug/logo")!
+            ) {
+                Label("ロゴの配布元", systemImage: "arrow.up.right.square")
+            }
+
+            Link(
+                destination: URL(string: "https://creativecommons.org/licenses/by/4.0/")!
+            ) {
+                Label("CC BY 4.0 ライセンス", systemImage: "arrow.up.right.square")
+            }
+        }
     }
 
     private func saveAndDismiss() {
