@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		208D49752FC424250046617B /* libsoratun.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 208D49732FC424130046617B /* libsoratun.xcframework */; };
-		208D49762FC424250046617B /* libsoratun.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 208D49732FC424130046617B /* libsoratun.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C200000000000000000000C2 /* SoracomGPSMultiunitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C100000000000000000000C1 /* SoracomGPSMultiunitApp.swift */; };
 		C400000000000000000000C4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300000000000000000000C3 /* ContentView.swift */; };
 		C600000000000000000000C6 /* SensorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C500000000000000000000C5 /* SensorData.swift */; };
@@ -38,20 +37,6 @@
 			remoteInfo = SoracomGPSMultiunit;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		208D49772FC424250046617B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				208D49762FC424250046617B /* libsoratun.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		208D49732FC424130046617B /* libsoratun.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libsoratun.xcframework; sourceTree = "<group>"; };
@@ -227,7 +212,6 @@
 				A400000000000000000000A4 /* Sources */,
 				A600000000000000000000A6 /* Frameworks */,
 				A500000000000000000000A5 /* Resources */,
-				208D49772FC424250046617B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

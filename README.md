@@ -70,7 +70,8 @@ chmod +x buildlibsoratun.sh
 ```
 
 ビルドした `libsoratun.xcframework` を `SoracomGPSMultiunit/SoracomGPSMultiunit/Libsoratun/` に配置し、
-Xcode プロジェクトの "Frameworks, Libraries, and Embedded Content" に追加してください。
+Xcode プロジェクトの "Frameworks, Libraries, and Embedded Content" に追加してください。libsoratun は静的ライブラリのため、
+"Embed" は `Do Not Embed` に設定してください。
 
 ### 2. WireGuard 接続情報の取得
 
