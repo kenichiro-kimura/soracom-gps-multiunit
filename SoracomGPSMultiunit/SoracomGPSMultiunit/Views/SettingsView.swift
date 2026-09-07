@@ -238,7 +238,9 @@ struct SettingsView: View {
                 Label("GitHub リポジトリ", systemImage: "arrow.up.right.square")
             }
         }
-
+    }
+    
+    private var licenseSeciton: some View {
         Section("ライセンス") {
             Text("SORACOM UGロゴを使用しています。")
                 .font(.caption)
