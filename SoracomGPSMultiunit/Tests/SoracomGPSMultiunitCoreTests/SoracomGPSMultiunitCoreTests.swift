@@ -29,6 +29,18 @@ final class SensorDataTests: XCTestCase {
         XCTAssertEqual(json?["type"] as? Int, 0)
     }
 
+    func testSensorDataEncodingIncludesNullGPSValuesWhenUnavailable() throws {
+        let data = SensorData(type: .periodic)
+
+        let jsonData = try JSONEncoder().encode(data)
+        let json = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
+
+        XCTAssertTrue(json?.keys.contains("lat") == true)
+        XCTAssertTrue(json?.keys.contains("lon") == true)
+        XCTAssertTrue(json?["lat"] is NSNull)
+        XCTAssertTrue(json?["lon"] is NSNull)
+    }
+
     func testSensorDataDecodingFromJSON() throws {
         let json = """
         {
