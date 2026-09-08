@@ -21,10 +21,20 @@ class SensorDataTest {
 
         val json = payload.toJsonString()
 
-        assertTrue(json.contains(""lat":35.1"))
-        assertTrue(json.contains(""lon":139.1"))
-        assertTrue(json.contains(""temp":25.5"))
-        assertTrue(json.contains(""humi":60.0"))
-        assertTrue(json.contains(""type":1"))
+        assertTrue(json.contains("\"lat\":35.1"))
+        assertTrue(json.contains("\"lon\":139.1"))
+        assertTrue(json.contains("\"temp\":25.5"))
+        assertTrue(json.contains("\"humi\":60.0"))
+        assertTrue(json.contains("\"type\":1"))
+    }
+
+    @Test
+    fun `toJsonString includes null GPS fields when location is unavailable`() {
+        val payload = SensorData(type = SendType.MANUAL)
+
+        val json = payload.toJsonString()
+
+        assertTrue(json.contains("\"lat\":null"))
+        assertTrue(json.contains("\"lon\":null"))
     }
 }

@@ -63,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -297,6 +298,11 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                         Spacer(modifier = Modifier.height(12.dp))
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(12.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            LogDataCell("緯度", gpsValue(log.sensorData.lat))
+                            LogDataCell("経度", gpsValue(log.sensorData.lon))
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(log.sensorData.toJsonString(), style = MaterialTheme.typography.bodySmall)
                     }
                 }
@@ -306,8 +312,19 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
 }
 
 @Composable
+private fun LogDataCell(label: String, value: String) {
+    Column {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
+    }
+}
+
+private fun gpsValue(value: Double?): String = value?.let { "%.5f".format(it) } ?: "null"
+
+@Composable
 private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -> Unit) {
     var currentSettings by remember(settings) { mutableStateOf(settings) }
+    val uriHandler = LocalUriHandler.current
 
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -407,6 +424,24 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                         onUpdateSettings(currentSettings)
                     }
                 }
+            }
+        }
+        Card(shape = RoundedCornerShape(16.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("ライセンス", fontWeight = FontWeight.SemiBold)
+                Text("SORACOM UGロゴを使用しています。", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    "ロゴの配布元: https://github.com/soracomug/logo",
+                    modifier = Modifier.clickable { uriHandler.openUri("https://github.com/soracomug/logo") },
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Text(
+                    "CC BY 4.0ライセンス: https://creativecommons.org/licenses/by/4.0/",
+                    modifier = Modifier.clickable { uriHandler.openUri("https://creativecommons.org/licenses/by/4.0/") },
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
         }
     }
