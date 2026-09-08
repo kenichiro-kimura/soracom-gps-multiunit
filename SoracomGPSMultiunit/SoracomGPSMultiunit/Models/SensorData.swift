@@ -29,8 +29,9 @@ struct SensorData: Codable, Equatable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(lat, forKey: .lat)
-        try container.encodeIfPresent(lon, forKey: .lon)
+        // GPS未取得時もキーを送信し、値はJSONのnullにする。
+        try container.encode(lat, forKey: .lat)
+        try container.encode(lon, forKey: .lon)
         try container.encodeIfPresent(bat, forKey: .bat)
         try container.encodeIfPresent(rs, forKey: .rs)
         try container.encodeIfPresent(temp, forKey: .temp)

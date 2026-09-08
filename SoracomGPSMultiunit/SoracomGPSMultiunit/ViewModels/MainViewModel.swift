@@ -6,6 +6,11 @@ import CoreLocation
 @MainActor
 class MainViewModel: ObservableObject {
 
+    private static let fixedLocation = CLLocationCoordinate2D(
+        latitude: 35.681236,
+        longitude: 139.767125
+    )
+
     // MARK: - Published Properties
 
     /// 最後に送信したセンサーデータ
@@ -96,13 +101,22 @@ class MainViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        // 固定位置モードが変更されたら、実 GPS の取得も切り替える
+        settings.$useFixedLocation
+            .dropFirst()
+            .sink { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    self?.updateLocationUpdates()
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Lifecycle
 
     func onAppear() {
-        locationService.requestAuthorization()
-        locationService.startUpdating()
+        updateLocationUpdates()
         motionService.startUpdating()
 
         Task {
@@ -114,6 +128,15 @@ class MainViewModel: ObservableObject {
         locationService.stopUpdating()
         motionService.stopUpdating()
         stopAutoSend()
+    }
+
+    private func updateLocationUpdates() {
+        if settings.useFixedLocation {
+            locationService.stopUpdating()
+        } else {
+            locationService.requestAuthorization()
+            locationService.startUpdating()
+        }
     }
 
     // MARK: - SORACOM Arc 接続
@@ -303,7 +326,10 @@ class MainViewModel: ObservableObject {
         let lat: Double?
         let lon: Double?
 
-        if sendLocation, let loc = location {
+        if sendLocation, settings.useFixedLocation {
+            lat = Self.fixedLocation.latitude
+            lon = Self.fixedLocation.longitude
+        } else if sendLocation, let loc = location {
             lat = (loc.coordinate.latitude * 1_000_000).rounded() / 1_000_000
             lon = (loc.coordinate.longitude * 1_000_000).rounded() / 1_000_000
         } else {

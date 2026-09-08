@@ -113,16 +113,20 @@ struct SendLogRow: View {
                     DataCell(label: "Z", value: String(format: "%.0f mG", z))
                 }
             }
-            if let lat = log.data.lat, let lon = log.data.lon {
-                HStack(spacing: 16) {
-                    DataCell(label: "緯度", value: String(format: "%.5f", lat))
-                    DataCell(label: "経度", value: String(format: "%.5f", lon))
-                }
+            // GPS未取得時も送信ログに項目を表示し、値なしはnullで示す。
+            HStack(spacing: 16) {
+                DataCell(label: "緯度", value: gpsValue(log.data.lat))
+                DataCell(label: "経度", value: gpsValue(log.data.lon))
             }
         }
         .padding(8)
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func gpsValue(_ value: Double?) -> String {
+        guard let value else { return "null" }
+        return String(format: "%.5f", value)
     }
 
     private func sendTypeLabel(_ type: SendType) -> String {

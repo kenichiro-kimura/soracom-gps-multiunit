@@ -20,6 +20,7 @@ struct SettingsView: View {
                 temperatureSection
                 humiditySection
                 signalBatterySection
+                fixedLocationSection
                 autoSendSection
                 arcConfigSection
                 aboutSection
@@ -138,6 +139,19 @@ struct SettingsView: View {
 
     // MARK: - Auto Send Section
 
+    // MARK: - Fixed Location Section
+
+    private var fixedLocationSection: some View {
+        Section {
+            Toggle("固定位置情報送信", isOn: $settings.useFixedLocation)
+        } header: {
+            Label("位置情報設定", systemImage: "location.fill")
+        } footer: {
+            Text("オンにすると、実際の位置情報の代わりに東京駅（35.681236, 139.767125）の固定位置を送信します。")
+                .font(.caption)
+        }
+    }
+
     private var autoSendSection: some View {
         Section {
             Toggle("自動送信 (フォールバック)", isOn: $settings.defaultAutoSend)
@@ -222,6 +236,25 @@ struct SettingsView: View {
                 destination: URL(string: "https://github.com/kenichiro-kimura/soracom-gps-multiunit")!
             ) {
                 Label("GitHub リポジトリ", systemImage: "arrow.up.right.square")
+            }
+        }
+    }
+    
+    private var licenseSeciton: some View {
+        Section("ライセンス") {
+            Text("SORACOM UGロゴを使用しています。")
+                .font(.caption)
+
+            Link(
+                destination: URL(string: "https://github.com/soracomug/logo")!
+            ) {
+                Label("ロゴの配布元", systemImage: "arrow.up.right.square")
+            }
+
+            Link(
+                destination: URL(string: "https://creativecommons.org/licenses/by/4.0/")!
+            ) {
+                Label("CC BY 4.0 ライセンス", systemImage: "arrow.up.right.square")
             }
         }
     }

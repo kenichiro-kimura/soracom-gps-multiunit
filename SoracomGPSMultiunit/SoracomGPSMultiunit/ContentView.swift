@@ -49,7 +49,7 @@ struct ContentView: View {
                 .padding(.bottom, 32)
             }
             .background(Color(.systemBackground))
-            .navigationTitle("GPS Multi Unit")
+            .navigationTitle("GPSトラッカーシミュレーター")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
