@@ -58,11 +58,13 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
     jint timeout_seconds
 ) {
     if (!ensureLibsoratunLoaded()) {
+        __android_log_print(ANDROID_LOG_ERROR, "soratunbridge", "libsoratun is unavailable: %s", libsoratun_load_error.c_str());
         return nullptr;
     }
 
     const char* config_chars = env->GetStringUTFChars(config_json, nullptr);
     const jsize body_length = env->GetArrayLength(body);
+    __android_log_print(ANDROID_LOG_INFO, "soratunbridge", "SendUDP start: bodyLength=%d port=%d timeout=%d", body_length, port, timeout_seconds);
     std::vector<char> body_bytes(static_cast<size_t>(body_length));
     env->GetByteArrayRegion(body, 0, body_length, reinterpret_cast<jbyte*>(body_bytes.data()));
 
@@ -77,8 +79,11 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
     env->ReleaseStringUTFChars(config_json, config_chars);
 
     if (response == nullptr) {
+        __android_log_print(ANDROID_LOG_ERROR, "soratunbridge", "SendUDP returned null");
         return nullptr;
     }
+
+    __android_log_print(ANDROID_LOG_INFO, "soratunbridge", "SendUDP response: %s", response);
 
     // libsoratun's exported SendUDP function returns a C string allocated via Go's C.CString,
     // so the caller must release it with free(3) after converting it to a Java string.

@@ -60,14 +60,14 @@ build_abi() {
     GOARCH="${goarch}" \
     GOARM="${goarm}" \
     CC="${TOOLCHAIN_BIN}/${cc_prefix}${MIN_ANDROID_API}-clang" \
-    go build -ldflags="-s -w" -buildmode=c-shared \
+    go build -ldflags="-s -w -extldflags '-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384'" -buildmode=c-shared \
       -o "${abi_dir}/libsoratun.so" .
   else
     CGO_ENABLED=1 \
     GOOS=android \
     GOARCH="${goarch}" \
     CC="${TOOLCHAIN_BIN}/${cc_prefix}${MIN_ANDROID_API}-clang" \
-    go build -ldflags="-s -w" -buildmode=c-shared \
+    go build -ldflags="-s -w -extldflags '-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384'" -buildmode=c-shared \
       -o "${abi_dir}/libsoratun.so" .
   fi
 
