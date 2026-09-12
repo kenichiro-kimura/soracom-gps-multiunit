@@ -79,7 +79,6 @@ Xcode プロジェクトの "Frameworks, Libraries, and Embedded Content" に追
 
 ```bash
 # Go と Android NDK を用意
-brew install go
 
 # libsoratun をクローン
 git clone https://github.com/0x6b/libsoratun
