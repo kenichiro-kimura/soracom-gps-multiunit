@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -75,6 +76,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -129,7 +131,7 @@ private fun App(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Soracom GPS Multiunit") })
+            TopAppBar(title = { Text("GPSトラッカーシミュレーター") })
         },
         bottomBar = {
             NavigationBar {
