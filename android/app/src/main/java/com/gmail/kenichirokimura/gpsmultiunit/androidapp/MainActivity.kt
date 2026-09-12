@@ -190,19 +190,10 @@ private fun DeviceTab(uiState: MainUiState, onManualSend: () -> Unit) {
 
 @Composable
 private fun DeviceCard(uiState: MainUiState, onManualSend: () -> Unit) {
-    var ledOn by remember { mutableStateOf(true) }
-    val shouldBlink = uiState.ledBlinking || uiState.connectionStatus == ConnectionStatus.SENDING
-    LaunchedEffect(shouldBlink) {
-        ledOn = true
-        while (shouldBlink) {
-            kotlinx.coroutines.delay(1_000L)
-            ledOn = !ledOn
-        }
-    }
-    val ledColor = if (uiState.ledOff || (shouldBlink && !ledOn)) {
-        Color(0xFF1A1A1A)
-    } else {
-        statusColor(uiState.connectionStatus)
+    val ledColor = when (uiState.ledState) {
+        LedState.OFF -> Color(0xFF1A1A1A)
+        LedState.BLINK_GREEN, LedState.SOLID_GREEN -> Color(0xFF66BB6A)
+        LedState.SOLID_RED -> Color(0xFFEF5350)
     }
     Box(
         modifier = Modifier
@@ -279,6 +270,8 @@ private fun SensorSummary(uiState: MainUiState) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("最新センサー値", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             HorizontalDivider()
+            SensorRow("送信結果", connectionStatusLabel(uiState.connectionStatus))
+            SensorRow("最終送信", uiState.lastSentAtLabel ?: "未送信")
             val sensorData = uiState.lastSensorData
             SensorRow("温度", sensorData?.temp?.let { "%.1f°C".format(it) } ?: "未送信")
             SensorRow("湿度", sensorData?.humi?.let { "%.1f%%".format(it) } ?: "未送信")
@@ -332,10 +325,14 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(if (log.success) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(log.timestampLabel, fontWeight = FontWeight.SemiBold)
+                        Text(if (log.success) "送信成功" else "送信失敗", fontWeight = FontWeight.SemiBold)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(log.timestampLabel, style = MaterialTheme.typography.labelSmall)
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(log.message, color = if (log.success) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error)
+                    if (!log.success) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(log.message, color = MaterialTheme.colorScheme.error)
+                    }
                     if (expanded) {
                         Spacer(modifier = Modifier.height(12.dp))
                         HorizontalDivider()
@@ -345,7 +342,21 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                             LogDataCell("経度", gpsValue(log.sensorData.lon))
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(log.sensorData.toJsonString(), style = MaterialTheme.typography.bodySmall)
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            LogDataCell("温度", log.sensorData.temp?.let { "%.1f°C".format(it) } ?: "無効")
+                            LogDataCell("湿度", log.sensorData.humi?.let { "%.1f%%".format(it) } ?: "無効")
+                            LogDataCell("電波強度", log.sensorData.rs?.toString() ?: "無効")
+                            LogDataCell("バッテリー", log.sensorData.bat?.toString() ?: "無効")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "加速度: X %.1f / Y %.1f / Z %.1f mG".format(
+                                log.sensorData.x ?: 0.0,
+                                log.sensorData.y ?: 0.0,
+                                log.sensorData.z ?: 0.0,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
                     }
                 }
             }

@@ -55,7 +55,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
     jstring config_json,
     jbyteArray body,
     jint port,
-    jint timeout_seconds
+    jint timeout_millis
 ) {
     if (!ensureLibsoratunLoaded()) {
         __android_log_print(ANDROID_LOG_ERROR, "soratunbridge", "libsoratun is unavailable: %s", libsoratun_load_error.c_str());
@@ -64,7 +64,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
 
     const char* config_chars = env->GetStringUTFChars(config_json, nullptr);
     const jsize body_length = env->GetArrayLength(body);
-    __android_log_print(ANDROID_LOG_INFO, "soratunbridge", "SendUDP start: bodyLength=%d port=%d timeout=%d", body_length, port, timeout_seconds);
+    __android_log_print(ANDROID_LOG_INFO, "soratunbridge", "SendUDP start: bodyLength=%d port=%d timeoutMillis=%d", body_length, port, timeout_millis);
     std::vector<char> body_bytes(static_cast<size_t>(body_length));
     env->GetByteArrayRegion(body, 0, body_length, reinterpret_cast<jbyte*>(body_bytes.data()));
 
@@ -73,7 +73,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendU
         body_bytes.data(),
         static_cast<int>(body_length),
         static_cast<int>(port),
-        static_cast<int>(timeout_seconds)
+        static_cast<int>(timeout_millis)
     );
 
     env->ReleaseStringUTFChars(config_json, config_chars);

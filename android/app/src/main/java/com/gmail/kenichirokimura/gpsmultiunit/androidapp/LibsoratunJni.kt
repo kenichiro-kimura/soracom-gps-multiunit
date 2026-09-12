@@ -9,7 +9,7 @@ interface LibsoratunNativeBridge {
         configJson: String,
         body: ByteArray,
         port: Int,
-        timeoutSeconds: Int,
+        timeoutMillis: Int,
     ): String?
 }
 
@@ -29,10 +29,10 @@ internal object LibsoratunJni : LibsoratunNativeBridge {
         configJson: String,
         body: ByteArray,
         port: Int,
-        timeoutSeconds: Int,
+        timeoutMillis: Int,
     ): String? {
         check(loadErrorMessage == null) { loadErrorMessage!! }
-        return nativeSendUdp(configJson, body, port, timeoutSeconds)
+        return nativeSendUdp(configJson, body, port, timeoutMillis)
     }
 
     private external fun nativeIsLibsoratunAvailable(): Boolean
@@ -41,6 +41,6 @@ internal object LibsoratunJni : LibsoratunNativeBridge {
         configJson: String,
         body: ByteArray,
         port: Int,
-        timeoutSeconds: Int,
+        timeoutMillis: Int,
     ): String?
 }

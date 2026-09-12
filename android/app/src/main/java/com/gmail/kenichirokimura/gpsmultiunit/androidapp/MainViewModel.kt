@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -165,19 +166,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (_uiState.value.isSending) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isSending = true, ledBlinking = true, ledOff = false, connectionStatus = ConnectionStatus.SENDING) }
+            _uiState.update {
+                it.copy(
+                    isSending = true,
+                    ledState = LedState.BLINK_GREEN,
+                    connectionStatus = ConnectionStatus.SENDING,
+                )
+            }
             val sensorData = collectSensorData(type)
             _uiState.update { it.copy(lastSensorData = sensorData) }
 
-            runCatching {
+            val sendResult = async {
                 dataSendingService.send(sensorData.toJsonString(), _uiState.value.settings)
-            }.onSuccess { response ->
-                val log = SendLog(sensorData = sensorData, success = true, message = response)
+            }
+
+            // iOS版と同じく、通信と並行して緑1秒・消灯1秒を4回繰り返す。
+            repeat(4) {
+                _uiState.update { it.copy(ledState = LedState.BLINK_GREEN) }
+                delay(1_000L)
+                _uiState.update { it.copy(ledState = LedState.OFF) }
+                delay(1_000L)
+            }
+
+            runCatching { sendResult.await() }.onSuccess {
+                val log = SendLog(sensorData = sensorData, success = true, message = "送信成功")
                 _uiState.update {
                     it.copy(
                         isSending = false,
-                        ledBlinking = false,
-                        ledOff = false,
+                        ledState = LedState.SOLID_GREEN,
                         connectionStatus = ConnectionStatus.CONNECTED,
                         lastSensorData = sensorData,
                         lastError = null,
@@ -185,28 +201,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         sendLogs = listOf(log) + it.sendLogs.take(99),
                     )
                 }
-                viewModelScope.launch {
-                    delay(5_000L)
-                    _uiState.update { it.copy(ledOff = true) }
-                }
             }.onFailure { error ->
-                val log = SendLog(sensorData = sensorData, success = false, message = error.localizedMessage ?: "送信に失敗しました。")
+                val errorMessage = error.localizedMessage ?: "送信に失敗しました。"
+                val log = SendLog(sensorData = sensorData, success = false, message = errorMessage)
                 _uiState.update {
                     it.copy(
                         isSending = false,
-                        ledBlinking = false,
-                        ledOff = false,
+                        ledState = LedState.SOLID_RED,
                         connectionStatus = ConnectionStatus.FAILED,
                         lastSensorData = sensorData,
                         lastError = log.message,
                         sendLogs = listOf(log) + it.sendLogs.take(99),
                     )
                 }
-                viewModelScope.launch {
-                    delay(5_000L)
-                    _uiState.update { it.copy(ledOff = true) }
-                }
             }
+
+            delay(5_000L)
+            _uiState.update { it.copy(ledState = LedState.OFF) }
         }
     }
 
@@ -246,8 +257,7 @@ data class MainUiState(
     val locationPermissionGranted: Boolean = false,
     val connectionStatus: ConnectionStatus = ConnectionStatus.DISCONNECTED,
     val isSending: Boolean = false,
-    val ledBlinking: Boolean = false,
-    val ledOff: Boolean = true,
+    val ledState: LedState = LedState.OFF,
     val lastError: String? = null,
     val lastSensorData: SensorData? = null,
     val lastSentAtLabel: String? = null,
@@ -259,6 +269,13 @@ enum class ConnectionStatus {
     SENDING,
     CONNECTED,
     FAILED,
+}
+
+enum class LedState {
+    OFF,
+    BLINK_GREEN,
+    SOLID_GREEN,
+    SOLID_RED,
 }
 
 data class SendLog(

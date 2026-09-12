@@ -26,12 +26,12 @@ interface SoracomArcService {
     suspend fun sendUdp(
         body: String,
         port: Int = UNIFIED_ENDPOINT_PORT,
-        timeoutSeconds: Int = UDP_TIMEOUT_SECONDS,
+        timeoutMillis: Int = UDP_TIMEOUT_MILLIS,
     ): String
 
     companion object {
         const val UNIFIED_ENDPOINT_PORT = 23080
-        const val UDP_TIMEOUT_SECONDS = 6
+        const val UDP_TIMEOUT_MILLIS = 6_000
     }
 }
 
@@ -47,7 +47,7 @@ class LibsoratunArcService(
         this.arcConfigJson = effectiveConfigJson(arcConfigJson)
     }
 
-    override suspend fun sendUdp(body: String, port: Int, timeoutSeconds: Int): String = withContext(Dispatchers.IO) {
+    override suspend fun sendUdp(body: String, port: Int, timeoutMillis: Int): String = withContext(Dispatchers.IO) {
         val config = arcConfigJson ?: throw SoracomArcError.NotConfigured()
         if (!nativeBridge.isLibsoratunAvailable()) {
             throw SoracomArcError.LibraryUnavailable(
@@ -59,7 +59,7 @@ class LibsoratunArcService(
             configJson = config,
             body = body.toByteArray(Charsets.UTF_8),
             port = port,
-            timeoutSeconds = timeoutSeconds,
+            timeoutMillis = timeoutMillis,
         ) ?: throw SoracomArcError.SendFailed("レスポンスが null でした")
 
         requireValidResponse(result)
