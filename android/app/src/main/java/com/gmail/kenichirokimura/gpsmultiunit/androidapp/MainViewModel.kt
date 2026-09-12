@@ -165,7 +165,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (_uiState.value.isSending) return
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isSending = true, connectionStatus = ConnectionStatus.SENDING) }
+            _uiState.update { it.copy(isSending = true, ledBlinking = true, ledOff = false, connectionStatus = ConnectionStatus.SENDING) }
             val sensorData = collectSensorData(type)
             _uiState.update { it.copy(lastSensorData = sensorData) }
 
@@ -176,6 +176,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.update {
                     it.copy(
                         isSending = false,
+                        ledBlinking = false,
+                        ledOff = false,
                         connectionStatus = ConnectionStatus.CONNECTED,
                         lastSensorData = sensorData,
                         lastError = null,
@@ -183,16 +185,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         sendLogs = listOf(log) + it.sendLogs.take(99),
                     )
                 }
+                viewModelScope.launch {
+                    delay(5_000L)
+                    _uiState.update { it.copy(ledOff = true) }
+                }
             }.onFailure { error ->
                 val log = SendLog(sensorData = sensorData, success = false, message = error.localizedMessage ?: "送信に失敗しました。")
                 _uiState.update {
                     it.copy(
                         isSending = false,
+                        ledBlinking = false,
+                        ledOff = false,
                         connectionStatus = ConnectionStatus.FAILED,
                         lastSensorData = sensorData,
                         lastError = log.message,
                         sendLogs = listOf(log) + it.sendLogs.take(99),
                     )
+                }
+                viewModelScope.launch {
+                    delay(5_000L)
+                    _uiState.update { it.copy(ledOff = true) }
                 }
             }
         }
@@ -234,6 +246,8 @@ data class MainUiState(
     val locationPermissionGranted: Boolean = false,
     val connectionStatus: ConnectionStatus = ConnectionStatus.DISCONNECTED,
     val isSending: Boolean = false,
+    val ledBlinking: Boolean = false,
+    val ledOff: Boolean = true,
     val lastError: String? = null,
     val lastSensorData: SensorData? = null,
     val lastSentAtLabel: String? = null,

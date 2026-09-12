@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -171,51 +172,7 @@ private fun DeviceTab(uiState: MainUiState, onManualSend: () -> Unit) {
     ) {
         item { Spacer(modifier = Modifier.height(8.dp)) }
         item {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = SoracomTeal),
-                shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .clip(CircleShape)
-                                .background(statusColor(uiState.connectionStatus))
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(connectionStatusLabel(uiState.connectionStatus), color = Color.White, fontWeight = FontWeight.SemiBold)
-                        Spacer(modifier = Modifier.weight(1f))
-                        Image(
-                            painter = painterResource(R.drawable.soracom_ug_logo),
-                            contentDescription = "SORACOM UG logo",
-                            modifier = Modifier.width(72.dp),
-                            contentScale = ContentScale.Fit,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Button(onClick = onManualSend, enabled = !uiState.isSending) {
-                        Icon(Icons.Default.ArrowUpward, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (uiState.isSending) "送信中..." else "手動送信")
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = uiState.lastSentAtLabel?.let { "最終送信: $it" } ?: "まだ送信していません",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    if (!uiState.locationPermissionGranted) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.LocationOff, contentDescription = null, tint = Color.White)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("位置情報権限がないため GPS は未設定です", color = Color.White)
-                        }
-                    }
-                }
-            }
+            DeviceCard(uiState = uiState, onManualSend = onManualSend)
         }
         item {
             SensorSummary(uiState)
@@ -228,6 +185,91 @@ private fun DeviceTab(uiState: MainUiState, onManualSend: () -> Unit) {
             }
         }
         item { Spacer(modifier = Modifier.height(8.dp)) }
+    }
+}
+
+@Composable
+private fun DeviceCard(uiState: MainUiState, onManualSend: () -> Unit) {
+    var ledOn by remember { mutableStateOf(true) }
+    val shouldBlink = uiState.ledlinking || uiState.connectionStatus == ConnectionStatus.SENDING
+    LaunchedEffect(shouldBlink) {
+        ledOn = true
+        while (shouldBlink) {
+            kotlinx.coroutines.delay(1_000L)
+            ledOn = !ledOn
+        }
+    }
+    val ledColor = if (uiState.ledOff || (shouldBlink && !ledOn)) {
+        Color(0xFF1A1A1A)
+    } else {
+        statusColor(uiState.connectionStatus)
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(202.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(modifier = Modifier.size(width = 320.dp, height = 202.dp)) {
+            Image(
+                painter = painterResource(R.drawable.device_background),
+                contentDescription = "GPSトラッカー本体",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds,
+            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 20.dp, height = 14.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(Color.White)
+                        .padding(3.dp)
+                        .background(ledColor, RoundedCornerShape(2.dp)),
+                )
+                Button(
+                    onClick = onManualSend,
+                    enabled = !uiState.isSending,
+                    modifier = Modifier.size(42.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF141414),
+                        contentColor = Color(0xFFC0C0C0),
+                    ),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(25.dp)
+                            .border(1.dp, Color(0xFF8A8A8A), CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Default.ArrowUpward, contentDescription = "手動送信", modifier = Modifier.size(18.dp))
+                    }
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                    repeat(2) {
+                        Box(
+                            modifier = Modifier
+                                .size(width = 34.dp, height = 11.dp)
+                                .clip(RoundedCornerShape(3.dp))
+                                .background(Color(0xFF1F1F1F)),
+                        )
+                    }
+                }
+            }
+            Image(
+                painter = painterResource(R.drawable.soracom_ug_logo),
+                contentDescription = "SORACOM UG logo",
+                modifier = Modifier.align(Alignment.BottomStart).padding(start = 12.dp, bottom = 10.dp).size(72.dp),
+                contentScale = ContentScale.Fit,
+            )
+        }
     }
 }
 
