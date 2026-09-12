@@ -191,7 +191,7 @@ private fun DeviceTab(uiState: MainUiState, onManualSend: () -> Unit) {
 @Composable
 private fun DeviceCard(uiState: MainUiState, onManualSend: () -> Unit) {
     var ledOn by remember { mutableStateOf(true) }
-    val shouldBlink = uiState.ledlinking || uiState.connectionStatus == ConnectionStatus.SENDING
+    val shouldBlink = uiState.ledBlinking || uiState.connectionStatus == ConnectionStatus.SENDING
     LaunchedEffect(shouldBlink) {
         ledOn = true
         while (shouldBlink) {
