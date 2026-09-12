@@ -1,4 +1,4 @@
-package com.gmail.kenichirokimura.gpsmultiunit.androidapp
+package org.sokohiki.kimura.app.soracom.gpsmultiunit
 
 import org.junit.Assert.assertTrue
 import org.junit.Test

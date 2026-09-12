@@ -1,4 +1,4 @@
-package com.gmail.kenichirokimura.gpsmultiunit.androidapp
+package org.sokohiki.kimura.app.soracom.gpsmultiunit
 
 data class AppSettings(
     val temperatureBase: Float = 25f,

@@ -1,4 +1,4 @@
-package com.gmail.kenichirokimura.gpsmultiunit.androidapp.ui.theme
+package org.sokohiki.kimura.app.soracom.gpsmultiunit.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

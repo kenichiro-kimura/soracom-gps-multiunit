@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.gmail.kenichirokimura.gpsmultiunit.androidapp"
-    compileSdk = 35
+    namespace = "org.sokohiki.kimura.app.soracom.gpsmultiunit"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.gmail.kenichirokimura.gpsmultiunit.androidapp"
+        applicationId = "org.sokohiki.kimura.app.soracom.gpsmultiunit"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 

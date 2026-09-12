@@ -1,4 +1,4 @@
-package com.gmail.kenichirokimura.gpsmultiunit.androidapp
+package org.sokohiki.kimura.app.soracom.gpsmultiunit
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertTrue

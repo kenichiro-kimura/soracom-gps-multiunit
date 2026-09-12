@@ -1,4 +1,4 @@
-package com.gmail.kenichirokimura.gpsmultiunit.androidapp
+package org.sokohiki.kimura.app.soracom.gpsmultiunit
 
 import android.Manifest
 import android.os.Bundle
@@ -70,7 +70,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gmail.kenichirokimura.gpsmultiunit.androidapp.ui.theme.SoracomGPSMultiunitTheme
+import org.sokohiki.kimura.app.soracom.gpsmultiunit.ui.theme.SoracomGPSMultiunitTheme
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
