@@ -309,7 +309,10 @@ class MainViewModel: ObservableObject {
     /// 送信処理を Result で包んで返す（点滅シーケンスとの並行実行用）
     private func performSend(_ sensorData: SensorData) async -> Result<String, Error> {
         do {
-            let response = try await dataSendingService.send(sensorData)
+            let response = try await dataSendingService.send(
+                sensorData,
+                allowUdpFallback: settings.arcUdpFallbackEnabled
+            )
             return .success(response)
         } catch {
             return .failure(error)

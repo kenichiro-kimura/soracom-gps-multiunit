@@ -110,6 +110,11 @@ final class AppSettings: ObservableObject {
     /// SORACOM Arc 設定 (WireGuard 形式) — Keychain に保存
     @Published var arcConfigJSON: String
 
+    /// Arc を利用できない場合にインターネット経由 UDP 送信へフォールバックするか
+    @Published var arcUdpFallbackEnabled: Bool {
+        didSet { defaults.set(arcUdpFallbackEnabled, forKey: Keys.arcUdpFallbackEnabled) }
+    }
+
     // MARK: - 電波強度・バッテリー設定
 
     /// 電波強度 (-1 - 4)
@@ -145,6 +150,7 @@ final class AppSettings: ObservableObject {
         humidityVariation = userDefaults.object(forKey: Keys.humidityVariation) as? Double ?? 5.0
         useFixedLocation = userDefaults.object(forKey: Keys.useFixedLocation) as? Bool ?? false
         arcConfigJSON = KeychainHelper.load(forKey: Keys.arcConfigJSON) ?? ""
+        arcUdpFallbackEnabled = userDefaults.object(forKey: Keys.arcUdpFallbackEnabled) as? Bool ?? true
         rsValue = userDefaults.object(forKey: Keys.rsValue) as? Int ?? 3
         batValue = userDefaults.object(forKey: Keys.batValue) as? Int ?? 3
         defaultSendingInterval = userDefaults.object(forKey: Keys.defaultSendingInterval) as? Int ?? 60
@@ -172,6 +178,7 @@ final class AppSettings: ObservableObject {
         static let humidityVariation = "humidityVariation"
         static let useFixedLocation = "useFixedLocation"
         static let arcConfigJSON = "arcConfigJSON"
+        static let arcUdpFallbackEnabled = "arcUdpFallbackEnabled"
         static let rsValue = "rsValue"
         static let batValue = "batValue"
         static let defaultSendingInterval = "defaultSendingInterval"

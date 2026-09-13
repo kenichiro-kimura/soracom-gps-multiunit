@@ -154,7 +154,7 @@ struct SettingsView: View {
 
     private var autoSendSection: some View {
         Section {
-            Toggle("自動送信 (フォールバック)", isOn: $settings.defaultAutoSend)
+            Toggle("自動送信", isOn: $settings.defaultAutoSend)
 
             if settings.defaultAutoSend {
                 VStack(alignment: .leading, spacing: 8) {
@@ -173,9 +173,9 @@ struct SettingsView: View {
                 .padding(.vertical, 4)
             }
         } header: {
-            Label("フォールバック送信設定", systemImage: "clock.arrow.circlepath")
+            Label("自動送信設定", systemImage: "clock.arrow.circlepath")
         } footer: {
-            Text("SORACOM Arc が接続できない場合や、メタデータサービスから設定を取得できない場合に使用されます。")
+            Text("指定した間隔でセンサーデータを自動送信します。")
                 .font(.caption)
         }
     }
@@ -205,12 +205,15 @@ struct SettingsView: View {
                     .scrollContentBackground(.hidden)
                     .background(Color(.systemGray6))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Toggle("インターネット経由 UDP にフォールバック", isOn: $settings.arcUdpFallbackEnabled)
+                    .padding(.top, 4)
             }
             .padding(.vertical, 4)
         } header: {
             Label("SORACOM Arc 設定", systemImage: "lock.shield")
         } footer: {
-            Text("SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。")
+            Text("SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。Arc 設定が未入力・無効、または SORACOM Arc で通信できない場合、ONなら uni.soracom.io へ UDP 送信します。OFFの場合は送信に失敗します。")
                 .font(.caption)
         }
         .alert("WireGuard 設定について", isPresented: $showArcConfigInfo) {
