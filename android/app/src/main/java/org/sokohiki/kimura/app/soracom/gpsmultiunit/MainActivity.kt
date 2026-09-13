@@ -312,7 +312,10 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(if (uiState.isSending) "送信中…" else "手動送信", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        sendStatusLabel(sensorData?.type, uiState.isSending),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                     Text(
                         "最終送信: ${uiState.lastSentAtLabel ?: "未送信"}",
                         style = MaterialTheme.typography.labelSmall,
@@ -458,6 +461,15 @@ private fun sendTypeLabel(type: SendType): String = when (type) {
     SendType.MANUAL -> "手動"
     SendType.PERIODIC -> "定期"
     SendType.ACCELERATION_ALERT -> "加速度"
+}
+
+private fun sendStatusLabel(type: SendType?, isSending: Boolean): String {
+    val label = when (type) {
+        SendType.PERIODIC -> "自動送信"
+        SendType.MANUAL, null -> "手動送信"
+        SendType.ACCELERATION_ALERT -> "加速度送信"
+    }
+    return if (isSending) "${label}中…" else label
 }
 
 @Composable
