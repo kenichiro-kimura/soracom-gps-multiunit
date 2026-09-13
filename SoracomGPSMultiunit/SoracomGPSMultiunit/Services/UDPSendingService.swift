@@ -11,8 +11,9 @@ class UDPSendingService {
     /// UDP 通信のタイムアウト（秒）
     static let udpTimeout: TimeInterval = 6.0
 
-    func send(_ data: Data) async throws {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+    /// - Returns: Unified Endpoint から受信したレスポンス文字列
+    func send(_ data: Data) async throws -> String {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let connection = NWConnection(
                 host: NWEndpoint.Host(Self.unifiedEndpointHost),
                 port: NWEndpoint.Port(rawValue: Self.unifiedEndpointPort)!,
@@ -23,14 +24,14 @@ class UDPSendingService {
             let lock = NSLock()
             var didResume = false
 
-            func resumeOnce(_ result: Result<Void, Error>) {
+            func resumeOnce(_ result: Result<String, Error>) {
                 lock.lock()
                 defer { lock.unlock() }
                 guard !didResume else { return }
                 didResume = true
                 switch result {
-                case .success:
-                    continuation.resume()
+                case .success(let response):
+                    continuation.resume(returning: response)
                 case .failure(let error):
                     continuation.resume(throwing: error)
                 }
@@ -68,13 +69,18 @@ class UDPSendingService {
                                 resumeOnce(.failure(UDPSendingError.invalidResponse("レスポンスが空でした")))
                                 return
                             }
-                            // 先頭バイトが '2' (0x32, HTTP 2xx) または '{' (0x7B, JSON) で始まる場合は成功
-                            guard responseData[0] == 0x32 || responseData[0] == 0x7B else {
-                                let responseStr = String(data: responseData, encoding: .utf8) ?? responseData.map { String(format: "%02x", $0) }.joined()
+                            guard let response = String(data: responseData, encoding: .utf8) else {
+                                let responseHex = responseData.map { String(format: "%02x", $0) }.joined()
+                                resumeOnce(.failure(UDPSendingError.invalidResponse("UTF-8 として解釈できません: \(responseHex)")))
+                                return
+                            }
+                            // 先頭が "2" (HTTP 2xx 相当) または "{" (JSON) で始まる場合は成功
+                            guard response.first == "2" || response.first == "{" else {
+                                let responseStr = response
                                 resumeOnce(.failure(UDPSendingError.invalidResponse("不正なレスポンス: \(responseStr)")))
                                 return
                             }
-                            resumeOnce(.success(()))
+                            resumeOnce(.success(response))
                         }
                     })
                 case .failed(let error):
