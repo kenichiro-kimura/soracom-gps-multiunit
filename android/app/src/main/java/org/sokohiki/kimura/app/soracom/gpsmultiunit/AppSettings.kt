@@ -10,4 +10,5 @@ data class AppSettings(
     val autoSendEnabled: Boolean = false,
     val sendingIntervalSeconds: Int = 60,
     val arcConfig: String = "",
+    val arcUdpFallbackEnabled: Boolean = true,
 )

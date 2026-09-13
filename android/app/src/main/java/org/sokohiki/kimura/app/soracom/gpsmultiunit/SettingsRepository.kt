@@ -16,6 +16,7 @@ class SettingsRepository(context: Context) {
         autoSendEnabled = preferences.getBoolean(KEY_AUTO_SEND_ENABLED, false),
         sendingIntervalSeconds = preferences.getInt(KEY_SENDING_INTERVAL_SECONDS, 60),
         arcConfig = preferences.getString(KEY_ARC_CONFIG, "") ?: "",
+        arcUdpFallbackEnabled = preferences.getBoolean(KEY_ARC_UDP_FALLBACK_ENABLED, true),
     )
 
     fun save(settings: AppSettings) {
@@ -29,6 +30,7 @@ class SettingsRepository(context: Context) {
             .putBoolean(KEY_AUTO_SEND_ENABLED, settings.autoSendEnabled)
             .putInt(KEY_SENDING_INTERVAL_SECONDS, settings.sendingIntervalSeconds)
             .putString(KEY_ARC_CONFIG, settings.arcConfig)
+            .putBoolean(KEY_ARC_UDP_FALLBACK_ENABLED, settings.arcUdpFallbackEnabled)
             .apply()
     }
 
@@ -43,5 +45,6 @@ class SettingsRepository(context: Context) {
         const val KEY_AUTO_SEND_ENABLED = "auto_send_enabled"
         const val KEY_SENDING_INTERVAL_SECONDS = "sending_interval_seconds"
         const val KEY_ARC_CONFIG = "arc_config"
+        const val KEY_ARC_UDP_FALLBACK_ENABLED = "arc_udp_fallback_enabled"
     }
 }

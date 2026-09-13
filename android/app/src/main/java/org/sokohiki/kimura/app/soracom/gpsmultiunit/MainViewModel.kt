@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -176,43 +177,46 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val sensorData = collectSensorData(type)
             _uiState.update { it.copy(lastSensorData = sensorData) }
 
-            val sendResult = async {
-                dataSendingService.send(sensorData.toJsonString(), _uiState.value.settings)
-            }
-
-            // iOS版と同じく、通信と並行して緑1秒・消灯1秒を4回繰り返す。
-            repeat(4) {
-                _uiState.update { it.copy(ledState = LedState.BLINK_GREEN) }
-                delay(1_000L)
-                _uiState.update { it.copy(ledState = LedState.OFF) }
-                delay(1_000L)
-            }
-
-            runCatching { sendResult.await() }.onSuccess {
-                val log = SendLog(sensorData = sensorData, success = true, message = "送信成功")
-                _uiState.update {
-                    it.copy(
-                        isSending = false,
-                        ledState = LedState.SOLID_GREEN,
-                        connectionStatus = ConnectionStatus.CONNECTED,
-                        lastSensorData = sensorData,
-                        lastError = null,
-                        lastSentAtLabel = java.time.LocalTime.now().withNano(0).toString(),
-                        sendLogs = listOf(log) + it.sendLogs.take(99),
-                    )
+            // UDP のタイムアウトなど、送信処理の失敗で親の UI コルーチンをキャンセルしない。
+            supervisorScope {
+                val sendResult = async {
+                    dataSendingService.send(sensorData.toJsonString(), _uiState.value.settings)
                 }
-            }.onFailure { error ->
-                val errorMessage = error.localizedMessage ?: "送信に失敗しました。"
-                val log = SendLog(sensorData = sensorData, success = false, message = errorMessage)
-                _uiState.update {
-                    it.copy(
-                        isSending = false,
-                        ledState = LedState.SOLID_RED,
-                        connectionStatus = ConnectionStatus.FAILED,
-                        lastSensorData = sensorData,
-                        lastError = log.message,
-                        sendLogs = listOf(log) + it.sendLogs.take(99),
-                    )
+
+                // iOS版と同じく、通信と並行して緑1秒・消灯1秒を4回繰り返す。
+                repeat(4) {
+                    _uiState.update { it.copy(ledState = LedState.BLINK_GREEN) }
+                    delay(1_000L)
+                    _uiState.update { it.copy(ledState = LedState.OFF) }
+                    delay(1_000L)
+                }
+
+                runCatching { sendResult.await() }.onSuccess {
+                    val log = SendLog(sensorData = sensorData, success = true, message = "送信成功")
+                    _uiState.update {
+                        it.copy(
+                            isSending = false,
+                            ledState = LedState.SOLID_GREEN,
+                            connectionStatus = ConnectionStatus.CONNECTED,
+                            lastSensorData = sensorData,
+                            lastError = null,
+                            lastSentAtLabel = java.time.LocalTime.now().withNano(0).toString(),
+                            sendLogs = listOf(log) + it.sendLogs.take(99),
+                        )
+                    }
+                }.onFailure { error ->
+                    val errorMessage = error.localizedMessage ?: "送信に失敗しました。"
+                    val log = SendLog(sensorData = sensorData, success = false, message = errorMessage)
+                    _uiState.update {
+                        it.copy(
+                            isSending = false,
+                            ledState = LedState.SOLID_RED,
+                            connectionStatus = ConnectionStatus.FAILED,
+                            lastSensorData = sensorData,
+                            lastError = log.message,
+                            sendLogs = listOf(log) + it.sendLogs.take(99),
+                        )
+                    }
                 }
             }
 

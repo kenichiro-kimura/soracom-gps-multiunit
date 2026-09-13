@@ -8,6 +8,7 @@ import org.json.JSONObject
 
 sealed class SoracomArcError(message: String) : IllegalStateException(message) {
     class NotConfigured : SoracomArcError("SORACOM Arc が設定されていません。設定画面から WireGuard 接続情報を入力してください。")
+    class FallbackDisabled : SoracomArcError("SORACOM Arc を利用できず、インターネット経由 UDP のフォールバックが無効なため送信に失敗しました。")
     class InvalidConfiguration(detail: String) : SoracomArcError("設定が無効です: $detail")
     class SendFailed(detail: String) : SoracomArcError("送信に失敗しました: $detail")
     class LibraryUnavailable(detail: String = DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE) : SoracomArcError(detail)

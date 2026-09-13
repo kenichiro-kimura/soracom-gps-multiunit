@@ -40,7 +40,7 @@ bool ensureLibsoratunLoaded() {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeIsLibsoratunAvailable(
+Java_org_sokohiki_kimura_app_soracom_gpsmultiunit_LibsoratunJni_nativeIsLibsoratunAvailable(
     JNIEnv*,
     jobject
 ) {
@@ -49,7 +49,7 @@ Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeIsLib
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_gmail_kenichirokimura_gpsmultiunit_androidapp_LibsoratunJni_nativeSendUdp(
+Java_org_sokohiki_kimura_app_soracom_gpsmultiunit_LibsoratunJni_nativeSendUdp(
     JNIEnv* env,
     jobject,
     jstring config_json,

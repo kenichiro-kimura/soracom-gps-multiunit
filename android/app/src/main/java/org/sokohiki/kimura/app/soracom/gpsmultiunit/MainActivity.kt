@@ -158,11 +158,7 @@ private fun App(
     ) { innerPadding ->
         Surface(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (currentTab) {
-                AppTab.DEVICE -> DeviceTab(
-                    uiState = uiState,
-                    onManualSend = onManualSend,
-                    onUpdateSettings = onUpdateSettings,
-                )
+                AppTab.DEVICE -> DeviceTab(uiState = uiState, onManualSend = onManualSend)
                 AppTab.LOGS -> LogsTab(uiState = uiState, onClearLogs = onClearLogs)
                 AppTab.SETTINGS -> SettingsTab(settings = uiState.settings, onUpdateSettings = onUpdateSettings)
             }
@@ -174,7 +170,6 @@ private fun App(
 private fun DeviceTab(
     uiState: MainUiState,
     onManualSend: () -> Unit,
-    onUpdateSettings: (AppSettings) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -186,14 +181,6 @@ private fun DeviceTab(
         }
         item {
             StatusCard(uiState = uiState, onManualSend = onManualSend)
-        }
-        item {
-            AutoSendCard(
-                enabled = uiState.settings.autoSendEnabled,
-                onEnabledChange = { enabled ->
-                    onUpdateSettings(uiState.settings.copy(autoSendEnabled = enabled))
-                },
-            )
         }
         uiState.lastError?.let { error ->
             item {
@@ -367,25 +354,6 @@ private fun StatusValue(label: String, value: String, modifier: Modifier = Modif
 }
 
 @Composable
-private fun AutoSendCard(enabled: Boolean, onEnabledChange: (Boolean) -> Unit) {
-    Card(
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7F7)),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Default.DataUsage, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.Gray)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("自動送信: ${if (enabled) "オン" else "オフ"}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(checked = enabled, onCheckedChange = onEnabledChange)
-        }
-    }
-}
-
-@Composable
 private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
     if (uiState.sendLogs.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -495,6 +463,7 @@ private fun sendTypeLabel(type: SendType): String = when (type) {
 @Composable
 private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -> Unit) {
     var currentSettings by remember(settings) { mutableStateOf(settings) }
+    var arcConfigInput by remember(settings.arcConfig) { mutableStateOf(settings.arcConfig) }
     val uriHandler = LocalUriHandler.current
 
     Column(
@@ -566,23 +535,47 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 OutlinedTextField(
-                    value = currentSettings.arcConfig,
-                    onValueChange = {
-                        currentSettings = currentSettings.copy(arcConfig = it)
-                        onUpdateSettings(currentSettings)
-                    },
+                    value = arcConfigInput,
+                    onValueChange = { arcConfigInput = it },
                     modifier = Modifier.fillMaxWidth().height(180.dp),
                     label = { Text("WireGuard 設定") },
                 )
+                Button(
+                    onClick = {
+                        currentSettings = currentSettings.copy(arcConfig = arcConfigInput)
+                        onUpdateSettings(currentSettings)
+                    },
+                    enabled = arcConfigInput != settings.arcConfig,
+                    modifier = Modifier.align(Alignment.End),
+                ) {
+                    Text("ARC 設定を保存")
+                }
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("インターネット経由 UDP にフォールバック")
+                        Text(
+                            "Arc 設定が未入力・無効、または SORACOM Arc で通信できない場合に uni.soracom.io へ UDP 送信します。OFF の場合は送信に失敗します。",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = currentSettings.arcUdpFallbackEnabled,
+                        onCheckedChange = {
+                            currentSettings = currentSettings.copy(arcUdpFallbackEnabled = it)
+                            onUpdateSettings(currentSettings)
+                        },
+                    )
+                }
             }
         }
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("自動送信 (フォールバック)")
+                        Text("自動送信")
                         Text(
-                            "SORACOM Arc が接続できない場合や、メタデータサービスから設定を取得できない場合に使用されます。",
+                            "指定した間隔でセンサーデータを自動送信します。",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -597,7 +590,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                 }
                 if (currentSettings.autoSendEnabled) {
                     SettingsSliderCard(
-                        title = "フォールバック送信設定",
+                        title = "自動送信設定",
                         valueText = "送信間隔: ${currentSettings.sendingIntervalSeconds} 秒",
                         value = currentSettings.sendingIntervalSeconds.toFloat(),
                         range = 5f..3600f,

@@ -32,6 +32,36 @@ class DataSendingServiceTest {
     }
 
     @Test
+    fun `uses UDP without invoking Arc when configuration is empty and fallback is enabled`() = runBlocking {
+        val arcService = FakeArcService()
+        val udpService = FakeUdpService(response = "204")
+        val service = DataSendingService(arcService = arcService, udpSendingService = udpService)
+
+        val response = service.send("""{"temp":25.0}""", AppSettings(arcUdpFallbackEnabled = true))
+
+        assertEquals("204${DataSendingService.UDP_FALLBACK_SUFFIX}", response)
+        assertEquals(0, arcService.configureCount)
+        assertEquals(0, arcService.sendCount)
+        assertEquals(1, udpService.sendCount)
+    }
+
+    @Test
+    fun `fails without invoking Arc when configuration is empty and fallback is disabled`() = runBlocking {
+        val arcService = FakeArcService()
+        val udpService = FakeUdpService(response = "204")
+        val service = DataSendingService(arcService = arcService, udpSendingService = udpService)
+
+        try {
+            service.send("""{"temp":25.0}""", AppSettings(arcUdpFallbackEnabled = false))
+            fail("Expected SoracomArcError.FallbackDisabled")
+        } catch (_: SoracomArcError.FallbackDisabled) {
+            assertEquals(0, arcService.configureCount)
+            assertEquals(0, arcService.sendCount)
+            assertEquals(0, udpService.sendCount)
+        }
+    }
+
+    @Test
     fun `propagates Arc send failure when Arc is configured and send fails`() = runBlocking {
         val arcService = FakeArcService(sendError = SoracomArcError.SendFailed("Arc send failed"))
         val service = DataSendingService(arcService = arcService, udpSendingService = FakeUdpService(response = "204"))
@@ -59,10 +89,13 @@ class DataSendingServiceTest {
         private val response: String = "200",
         private val sendError: SoracomArcError.SendFailed? = null,
     ) : SoracomArcService {
+        var configureCount: Int = 0
         var sendCount: Int = 0
         override val isConfigured: Boolean = true
 
-        override fun configure(arcConfigJson: String) = Unit
+        override fun configure(arcConfigJson: String) {
+            configureCount += 1
+        }
 
         override suspend fun sendUdp(body: String, port: Int, timeoutSeconds: Int): String {
             sendCount += 1
