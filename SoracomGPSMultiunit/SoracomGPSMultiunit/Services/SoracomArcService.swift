@@ -37,6 +37,11 @@ protocol SoracomArcServiceProtocol: AnyObject {
     ///   - body: リクエストボディ
     /// - Returns: レスポンスボディ文字列
     func sendHTTP(path: String, method: String, body: String) async throws -> String
+
+    /// SORACOM Unified Endpoint へ Arc 経由で UDP メッセージを送信する
+    /// - Parameter body: UTF-8 エンコードするメッセージ本文
+    /// - Returns: Unified Endpoint からのレスポンス文字列
+    func sendUDP(body: String) async throws -> String
 }
 
 // MARK: - LibsoratunArcService
@@ -227,6 +232,39 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
             }
         }
     }
+
+    /// SORACOM Unified Endpoint へ Arc 経由で UDP メッセージを送信する
+    ///
+    /// Unified Endpoint の UDP ポートは 23080、libsoratun に渡すタイムアウトは 6000 ミリ秒です。
+    func sendUDP(body: String) async throws -> String {
+        guard let config = arcConfigJSON, !config.isEmpty else {
+            throw SoracomArcError.notConfigured
+        }
+
+        let bodyLength = body.lengthOfBytes(using: .utf8)
+        guard bodyLength <= Int(Int32.max) else {
+            throw SoracomArcError.sendFailed("UDP メッセージが大きすぎます")
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                guard let resultPtr = SendUDP(config, body, Int32(bodyLength), 23080, 6000) else {
+                    continuation.resume(throwing: SoracomArcError.sendFailed("UDP レスポンスが null でした"))
+                    return
+                }
+                let result = String(cString: resultPtr)
+                free(resultPtr)
+
+                // SendUDP は Unified Endpoint のレスポンスを返す。HTTP 2xx 相当または
+                // JSON 以外の値（エラー文字列・空文字列）は送信失敗として扱う。
+                guard result.first == "2" || result.first == "{" else {
+                    continuation.resume(throwing: SoracomArcError.sendFailed("UDP レスポンスが不正です: \(result)"))
+                    return
+                }
+                continuation.resume(returning: result)
+            }
+        }
+    }
 }
 
 // MARK: - MockArcService (開発・テスト用)
@@ -265,6 +303,16 @@ class MockArcService: SoracomArcServiceProtocol, @unchecked Sendable {
             throw SoracomArcError.sendFailed("モックエラー")
         }
         // 実際の送信をシミュレート
+        try await Task.sleep(nanoseconds: 200_000_000) // 200ms
+        return response
+    }
+
+    func sendUDP(body: String) async throws -> String {
+        let fail = shouldFail
+        let response = mockResponse
+        if fail {
+            throw SoracomArcError.sendFailed("モックエラー")
+        }
         try await Task.sleep(nanoseconds: 200_000_000) // 200ms
         return response
     }

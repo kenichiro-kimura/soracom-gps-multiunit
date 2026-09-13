@@ -7,7 +7,6 @@ import Foundation
 class DataSendingService {
     private let arcService: SoracomArcServiceProtocol
     private let udpSendingService: UDPSendingService
-    private let unifiedEndpointPath = "/"
 
     init(arcService: SoracomArcServiceProtocol) {
         self.arcService = arcService
@@ -27,13 +26,9 @@ class DataSendingService {
             throw DataSendingError.encodingFailed
         }
 
-        // Arc 経由での送信を試みる
+        // Arc 経由で Unified Endpoint の UDP ポートへ送信を試みる
         do {
-            return try await arcService.sendHTTP(
-                path: unifiedEndpointPath,
-                method: "POST",
-                body: jsonString
-            )
+            return try await arcService.sendUDP(body: jsonString)
         } catch let arcError as SoracomArcError {
             switch arcError {
             case .notConfigured, .libraryUnavailable, .invalidConfiguration:
