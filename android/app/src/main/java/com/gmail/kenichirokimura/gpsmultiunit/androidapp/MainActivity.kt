@@ -158,7 +158,11 @@ private fun App(
     ) { innerPadding ->
         Surface(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (currentTab) {
-                AppTab.DEVICE -> DeviceTab(uiState = uiState, onManualSend = onManualSend)
+                AppTab.DEVICE -> DeviceTab(
+                    uiState = uiState,
+                    onManualSend = onManualSend,
+                    onUpdateSettings = onUpdateSettings,
+                )
                 AppTab.LOGS -> LogsTab(uiState = uiState, onClearLogs = onClearLogs)
                 AppTab.SETTINGS -> SettingsTab(settings = uiState.settings, onUpdateSettings = onUpdateSettings)
             }
@@ -167,21 +171,36 @@ private fun App(
 }
 
 @Composable
-private fun DeviceTab(uiState: MainUiState, onManualSend: () -> Unit) {
+private fun DeviceTab(
+    uiState: MainUiState,
+    onManualSend: () -> Unit,
+    onUpdateSettings: (AppSettings) -> Unit,
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item { Spacer(modifier = Modifier.height(8.dp)) }
+        item { Spacer(modifier = Modifier.height(10.dp)) }
         item {
             DeviceCard(uiState = uiState, onManualSend = onManualSend)
         }
         item {
-            SensorSummary(uiState)
+            StatusCard(uiState = uiState, onManualSend = onManualSend)
+        }
+        item {
+            AutoSendCard(
+                enabled = uiState.settings.autoSendEnabled,
+                onEnabledChange = { enabled ->
+                    onUpdateSettings(uiState.settings.copy(autoSendEnabled = enabled))
+                },
+            )
         }
         uiState.lastError?.let { error ->
             item {
-                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                ) {
                     Text(error, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onErrorContainer)
                 }
             }
@@ -267,38 +286,102 @@ private fun DeviceCard(uiState: MainUiState, onManualSend: () -> Unit) {
 }
 
 @Composable
-private fun SensorSummary(uiState: MainUiState) {
-    Card(shape = RoundedCornerShape(20.dp)) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("最新センサー値", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            HorizontalDivider()
-            SensorRow("送信結果", connectionStatusLabel(uiState.connectionStatus))
-            SensorRow("最終送信", uiState.lastSentAtLabel ?: "未送信")
-            val sensorData = uiState.lastSensorData
-            SensorRow("温度", sensorData?.temp?.let { "%.1f°C".format(it) } ?: "未送信")
-            SensorRow("湿度", sensorData?.humi?.let { "%.1f%%".format(it) } ?: "未送信")
-            SensorRow(
-                "加速度",
-                sensorData?.let { "X %.1f / Y %.1f / Z %.1f mG".format(it.x ?: 0.0, it.y ?: 0.0, it.z ?: 0.0) } ?: "未送信",
+private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
+    val sensorData = uiState.lastSensorData
+    val connected = uiState.connectionStatus == ConnectionStatus.CONNECTED
+
+    Card(
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7F7)),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("ステータス", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.weight(1f))
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = if (connected) Color(0xFFDFF5DF) else Color(0xFFE9E9E9),
+                ) {
+                    Text(
+                        text = connectionStatusLabel(uiState.connectionStatus),
+                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                        color = if (connected) Color(0xFF3D9A4A) else Color(0xFF757575),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable(enabled = !uiState.isSending, onClick = onManualSend),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    Icons.Default.ArrowUpward,
+                    contentDescription = "手動送信",
+                    modifier = Modifier.size(18.dp),
+                    tint = SoracomTeal,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(if (uiState.isSending) "送信中…" else "手動送信", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        "最終送信: ${uiState.lastSentAtLabel ?: "未送信"}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            HorizontalDivider(color = Color(0xFFD6D6D6))
+            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                StatusValue(
+                    label = "温度",
+                    value = sensorData?.temp?.let { "%.1f°C".format(it) } ?: "--",
+                    modifier = Modifier.weight(1f),
+                )
+                StatusValue(
+                    label = "湿度",
+                    value = sensorData?.humi?.let { "%.1f%%".format(it) } ?: "--",
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            StatusValue(
+                label = "加速度",
+                value = sensorData?.let { "X:%.1f  Y:%.1f  Z:%.1f mG".format(it.x ?: 0.0, it.y ?: 0.0, it.z ?: 0.0) } ?: "--",
             )
-            SensorRow(
-                "GPS",
-                sensorData?.lat?.let { lat -> "%.6f, %.6f".format(lat, sensorData.lon ?: 0.0) } ?: "信号なし",
+            StatusValue(
+                label = "GPS",
+                value = sensorData?.lat?.let { lat -> "%.6f, %.6f".format(lat, sensorData.lon ?: 0.0) } ?: "信号なし",
             )
-            SensorRow("電波強度", sensorData?.rs?.toString() ?: uiState.settings.rsValue.toString())
-            SensorRow("バッテリー", sensorData?.bat?.toString() ?: uiState.settings.batValue.toString())
-            AssistChip(onClick = {}, label = {
-                Text(if (uiState.settings.autoSendEnabled) "自動送信: ${uiState.settings.sendingIntervalSeconds}秒" else "手動送信")
-            })
         }
     }
 }
 
 @Composable
-private fun SensorRow(label: String, value: String) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.width(80.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+private fun StatusValue(label: String, value: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = SoracomTeal)
+        Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
+private fun AutoSendCard(enabled: Boolean, onEnabledChange: (Boolean) -> Unit) {
+    Card(
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7F7)),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Default.DataUsage, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.Gray)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("自動送信: ${if (enabled) "オン" else "オフ"}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.weight(1f))
+            Switch(checked = enabled, onCheckedChange = onEnabledChange)
+        }
     }
 }
 
@@ -316,50 +399,51 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
-            Row(modifier = Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
-                FilterChip(selected = false, onClick = onClearLogs, label = { Text("ログを消去") })
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text("送信ログ", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.weight(1f))
+                FilterChip(selected = false, onClick = onClearLogs, label = { Text("消去") })
             }
         }
         items(uiState.sendLogs) { log ->
-            var expanded by remember(log.timestampLabel) { mutableStateOf(false) }
-            Card(shape = RoundedCornerShape(16.dp)) {
-                Column(modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }.padding(16.dp)) {
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(if (log.success) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error))
+                        Box(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clip(CircleShape)
+                                .background(if (log.success) Color(0xFF5ABB68) else MaterialTheme.colorScheme.error),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(if (log.success) "✓" else "!", color = Color.White, style = MaterialTheme.typography.labelSmall)
+                        }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (log.success) "送信成功" else "送信失敗", fontWeight = FontWeight.SemiBold)
+                        Text(log.timestampLabel.replace("T", " "), fontWeight = FontWeight.SemiBold)
                         Spacer(modifier = Modifier.weight(1f))
-                        Text(log.timestampLabel, style = MaterialTheme.typography.labelSmall)
-                    }
-                    if (!log.success) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(log.message, color = MaterialTheme.colorScheme.error)
-                    }
-                    if (expanded) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            LogDataCell("緯度", gpsValue(log.sensorData.lat))
-                            LogDataCell("経度", gpsValue(log.sensorData.lon))
+                        Surface(shape = RoundedCornerShape(10.dp), color = Color(0xFFF0F0F2)) {
+                            Text(
+                                sendTypeLabel(log.sensorData.type),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                            )
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            LogDataCell("温度", log.sensorData.temp?.let { "%.1f°C".format(it) } ?: "無効")
-                            LogDataCell("湿度", log.sensorData.humi?.let { "%.1f%%".format(it) } ?: "無効")
-                            LogDataCell("電波強度", log.sensorData.rs?.toString() ?: "無効")
-                            LogDataCell("バッテリー", log.sensorData.bat?.toString() ?: "無効")
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            "加速度: X %.1f / Y %.1f / Z %.1f mG".format(
-                                log.sensorData.x ?: 0.0,
-                                log.sensorData.y ?: 0.0,
-                                log.sensorData.z ?: 0.0,
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                        )
                     }
+                    Text(
+                        if (log.success) "センサー値を送信しました" else log.message,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (log.success) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
+                    )
+                    LogSensorPanel(log.sensorData)
                 }
             }
         }
@@ -367,14 +451,46 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
 }
 
 @Composable
-private fun LogDataCell(label: String, value: String) {
-    Column {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun LogSensorPanel(sensorData: SensorData) {
+    Surface(
+        modifier = Modifier.width(220.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = Color(0xFFF2F2F6),
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(7.dp),
+        ) {
+            Row {
+                LogMetric("温度", sensorData.temp?.let { "%.1f°C".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric("湿度", sensorData.humi?.let { "%.1f%%".format(it) } ?: "--", Modifier.weight(1f))
+            }
+            Row {
+                LogMetric("X", sensorData.x?.let { "%.0f mG".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric("Y", sensorData.y?.let { "%.0f mG".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric("Z", sensorData.z?.let { "%.0f mG".format(it) } ?: "--", Modifier.weight(1f))
+            }
+            Row {
+                LogMetric("緯度", sensorData.lat?.let { "%.6f".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric("経度", sensorData.lon?.let { "%.6f".format(it) } ?: "--", Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun LogMetric(label: String, value: String, modifier: Modifier) {
+    Column(modifier = modifier) {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
     }
 }
 
-private fun gpsValue(value: Double?): String = value?.let { "%.5f".format(it) } ?: "null"
+private fun sendTypeLabel(type: SendType): String = when (type) {
+    SendType.MANUAL -> "手動"
+    SendType.PERIODIC -> "定期"
+    SendType.ACCELERATION_ALERT -> "加速度"
+}
 
 @Composable
 private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -> Unit) {
@@ -386,8 +502,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         SettingsSliderCard(
-            title = "温度ベース値",
-            valueText = "%.1f°C".format(currentSettings.temperatureBase),
+            title = "温度設定",
+            valueText = "ベース温度: %.1f °C".format(currentSettings.temperatureBase),
             value = currentSettings.temperatureBase,
             range = -40f..85f,
             steps = 249,
@@ -396,8 +512,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         SettingsSliderCard(
-            title = "温度変動幅",
-            valueText = "±%.1f°C".format(currentSettings.temperatureVariation),
+            title = "温度設定",
+            valueText = "変動幅: ± %.1f °C".format(currentSettings.temperatureVariation),
             value = currentSettings.temperatureVariation,
             range = 0f..10f,
             steps = 19,
@@ -406,8 +522,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         SettingsSliderCard(
-            title = "湿度ベース値",
-            valueText = "%.1f%%".format(currentSettings.humidityBase),
+            title = "湿度設定",
+            valueText = "ベース湿度: %.1f %%".format(currentSettings.humidityBase),
             value = currentSettings.humidityBase,
             range = 0f..100f,
             steps = 99,
@@ -416,8 +532,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         SettingsSliderCard(
-            title = "湿度変動幅",
-            valueText = "±%.1f%%".format(currentSettings.humidityVariation),
+            title = "湿度設定",
+            valueText = "変動幅: ± %.1f %%".format(currentSettings.humidityVariation),
             value = currentSettings.humidityVariation,
             range = 0f..20f,
             steps = 19,
@@ -425,19 +541,27 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             currentSettings = currentSettings.copy(humidityVariation = it)
             onUpdateSettings(currentSettings)
         }
-        StepperCard(title = "電波強度 (rs)", value = currentSettings.rsValue, range = -1..4) {
+        StepperCard(
+            title = "電波強度 (rs): ${if (currentSettings.rsValue == -1) "圏外" else currentSettings.rsValue}",
+            value = currentSettings.rsValue,
+            range = -1..4,
+        ) {
             currentSettings = currentSettings.copy(rsValue = it)
             onUpdateSettings(currentSettings)
         }
-        StepperCard(title = "バッテリー (bat)", value = currentSettings.batValue, range = -1..3) {
+        StepperCard(
+            title = "バッテリー (bat): ${if (currentSettings.batValue == -1) "充電中" else currentSettings.batValue}",
+            value = currentSettings.batValue,
+            range = -1..3,
+        ) {
             currentSettings = currentSettings.copy(batValue = it)
             onUpdateSettings(currentSettings)
         }
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("SORACOM Arc", fontWeight = FontWeight.SemiBold)
+                Text("SORACOM Arc 設定", fontWeight = FontWeight.SemiBold)
                 Text(
-                    "WireGuard 接続情報または soratun の arc.json を貼り付けます。`android/app/src/main/jniLibs/` に libsoratun.so を配置すると Arc 経由送信を試行します。",
+                    "SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -448,7 +572,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                         onUpdateSettings(currentSettings)
                     },
                     modifier = Modifier.fillMaxWidth().height(180.dp),
-                    label = { Text("WireGuard / arc.json") },
+                    label = { Text("WireGuard 設定") },
                 )
             }
         }
@@ -456,8 +580,12 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("自動送信")
-                        Text("データ送信を設定した秒数間隔で繰り返します", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("自動送信 (フォールバック)")
+                        Text(
+                            "SORACOM Arc が接続できない場合や、メタデータサービスから設定を取得できない場合に使用されます。",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                     Switch(
                         checked = currentSettings.autoSendEnabled,
@@ -469,8 +597,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                 }
                 if (currentSettings.autoSendEnabled) {
                     SettingsSliderCard(
-                        title = "送信間隔",
-                        valueText = "${currentSettings.sendingIntervalSeconds}秒",
+                        title = "フォールバック送信設定",
+                        valueText = "送信間隔: ${currentSettings.sendingIntervalSeconds} 秒",
                         value = currentSettings.sendingIntervalSeconds.toFloat(),
                         range = 5f..3600f,
                         steps = 718,
@@ -483,16 +611,37 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
         }
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("アプリについて", fontWeight = FontWeight.SemiBold)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("バージョン")
+                    Text("1.0", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("ビルド")
+                    Text("1", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Text(
+                    "GitHub リポジトリ",
+                    modifier = Modifier.clickable {
+                        uriHandler.openUri("https://github.com/kenichiro-kimura/soracom-gps-multiunit")
+                    },
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+        Card(shape = RoundedCornerShape(16.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("ライセンス", fontWeight = FontWeight.SemiBold)
                 Text("SORACOM UGロゴを使用しています。", style = MaterialTheme.typography.bodySmall)
                 Text(
-                    "ロゴの配布元: https://github.com/soracomug/logo",
+                    "ロゴの配布元",
                     modifier = Modifier.clickable { uriHandler.openUri("https://github.com/soracomug/logo") },
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Text(
-                    "CC BY 4.0ライセンス: https://creativecommons.org/licenses/by/4.0/",
+                    "CC BY 4.0 ライセンス",
                     modifier = Modifier.clickable { uriHandler.openUri("https://creativecommons.org/licenses/by/4.0/") },
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodySmall,
