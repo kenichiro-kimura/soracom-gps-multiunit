@@ -18,7 +18,7 @@ class DataSendingService {
     /// - Parameter sensorData: 送信するセンサーデータ
     /// - Returns: Arc 経由の場合はサーバーレスポンス、UDP フォールバックの場合は "(UDP フォールバック)"
     @discardableResult
-    func send(_ sensorData: SensorData) async throws -> String {
+    func send(_ sensorData: SensorData, allowUdpFallback: Bool = true) async throws -> String {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
         let jsonData = try encoder.encode(sensorData)
@@ -45,6 +45,10 @@ class DataSendingService {
             }
         }
 
+        guard allowUdpFallback else {
+            throw DataSendingError.arcFallbackDisabled
+        }
+
         // UDP フォールバック: 通常インターネット経由で uni.soracom.io:23080 に送信
         try await udpSendingService.send(jsonData)
         return "(UDP フォールバック)"
@@ -55,12 +59,15 @@ class DataSendingService {
 
 enum DataSendingError: LocalizedError {
     case encodingFailed
+    case arcFallbackDisabled
     case sendFailed(String)
 
     var errorDescription: String? {
         switch self {
         case .encodingFailed:
             return "センサーデータの JSON 変換に失敗しました。"
+        case .arcFallbackDisabled:
+            return "SORACOM Arc を利用できず、インターネット経由 UDP のフォールバックが無効なため送信に失敗しました。"
         case .sendFailed(let detail):
             return "データ送信に失敗しました: \(detail)"
         }
