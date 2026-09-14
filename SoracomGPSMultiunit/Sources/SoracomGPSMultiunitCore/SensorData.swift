@@ -68,9 +68,11 @@ public struct SensorData: Codable, Equatable, Sendable {
     }
 
     private func jsonValue<T: Encodable>(_ value: T) throws -> String {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.fragmentsAllowed]
-        return String(decoding: try encoder.encode(value), as: UTF8.self)
+        // JSONEncoder はこのプロジェクトのFoundationではトップレベルの値を直接出力できない。
+        // 要素ひとつの配列をエンコードし、外側の角括弧だけを除いてJSON値として使う。
+        let encodedArray = try JSONEncoder().encode([value])
+        let jsonArray = String(decoding: encodedArray, as: UTF8.self)
+        return String(jsonArray.dropFirst().dropLast())
     }
 
     public init(
