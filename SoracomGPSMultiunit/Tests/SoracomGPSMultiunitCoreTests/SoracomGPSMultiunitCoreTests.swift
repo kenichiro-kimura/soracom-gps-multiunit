@@ -43,8 +43,7 @@ final class SensorDataTests: XCTestCase {
             type: .periodic
         )
 
-        let jsonData = try JSONEncoder().encode(data)
-        let json = String(data: jsonData, encoding: .utf8)
+        let json = try data.jsonString()
 
         XCTAssertEqual(
             json,

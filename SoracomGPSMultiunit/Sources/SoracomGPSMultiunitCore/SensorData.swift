@@ -42,6 +42,37 @@ public struct SensorData: Codable, Equatable, Sendable {
         try container.encode(type, forKey: .type)
     }
 
+    /// Unified Endpoint へ送信する JSON を、GPS マルチユニット互換のキー順で生成する。
+    /// JSON オブジェクトのキー順は Codable では保証されないため、送信ボディはここで明示的に組み立てる。
+    public func jsonString() throws -> String {
+        var fields = [
+            "\"lat\":\(try jsonValue(lat))",
+            "\"lon\":\(try jsonValue(lon))"
+        ]
+
+        if let bat { fields.append("\"bat\":\(try jsonValue(bat))") }
+        if let rs { fields.append("\"rs\":\(try jsonValue(rs))") }
+        if let temp { fields.append("\"temp\":\(try jsonValue(temp))") }
+        if let humi { fields.append("\"humi\":\(try jsonValue(humi))") }
+        if let x { fields.append("\"x\":\(try jsonValue(x))") }
+        if let y { fields.append("\"y\":\(try jsonValue(y))") }
+        if let z { fields.append("\"z\":\(try jsonValue(z))") }
+        fields.append("\"type\":\(try jsonValue(type))")
+
+        return "{\(fields.joined(separator: ","))}"
+    }
+
+    private func jsonValue(_ value: Double?) throws -> String {
+        guard let value else { return "null" }
+        return try jsonValue(value)
+    }
+
+    private func jsonValue<T: Encodable>(_ value: T) throws -> String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.fragmentsAllowed]
+        return String(decoding: try encoder.encode(value), as: UTF8.self)
+    }
+
     public init(
         lat: Double? = nil,
         lon: Double? = nil,

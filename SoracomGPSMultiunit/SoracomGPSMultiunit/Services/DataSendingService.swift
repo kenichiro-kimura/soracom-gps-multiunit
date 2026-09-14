@@ -18,12 +18,7 @@ class DataSendingService {
     /// - Returns: Arc またはインターネット経由 UDP の Unified Endpoint レスポンス
     @discardableResult
     func send(_ sensorData: SensorData, allowUdpFallback: Bool = true) async throws -> String {
-        let encoder = JSONEncoder()
-        let jsonData = try encoder.encode(sensorData)
-
-        guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-            throw DataSendingError.encodingFailed
-        }
+        let jsonString = try sensorData.jsonString()
 
         // Arc 経由で Unified Endpoint の UDP ポートへ送信を試みる
         do {
@@ -44,7 +39,7 @@ class DataSendingService {
         }
 
         // UDP フォールバック: 通常インターネット経由で uni.soracom.io:23080 に送信
-        return try await udpSendingService.send(jsonData)
+        return try await udpSendingService.send(Data(jsonString.utf8))
     }
 }
 

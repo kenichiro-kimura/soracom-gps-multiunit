@@ -12,12 +12,7 @@ public final class DataSendingService: Sendable {
     /// センサーデータを Unified Endpoint に送信する
     @discardableResult
     public func send(_ sensorData: SensorData) async throws -> String {
-        let encoder = JSONEncoder()
-        let jsonData = try encoder.encode(sensorData)
-
-        guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-            throw DataSendingError.encodingFailed
-        }
+        let jsonString = try sensorData.jsonString()
 
         let response = try await arcService.sendHTTP(
             path: unifiedEndpointPath,
