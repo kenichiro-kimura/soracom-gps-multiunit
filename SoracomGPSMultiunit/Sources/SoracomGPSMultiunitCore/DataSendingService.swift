@@ -13,7 +13,6 @@ public final class DataSendingService: Sendable {
     @discardableResult
     public func send(_ sensorData: SensorData) async throws -> String {
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.sortedKeys]
         let jsonData = try encoder.encode(sensorData)
 
         guard let jsonString = String(data: jsonData, encoding: .utf8) else {

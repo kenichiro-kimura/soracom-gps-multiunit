@@ -19,7 +19,6 @@ class DataSendingService {
     @discardableResult
     func send(_ sensorData: SensorData, allowUdpFallback: Bool = true) async throws -> String {
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.sortedKeys]
         let jsonData = try encoder.encode(sensorData)
 
         guard let jsonString = String(data: jsonData, encoding: .utf8) else {
