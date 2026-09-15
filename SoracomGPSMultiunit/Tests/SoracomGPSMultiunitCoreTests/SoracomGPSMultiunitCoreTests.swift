@@ -29,6 +29,28 @@ final class SensorDataTests: XCTestCase {
         XCTAssertEqual(json?["type"] as? Int, 0)
     }
 
+    func testSensorDataEncodingPreservesWireFormatFieldOrder() throws {
+        let data = SensorData(
+            lat: 33.761794,
+            lon: 130.490584,
+            temp: 28.3,
+            humi: 85.2,
+            x: 0,
+            y: 0,
+            z: -960,
+            bat: 3,
+            rs: 0,
+            type: .periodic
+        )
+
+        let json = try data.jsonString()
+
+        XCTAssertEqual(
+            json,
+            "{\"lat\":33.761794,\"lon\":130.490584,\"bat\":3,\"rs\":0,\"temp\":28.3,\"humi\":85.2,\"x\":0,\"y\":0,\"z\":-960,\"type\":0}"
+        )
+    }
+
     func testSensorDataEncodingIncludesNullGPSValuesWhenUnavailable() throws {
         let data = SensorData(type: .periodic)
 

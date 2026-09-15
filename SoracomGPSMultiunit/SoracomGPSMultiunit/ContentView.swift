@@ -41,10 +41,6 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     DeviceView(viewModel: viewModel)
                         .padding(.top, 16)
-
-                    autoSendControl
-                        .padding(.horizontal)
-                        .padding(.top, 12)
                 }
                 .padding(.bottom, 32)
             }
@@ -77,34 +73,6 @@ struct ContentView: View {
             }
             .badge(viewModel.sendLogs.filter { !$0.success }.count)
             .tag(1)
-    }
-
-    // MARK: - Auto Send Control
-
-    private var autoSendControl: some View {
-        HStack {
-            Label(
-                viewModel.isAutoSendEnabled
-                    ? "自動送信中 (\(viewModel.sendingInterval)秒)"
-                    : "自動送信: オフ",
-                systemImage: "clock.arrow.2.circlepath"
-            )
-            .font(.subheadline)
-            .foregroundStyle(viewModel.isAutoSendEnabled ? .primary : .secondary)
-
-            Spacer()
-
-            Toggle("", isOn: Binding(
-                get: { viewModel.isAutoSendEnabled },
-                set: { _ in viewModel.toggleAutoSend() }
-            ))
-            .labelsHidden()
-        }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.regularMaterial)
-        )
     }
 
     // MARK: - Refresh Button
