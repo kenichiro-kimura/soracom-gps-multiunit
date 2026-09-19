@@ -42,7 +42,7 @@ GPS マルチユニット SORACOM Edition と同じ JSON 形式でデータを�
 ## 必要環境
 
 - iOS 17.6 以上 / Xcode 15.0 以上
-- Android Studio Koala 以降 または Android SDK 35 以上
+- Android Studio Koala 以降 または Android SDK 36 以上
 - SORACOM アカウント (仮想 SIM)
 - libsoratun ビルド成果物 (iOS / Android で任意、後述)
 
