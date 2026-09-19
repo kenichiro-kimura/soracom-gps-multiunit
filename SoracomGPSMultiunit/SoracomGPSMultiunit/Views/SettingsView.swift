@@ -213,7 +213,7 @@ struct SettingsView: View {
         } header: {
             Label("SORACOM Arc 設定", systemImage: "lock.shield")
         } footer: {
-            Text("SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。Arc 設定が未入力・無効、または SORACOM Arc で通信できない場合、ONなら uni.soracom.io へ UDP 送信します。OFFの場合は送信に失敗します。")
+            Text("SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。Arc 設定が未入力・無効、または libsoratun が利用できない場合、ONなら uni.soracom.io へ UDP 送信します。OFFの場合は送信に失敗します。")
                 .font(.caption)
         }
         .alert("WireGuard 設定について", isPresented: $showArcConfigInfo) {
