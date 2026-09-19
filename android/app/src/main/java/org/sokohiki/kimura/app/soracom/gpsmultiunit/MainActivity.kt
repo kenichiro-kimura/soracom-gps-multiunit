@@ -587,7 +587,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                     Column(modifier = Modifier.weight(1f)) {
                         Text("インターネット経由 UDP にフォールバック")
                         Text(
-                            "Arc 設定が未入力・無効、または SORACOM Arc で通信できない場合に uni.soracom.io へ UDP 送信します。OFF の場合は送信に失敗します。",
+                            "Arc 設定が未入力・無効、または libsoratun が利用できない場合に uni.soracom.io へ UDP 送信します。OFF の場合は送信に失敗します。"
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
