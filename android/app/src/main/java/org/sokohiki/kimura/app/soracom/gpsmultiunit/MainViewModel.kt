@@ -77,10 +77,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (_uiState.value.locationPermissionGranted) {
             startSensors()
         }
+        restartAutoSendIfNeeded()
     }
 
     fun onStop() {
         stopSensors()
+        autoSendJob?.cancel()
+        autoSendJob = null
     }
 
     fun onLocationPermissionChanged(granted: Boolean) {
