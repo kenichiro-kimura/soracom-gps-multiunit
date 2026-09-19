@@ -7,6 +7,7 @@ data class AppSettings(
     val humidityVariation: Float = 5f,
     val rsValue: Int = 3,
     val batValue: Int = 3,
+    val useFixedLocation: Boolean = false,
     val autoSendEnabled: Boolean = false,
     val sendingIntervalSeconds: Int = 60,
     val arcConfig: String = "",

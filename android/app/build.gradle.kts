@@ -12,7 +12,7 @@ android {
         applicationId = "org.sokohiki.kimura.app.soracom.gpsmultiunit"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
+        versionCode = 3
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -50,6 +50,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -75,6 +76,8 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
     testImplementation("junit:junit:4.13.2")
+    // Android の org.json はローカル JVM テストでは実装を持たないため、実装版を明示的に使用する。
+    testImplementation("org.json:json:20240303")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

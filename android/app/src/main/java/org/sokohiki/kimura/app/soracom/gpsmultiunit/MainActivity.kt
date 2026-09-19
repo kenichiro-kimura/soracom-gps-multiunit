@@ -312,7 +312,10 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(if (uiState.isSending) "送信中…" else "手動送信", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        sendStatusLabel(sensorData?.type, uiState.isSending),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                     Text(
                         "最終送信: ${uiState.lastSentAtLabel ?: "未送信"}",
                         style = MaterialTheme.typography.labelSmall,
@@ -460,6 +463,15 @@ private fun sendTypeLabel(type: SendType): String = when (type) {
     SendType.ACCELERATION_ALERT -> "加速度"
 }
 
+private fun sendStatusLabel(type: SendType?, isSending: Boolean): String {
+    val label = when (type) {
+        SendType.PERIODIC -> "自動送信"
+        SendType.MANUAL, null -> "手動送信"
+        SendType.ACCELERATION_ALERT -> "加速度送信"
+    }
+    return if (isSending) "${label}中…" else label
+}
+
 @Composable
 private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -> Unit) {
     var currentSettings by remember(settings) { mutableStateOf(settings) }
@@ -527,6 +539,27 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         Card(shape = RoundedCornerShape(16.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("固定位置情報送信")
+                        Text(
+                            "オンにすると、実際の位置情報の代わりに東京駅（35.681236, 139.767125）の固定位置を送信します。",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = currentSettings.useFixedLocation,
+                        onCheckedChange = {
+                            currentSettings = currentSettings.copy(useFixedLocation = it)
+                            onUpdateSettings(currentSettings)
+                        },
+                    )
+                }
+            }
+        }
+        Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("SORACOM Arc 設定", fontWeight = FontWeight.SemiBold)
                 Text(
@@ -554,7 +587,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                     Column(modifier = Modifier.weight(1f)) {
                         Text("インターネット経由 UDP にフォールバック")
                         Text(
-                            "Arc 設定が未入力・無効、または SORACOM Arc で通信できない場合に uni.soracom.io へ UDP 送信します。OFF の場合は送信に失敗します。",
+                            "Arc 設定が未入力・無効、または libsoratun が利用できない場合に uni.soracom.io へ UDP 送信します。OFF の場合は送信に失敗します。",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -607,11 +640,11 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                 Text("アプリについて", fontWeight = FontWeight.SemiBold)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("バージョン")
-                    Text("1.0", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(BuildConfig.VERSION_NAME, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("ビルド")
-                    Text("1", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(BuildConfig.VERSION_CODE.toString(), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Text(
                     "GitHub リポジトリ",

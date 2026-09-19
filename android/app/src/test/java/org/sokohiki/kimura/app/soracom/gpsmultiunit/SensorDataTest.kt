@@ -1,5 +1,6 @@
 package org.sokohiki.kimura.app.soracom.gpsmultiunit
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -21,11 +22,11 @@ class SensorDataTest {
 
         val json = payload.toJsonString()
 
-        assertTrue(json.contains("\"lat\":35.1"))
-        assertTrue(json.contains("\"lon\":139.1"))
-        assertTrue(json.contains("\"temp\":25.5"))
-        assertTrue(json.contains("\"humi\":60.0"))
-        assertTrue(json.contains("\"type\":1"))
+        assertEquals(
+            "{\"lat\":35.1,\"lon\":139.1,\"bat\":3,\"rs\":4,\"temp\":25.5," +
+                "\"humi\":60.0,\"x\":1.0,\"y\":-2.0,\"z\":980.0,\"type\":1}",
+            json,
+        )
     }
 
     @Test

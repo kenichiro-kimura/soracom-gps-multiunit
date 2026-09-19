@@ -77,10 +77,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (_uiState.value.locationPermissionGranted) {
             startSensors()
         }
+        restartAutoSendIfNeeded()
     }
 
     fun onStop() {
         stopSensors()
+        autoSendJob?.cancel()
+        autoSendJob = null
     }
 
     fun onLocationPermissionChanged(granted: Boolean) {
@@ -229,10 +232,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val settings = _uiState.value.settings
         val location = lastLocation.takeIf { _uiState.value.locationPermissionGranted }
         val (x, y, z) = lastAcceleration
+        val (lat, lon) = if (settings.useFixedLocation) {
+            FIXED_LOCATION_LATITUDE to FIXED_LOCATION_LONGITUDE
+        } else {
+            location?.latitude?.roundedTo(6) to location?.longitude?.roundedTo(6)
+        }
 
         return SensorData(
-            lat = location?.latitude?.roundedTo(6),
-            lon = location?.longitude?.roundedTo(6),
+            lat = lat,
+            lon = lon,
             temp = SensorValueGenerator.temperature(settings),
             humi = SensorValueGenerator.humidity(settings),
             x = x,
@@ -253,6 +261,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun accelerationToMilliG(value: Float): Double {
         val milliG = value / SensorManager.GRAVITY_EARTH * 1000.0
         return round(milliG * 10.0) / 10.0
+    }
+
+    private companion object {
+        const val FIXED_LOCATION_LATITUDE = 35.681236
+        const val FIXED_LOCATION_LONGITUDE = 139.767125
     }
 }
 

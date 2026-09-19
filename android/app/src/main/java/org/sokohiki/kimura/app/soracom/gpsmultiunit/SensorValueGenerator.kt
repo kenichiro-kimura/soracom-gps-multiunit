@@ -5,6 +5,9 @@ import kotlin.random.Random
 
 object SensorValueGenerator {
     fun temperature(settings: AppSettings, random: Random = Random.Default): Double {
+        if (settings.temperatureVariation == 0f) {
+            return roundToTenth(settings.temperatureBase.toDouble())
+        }
         val variation = random.nextDouble(
             -settings.temperatureVariation.toDouble(),
             settings.temperatureVariation.toDouble(),
@@ -13,6 +16,9 @@ object SensorValueGenerator {
     }
 
     fun humidity(settings: AppSettings, random: Random = Random.Default): Double {
+        if (settings.humidityVariation == 0f) {
+            return roundToTenth(settings.humidityBase.toDouble().coerceIn(0.0, 100.0))
+        }
         val variation = random.nextDouble(
             -settings.humidityVariation.toDouble(),
             settings.humidityVariation.toDouble(),
