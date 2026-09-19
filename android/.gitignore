@@ -13,3 +13,5 @@ local.properties
 
 # Ignore Android Studio native build output
 **/.cxx/
+
+app/release/

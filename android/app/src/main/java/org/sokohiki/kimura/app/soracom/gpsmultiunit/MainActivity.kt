@@ -539,6 +539,27 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         Card(shape = RoundedCornerShape(16.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("固定位置情報送信")
+                        Text(
+                            "オンにすると、実際の位置情報の代わりに東京駅（35.681236, 139.767125）の固定位置を送信します。",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = currentSettings.useFixedLocation,
+                        onCheckedChange = {
+                            currentSettings = currentSettings.copy(useFixedLocation = it)
+                            onUpdateSettings(currentSettings)
+                        },
+                    )
+                }
+            }
+        }
+        Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("SORACOM Arc 設定", fontWeight = FontWeight.SemiBold)
                 Text(

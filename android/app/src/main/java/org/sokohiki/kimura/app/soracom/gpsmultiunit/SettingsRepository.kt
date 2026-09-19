@@ -13,6 +13,7 @@ class SettingsRepository(context: Context) {
         humidityVariation = preferences.getFloat(KEY_HUMIDITY_VARIATION, 5f),
         rsValue = preferences.getInt(KEY_RS_VALUE, 3),
         batValue = preferences.getInt(KEY_BAT_VALUE, 3),
+        useFixedLocation = preferences.getBoolean(KEY_USE_FIXED_LOCATION, false),
         autoSendEnabled = preferences.getBoolean(KEY_AUTO_SEND_ENABLED, false),
         sendingIntervalSeconds = preferences.getInt(KEY_SENDING_INTERVAL_SECONDS, 60),
         arcConfig = preferences.getString(KEY_ARC_CONFIG, "") ?: "",
@@ -27,6 +28,7 @@ class SettingsRepository(context: Context) {
             .putFloat(KEY_HUMIDITY_VARIATION, settings.humidityVariation)
             .putInt(KEY_RS_VALUE, settings.rsValue)
             .putInt(KEY_BAT_VALUE, settings.batValue)
+            .putBoolean(KEY_USE_FIXED_LOCATION, settings.useFixedLocation)
             .putBoolean(KEY_AUTO_SEND_ENABLED, settings.autoSendEnabled)
             .putInt(KEY_SENDING_INTERVAL_SECONDS, settings.sendingIntervalSeconds)
             .putString(KEY_ARC_CONFIG, settings.arcConfig)
@@ -42,6 +44,7 @@ class SettingsRepository(context: Context) {
         const val KEY_HUMIDITY_VARIATION = "humidity_variation"
         const val KEY_RS_VALUE = "rs_value"
         const val KEY_BAT_VALUE = "bat_value"
+        const val KEY_USE_FIXED_LOCATION = "use_fixed_location"
         const val KEY_AUTO_SEND_ENABLED = "auto_send_enabled"
         const val KEY_SENDING_INTERVAL_SECONDS = "sending_interval_seconds"
         const val KEY_ARC_CONFIG = "arc_config"
