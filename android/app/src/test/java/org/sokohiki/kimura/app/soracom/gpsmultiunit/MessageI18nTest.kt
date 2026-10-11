@@ -19,6 +19,9 @@ class MessageI18nTest {
         withLocale("it-IT") {
             assertEquals("Invio riuscito", MessageI18n.sendSuccess())
         }
+        withLocale("fr-FR") {
+            assertEquals("Envoi réussi", MessageI18n.sendSuccess())
+        }
         withLocale("ko-KR") {
             assertEquals("전송 성공", MessageI18n.sendSuccess())
         }
@@ -32,7 +35,7 @@ class MessageI18nTest {
 
     @Test
     fun `unsupported language falls back to japanese`() {
-        withLocale("fr-FR") {
+        withLocale("pt-BR") {
             assertEquals("送信成功", MessageI18n.sendSuccess())
         }
     }
