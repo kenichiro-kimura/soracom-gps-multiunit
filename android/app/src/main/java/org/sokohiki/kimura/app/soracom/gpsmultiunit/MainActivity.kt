@@ -188,7 +188,11 @@ private fun DeviceTab(
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                 ) {
-                    Text(error, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onErrorContainer)
+                    Text(
+                        MessageI18n.text(error),
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                    )
                 }
             }
         }
@@ -286,7 +290,7 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("ステータス", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(MessageI18n.status(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.weight(1f))
                 Surface(
                     shape = RoundedCornerShape(12.dp),
@@ -306,7 +310,7 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
             ) {
                 Icon(
                     Icons.Default.ArrowUpward,
-                    contentDescription = "手動送信",
+                    contentDescription = MessageI18n.manualSend(),
                     modifier = Modifier.size(18.dp),
                     tint = SoracomTeal,
                 )
@@ -326,18 +330,18 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
             HorizontalDivider(color = Color(0xFFD6D6D6))
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                 StatusValue(
-                    label = "温度",
+                    label = MessageI18n.temperature(),
                     value = sensorData?.temp?.let { "%.1f°C".format(it) } ?: "--",
                     modifier = Modifier.weight(1f),
                 )
                 StatusValue(
-                    label = "湿度",
+                    label = MessageI18n.humidity(),
                     value = sensorData?.humi?.let { "%.1f%%".format(it) } ?: "--",
                     modifier = Modifier.weight(1f),
                 )
             }
             StatusValue(
-                label = "加速度",
+                label = MessageI18n.acceleration(),
                 value = sensorData?.let { "X:%.1f  Y:%.1f  Z:%.1f mG".format(it.x ?: 0.0, it.y ?: 0.0, it.z ?: 0.0) } ?: "--",
             )
             StatusValue(
@@ -374,9 +378,9 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("送信ログ", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Text(MessageI18n.sendLogs(), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.weight(1f))
-                FilterChip(selected = false, onClick = onClearLogs, label = { Text("消去") })
+                FilterChip(selected = false, onClick = onClearLogs, label = { Text(MessageI18n.clear()) })
             }
         }
         items(uiState.sendLogs) { log ->
@@ -410,7 +414,7 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                         }
                     }
                     Text(
-                        if (log.success) MessageI18n.sentSensorValuesMessage() else log.message,
+                        if (log.success) MessageI18n.sentSensorValuesMessage() else MessageI18n.text(log.message),
                         style = MaterialTheme.typography.labelSmall,
                         color = if (log.success) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                     )

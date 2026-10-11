@@ -31,9 +31,13 @@ class UdpSendingService(
                 .copyOf(responsePacket.length)
                 .toString(Charsets.UTF_8)
 
-            require(response.isNotBlank()) { MessageI18n.emptyResponse() }
-            require(response.first() == '2' || response.first() == '{') {
-                MessageI18n.invalidResponse(response)
+            if (response.isBlank()) {
+                throw SoracomArcError.SendFailed(MessageI18n.Message(MessageI18n.MessageKey.EMPTY_RESPONSE))
+            }
+            if (response.first() != '2' && response.first() != '{') {
+                throw SoracomArcError.SendFailed(
+                    MessageI18n.Message(MessageI18n.MessageKey.INVALID_RESPONSE, response)
+                )
             }
             response
         }

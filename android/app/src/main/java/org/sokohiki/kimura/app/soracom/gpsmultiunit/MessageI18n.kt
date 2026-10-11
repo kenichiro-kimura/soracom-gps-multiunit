@@ -2,7 +2,36 @@ package org.sokohiki.kimura.app.soracom.gpsmultiunit
 
 import java.util.Locale
 
-internal object MessageI18n {
+object MessageI18n {
+    data class Message(
+        val key: MessageKey,
+        val detail: String? = null,
+        val detailMessage: Message? = null,
+    )
+
+    enum class MessageKey {
+        GPS_PERMISSION_DENIED,
+        LOCATION_PERMISSION_CHECK_FAILED,
+        SEND_SUCCESS,
+        SEND_FAILED,
+        SEND_FAILED_WITH_DETAIL,
+        ARC_NOT_CONFIGURED,
+        ARC_FALLBACK_DISABLED,
+        LIBRARY_UNAVAILABLE_DEFAULT,
+        JNI_LOAD_FAILED,
+        INVALID_CONFIGURATION,
+        RESPONSE_WAS_NULL,
+        EMPTY_RESPONSE,
+        INVALID_RESPONSE,
+        WIRE_GUARD_OR_VALID_JSON_REQUIRED,
+        MISSING_ARC_SESSION_STATUS_FIELD,
+        ARC_SESSION_STATUS_EMPTY,
+        SORATUN_CONVERSION_FAILED,
+        ADDRESS_MUST_BE_CIDR,
+        WIRE_GUARD_PARSE_ERROR,
+        RAW_DETAIL,
+    }
+
     private enum class Language {
         JA, EN, DE, ES, IT, FR, KO, ZH
     }
@@ -405,5 +434,105 @@ internal object MessageI18n {
         Language.KO -> "신호 없음"
         Language.ZH -> "无信号"
         Language.JA -> "信号なし"
+    }
+
+    fun status(): String = when (language()) {
+        Language.EN -> "Status"
+        Language.DE -> "Status"
+        Language.ES -> "Estado"
+        Language.IT -> "Stato"
+        Language.FR -> "État"
+        Language.KO -> "상태"
+        Language.ZH -> "状态"
+        Language.JA -> "ステータス"
+    }
+
+    fun temperature(): String = when (language()) {
+        Language.EN -> "Temperature"
+        Language.DE -> "Temperatur"
+        Language.ES -> "Temperatura"
+        Language.IT -> "Temperatura"
+        Language.FR -> "Température"
+        Language.KO -> "온도"
+        Language.ZH -> "温度"
+        Language.JA -> "温度"
+    }
+
+    fun humidity(): String = when (language()) {
+        Language.EN -> "Humidity"
+        Language.DE -> "Luftfeuchtigkeit"
+        Language.ES -> "Humedad"
+        Language.IT -> "Umidità"
+        Language.FR -> "Humidité"
+        Language.KO -> "습도"
+        Language.ZH -> "湿度"
+        Language.JA -> "湿度"
+    }
+
+    fun acceleration(): String = when (language()) {
+        Language.EN -> "Acceleration"
+        Language.DE -> "Beschleunigung"
+        Language.ES -> "Aceleración"
+        Language.IT -> "Accelerazione"
+        Language.FR -> "Accélération"
+        Language.KO -> "가속도"
+        Language.ZH -> "加速度"
+        Language.JA -> "加速度"
+    }
+
+    fun manualSend(): String = when (language()) {
+        Language.EN -> "Manual send"
+        Language.DE -> "Manuell senden"
+        Language.ES -> "Envío manual"
+        Language.IT -> "Invio manuale"
+        Language.FR -> "Envoi manuel"
+        Language.KO -> "수동 전송"
+        Language.ZH -> "手动发送"
+        Language.JA -> "手動送信"
+    }
+
+    fun sendLogs(): String = when (language()) {
+        Language.EN -> "Send logs"
+        Language.DE -> "Sendeprotokolle"
+        Language.ES -> "Registros de envío"
+        Language.IT -> "Registri di invio"
+        Language.FR -> "Journaux d'envoi"
+        Language.KO -> "전송 로그"
+        Language.ZH -> "发送日志"
+        Language.JA -> "送信ログ"
+    }
+
+    fun clear(): String = when (language()) {
+        Language.EN -> "Clear"
+        Language.DE -> "Löschen"
+        Language.ES -> "Borrar"
+        Language.IT -> "Cancella"
+        Language.FR -> "Effacer"
+        Language.KO -> "지우기"
+        Language.ZH -> "清除"
+        Language.JA -> "消去"
+    }
+
+    fun text(message: Message): String = when (message.key) {
+        MessageKey.GPS_PERMISSION_DENIED -> gpsPermissionDenied()
+        MessageKey.LOCATION_PERMISSION_CHECK_FAILED -> locationPermissionCheckFailed()
+        MessageKey.SEND_SUCCESS -> sendSuccess()
+        MessageKey.SEND_FAILED -> sendFailed()
+        MessageKey.SEND_FAILED_WITH_DETAIL -> sendFailedWithDetail(message.detailMessage?.let(::text) ?: message.detail.orEmpty())
+        MessageKey.ARC_NOT_CONFIGURED -> arcNotConfigured()
+        MessageKey.ARC_FALLBACK_DISABLED -> arcFallbackDisabled()
+        MessageKey.LIBRARY_UNAVAILABLE_DEFAULT -> libraryUnavailableDefault()
+        MessageKey.JNI_LOAD_FAILED -> jniLoadFailed()
+        MessageKey.INVALID_CONFIGURATION -> invalidConfiguration(message.detailMessage?.let(::text) ?: message.detail.orEmpty())
+        MessageKey.RESPONSE_WAS_NULL -> responseWasNull()
+        MessageKey.EMPTY_RESPONSE -> emptyResponse()
+        MessageKey.INVALID_RESPONSE -> invalidResponse(message.detail.orEmpty())
+        MessageKey.WIRE_GUARD_OR_VALID_JSON_REQUIRED -> wireGuardOrValidJsonRequired()
+        MessageKey.MISSING_ARC_SESSION_STATUS_FIELD -> missingArcSessionStatusField()
+        MessageKey.ARC_SESSION_STATUS_EMPTY -> arcSessionStatusEmpty()
+        MessageKey.SORATUN_CONVERSION_FAILED -> soratunConversionFailed()
+        MessageKey.ADDRESS_MUST_BE_CIDR -> addressMustBeCidr()
+        MessageKey.WIRE_GUARD_PARSE_ERROR -> wireGuardParseError()
+        MessageKey.RAW_DETAIL -> message.detail.orEmpty()
     }
 }

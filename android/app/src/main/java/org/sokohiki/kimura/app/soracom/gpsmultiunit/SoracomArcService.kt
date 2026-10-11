@@ -6,12 +6,23 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-sealed class SoracomArcError(message: String) : IllegalStateException(message) {
-    class NotConfigured : SoracomArcError(MessageI18n.arcNotConfigured())
-    class FallbackDisabled : SoracomArcError(MessageI18n.arcFallbackDisabled())
-    class InvalidConfiguration(detail: String) : SoracomArcError(MessageI18n.invalidConfiguration(detail))
-    class SendFailed(detail: String) : SoracomArcError(MessageI18n.sendFailedWithDetail(detail))
-    class LibraryUnavailable(detail: String = DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE) : SoracomArcError(detail)
+sealed class SoracomArcError(val uiMessage: MessageI18n.Message) : IllegalStateException(MessageI18n.text(uiMessage)) {
+    class NotConfigured : SoracomArcError(MessageI18n.Message(MessageI18n.MessageKey.ARC_NOT_CONFIGURED))
+    class FallbackDisabled : SoracomArcError(MessageI18n.Message(MessageI18n.MessageKey.ARC_FALLBACK_DISABLED))
+    class InvalidConfiguration(detail: MessageI18n.Message) : SoracomArcError(
+        MessageI18n.Message(MessageI18n.MessageKey.INVALID_CONFIGURATION, detailMessage = detail)
+    ) {
+        constructor(detail: String) : this(MessageI18n.Message(MessageI18n.MessageKey.RAW_DETAIL, detail))
+    }
+    class SendFailed(detail: MessageI18n.Message) : SoracomArcError(
+        MessageI18n.Message(MessageI18n.MessageKey.SEND_FAILED_WITH_DETAIL, detailMessage = detail)
+    ) {
+        constructor(detail: String) : this(MessageI18n.Message(MessageI18n.MessageKey.RAW_DETAIL, detail))
+    }
+    class LibraryUnavailable(detail: MessageI18n.Message = MessageI18n.Message(MessageI18n.MessageKey.LIBRARY_UNAVAILABLE_DEFAULT)) :
+        SoracomArcError(detail) {
+        constructor(detail: String) : this(MessageI18n.Message(MessageI18n.MessageKey.RAW_DETAIL, detail))
+    }
 
     companion object {
         val DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE: String
@@ -52,7 +63,7 @@ class LibsoratunArcService(
         val config = arcConfigJson ?: throw SoracomArcError.NotConfigured()
         if (!nativeBridge.isLibsoratunAvailable()) {
             throw SoracomArcError.LibraryUnavailable(
-                nativeBridge.loadErrorMessage() ?: SoracomArcError.DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE
+                nativeBridge.loadError() ?: MessageI18n.Message(MessageI18n.MessageKey.LIBRARY_UNAVAILABLE_DEFAULT)
             )
         }
 
@@ -61,7 +72,7 @@ class LibsoratunArcService(
             body = body.toByteArray(Charsets.UTF_8),
             port = port,
             timeoutMillis = timeoutMillis,
-        ) ?: throw SoracomArcError.SendFailed(MessageI18n.responseWasNull())
+        ) ?: throw SoracomArcError.SendFailed(MessageI18n.Message(MessageI18n.MessageKey.RESPONSE_WAS_NULL))
 
         requireValidResponse(result)
         result
@@ -80,7 +91,9 @@ class LibsoratunArcService(
         val json = try {
             JSONObject(trimmed)
         } catch (_: JSONException) {
-            throw SoracomArcError.InvalidConfiguration(MessageI18n.wireGuardOrValidJsonRequired())
+            throw SoracomArcError.InvalidConfiguration(
+                MessageI18n.Message(MessageI18n.MessageKey.WIRE_GUARD_OR_VALID_JSON_REQUIRED)
+            )
         }
 
         val effective = if (!json.has("arcSessionStatus") && json.has("endpoint")) {
@@ -91,11 +104,13 @@ class LibsoratunArcService(
 
         val arcSession = effective.optJSONObject("arcSessionStatus")
             ?: throw SoracomArcError.InvalidConfiguration(
-                MessageI18n.missingArcSessionStatusField()
+                MessageI18n.Message(MessageI18n.MessageKey.MISSING_ARC_SESSION_STATUS_FIELD)
             )
 
         if (arcSession.length() == 0) {
-            throw SoracomArcError.InvalidConfiguration(MessageI18n.arcSessionStatusEmpty())
+            throw SoracomArcError.InvalidConfiguration(
+                MessageI18n.Message(MessageI18n.MessageKey.ARC_SESSION_STATUS_EMPTY)
+            )
         }
 
         return effective.toString()
@@ -147,15 +162,15 @@ class LibsoratunArcService(
         }
 
         val clientPrivateKey = privateKey
-            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR_MESSAGE)
         val clientAddress = address
-            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR_MESSAGE)
         val serverPublicKey = publicKey
-            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR_MESSAGE)
         val serverEndpoint = endpoint
-            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
+            ?: throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR_MESSAGE)
         if (allowedIps.isEmpty()) {
-            throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR)
+            throw SoracomArcError.InvalidConfiguration(WIRE_GUARD_PARSE_ERROR_MESSAGE)
         }
 
         return JSONObject(
@@ -182,7 +197,9 @@ class LibsoratunArcService(
         val allowedIpsArray = json.optJSONArray("allowedIPs")
 
         if (privateKey.isBlank() || address.isBlank() || publicKey.isBlank() || endpoint.isBlank() || allowedIpsArray == null || allowedIpsArray.length() == 0) {
-            throw SoracomArcError.InvalidConfiguration(MessageI18n.soratunConversionFailed())
+            throw SoracomArcError.InvalidConfiguration(
+                MessageI18n.Message(MessageI18n.MessageKey.SORATUN_CONVERSION_FAILED)
+            )
         }
 
         val allowedIps = buildList {
@@ -194,7 +211,9 @@ class LibsoratunArcService(
             }
         }
         if (allowedIps.isEmpty()) {
-            throw SoracomArcError.InvalidConfiguration(MessageI18n.soratunConversionFailed())
+            throw SoracomArcError.InvalidConfiguration(
+                MessageI18n.Message(MessageI18n.MessageKey.SORATUN_CONVERSION_FAILED)
+            )
         }
 
         return JSONObject(
@@ -215,24 +234,29 @@ class LibsoratunArcService(
 
     private fun requireValidResponse(response: String) {
         if (response.isBlank()) {
-            throw SoracomArcError.SendFailed(MessageI18n.emptyResponse())
+            throw SoracomArcError.SendFailed(MessageI18n.Message(MessageI18n.MessageKey.EMPTY_RESPONSE))
         }
         val firstCharacter = response.firstOrNull()
         if (firstCharacter != '2' && firstCharacter != '{') {
-            throw SoracomArcError.SendFailed(MessageI18n.invalidResponse(response))
+            throw SoracomArcError.SendFailed(
+                MessageI18n.Message(MessageI18n.MessageKey.INVALID_RESPONSE, response)
+            )
         }
     }
 
     private fun requireClientIpAddress(address: String): String {
         if (!address.contains('/')) {
-            throw SoracomArcError.InvalidConfiguration(MessageI18n.addressMustBeCidr())
+            throw SoracomArcError.InvalidConfiguration(
+                MessageI18n.Message(MessageI18n.MessageKey.ADDRESS_MUST_BE_CIDR)
+            )
         }
         return address.substringBefore("/")
     }
 
     private companion object {
         const val DEFAULT_LOG_LEVEL = 1
+        val WIRE_GUARD_PARSE_ERROR_MESSAGE = MessageI18n.Message(MessageI18n.MessageKey.WIRE_GUARD_PARSE_ERROR)
         val WIRE_GUARD_PARSE_ERROR: String
-            get() = MessageI18n.wireGuardParseError()
+            get() = MessageI18n.text(WIRE_GUARD_PARSE_ERROR_MESSAGE)
     }
 }

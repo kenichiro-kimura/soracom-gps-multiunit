@@ -4,6 +4,9 @@ interface LibsoratunNativeBridge {
     fun isLibsoratunAvailable(): Boolean
 
     fun loadErrorMessage(): String? = null
+    fun loadError(): MessageI18n.Message? = loadErrorMessage()?.let {
+        MessageI18n.Message(MessageI18n.MessageKey.RAW_DETAIL, it)
+    }
 
     fun sendUdp(
         configJson: String,
@@ -14,16 +17,19 @@ interface LibsoratunNativeBridge {
 }
 
 internal object LibsoratunJni : LibsoratunNativeBridge {
-    private val loadErrorMessage: String? = try {
+    private val loadFailed: Boolean = try {
         System.loadLibrary("soratunbridge")
-        null
+        false
     } catch (_: UnsatisfiedLinkError) {
-        MessageI18n.jniLoadFailed()
+        true
     }
 
-    override fun isLibsoratunAvailable(): Boolean = loadErrorMessage == null && nativeIsLibsoratunAvailable()
+    override fun isLibsoratunAvailable(): Boolean = !loadFailed && nativeIsLibsoratunAvailable()
 
-    override fun loadErrorMessage(): String? = loadErrorMessage
+    override fun loadErrorMessage(): String? = loadError()?.let(MessageI18n::text)
+
+    override fun loadError(): MessageI18n.Message? =
+        if (loadFailed) MessageI18n.Message(MessageI18n.MessageKey.JNI_LOAD_FAILED) else null
 
     override fun sendUdp(
         configJson: String,
@@ -31,7 +37,7 @@ internal object LibsoratunJni : LibsoratunNativeBridge {
         port: Int,
         timeoutMillis: Int,
     ): String? {
-        check(loadErrorMessage == null) { loadErrorMessage!! }
+        check(!loadFailed) { loadErrorMessage()!! }
         return nativeSendUdp(configJson, body, port, timeoutMillis)
     }
 
