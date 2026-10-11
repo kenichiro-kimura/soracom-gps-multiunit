@@ -97,7 +97,7 @@ class DataSendingServiceTest {
             configureCount += 1
         }
 
-        override suspend fun sendUdp(body: String, port: Int, timeoutSeconds: Int): String {
+        override suspend fun sendUdp(body: String, port: Int, timeoutMillis: Int): String {
             sendCount += 1
             sendError?.let { throw it }
             return response
