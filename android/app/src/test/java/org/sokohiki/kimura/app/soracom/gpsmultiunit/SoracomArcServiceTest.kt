@@ -72,7 +72,7 @@ internal class FakeNativeBridge(
 
     override fun isLibsoratunAvailable(): Boolean = isAvailable
 
-    override fun sendUdp(configJson: String, body: ByteArray, port: Int, timeoutSeconds: Int): String? {
+    override fun sendUdp(configJson: String, body: ByteArray, port: Int, timeoutMillis: Int): String? {
         lastConfigJson = configJson
         return response
     }
