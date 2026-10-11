@@ -7,15 +7,15 @@ import org.json.JSONException
 import org.json.JSONObject
 
 sealed class SoracomArcError(message: String) : IllegalStateException(message) {
-    class NotConfigured : SoracomArcError("SORACOM Arc が設定されていません。設定画面から WireGuard 接続情報を入力してください。")
-    class FallbackDisabled : SoracomArcError("SORACOM Arc を利用できず、インターネット経由 UDP のフォールバックが無効なため送信に失敗しました。")
-    class InvalidConfiguration(detail: String) : SoracomArcError("設定が無効です: $detail")
-    class SendFailed(detail: String) : SoracomArcError("送信に失敗しました: $detail")
+    class NotConfigured : SoracomArcError(MessageI18n.arcNotConfigured())
+    class FallbackDisabled : SoracomArcError(MessageI18n.arcFallbackDisabled())
+    class InvalidConfiguration(detail: String) : SoracomArcError(MessageI18n.invalidConfiguration(detail))
+    class SendFailed(detail: String) : SoracomArcError(MessageI18n.sendFailedWithDetail(detail))
     class LibraryUnavailable(detail: String = DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE) : SoracomArcError(detail)
 
     companion object {
-        const val DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE =
-            "libsoratun ライブラリが利用できません。`android/app/src/main/jniLibs/` に libsoratun.so を配置して再ビルドしてください。"
+        val DEFAULT_LIBRARY_UNAVAILABLE_MESSAGE: String
+            get() = MessageI18n.libraryUnavailableDefault()
     }
 }
 
@@ -61,7 +61,7 @@ class LibsoratunArcService(
             body = body.toByteArray(Charsets.UTF_8),
             port = port,
             timeoutMillis = timeoutMillis,
-        ) ?: throw SoracomArcError.SendFailed("レスポンスが null でした")
+        ) ?: throw SoracomArcError.SendFailed(MessageI18n.responseWasNull())
 
         requireValidResponse(result)
         result
@@ -80,7 +80,7 @@ class LibsoratunArcService(
         val json = try {
             JSONObject(trimmed)
         } catch (_: JSONException) {
-            throw SoracomArcError.InvalidConfiguration("WireGuard 設定または有効な JSON を入力してください。")
+            throw SoracomArcError.InvalidConfiguration(MessageI18n.wireGuardOrValidJsonRequired())
         }
 
         val effective = if (!json.has("arcSessionStatus") && json.has("endpoint")) {
@@ -91,11 +91,11 @@ class LibsoratunArcService(
 
         val arcSession = effective.optJSONObject("arcSessionStatus")
             ?: throw SoracomArcError.InvalidConfiguration(
-                "arcSessionStatus フィールドがありません。WireGuard 設定または soratun の arc.json を貼り付けてください。"
+                MessageI18n.missingArcSessionStatusField()
             )
 
         if (arcSession.length() == 0) {
-            throw SoracomArcError.InvalidConfiguration("arcSessionStatus が空です。")
+            throw SoracomArcError.InvalidConfiguration(MessageI18n.arcSessionStatusEmpty())
         }
 
         return effective.toString()
@@ -182,7 +182,7 @@ class LibsoratunArcService(
         val allowedIpsArray = json.optJSONArray("allowedIPs")
 
         if (privateKey.isBlank() || address.isBlank() || publicKey.isBlank() || endpoint.isBlank() || allowedIpsArray == null || allowedIpsArray.length() == 0) {
-            throw SoracomArcError.InvalidConfiguration("soratun 形式の JSON を libsoratun 形式に変換できませんでした")
+            throw SoracomArcError.InvalidConfiguration(MessageI18n.soratunConversionFailed())
         }
 
         val allowedIps = buildList {
@@ -194,7 +194,7 @@ class LibsoratunArcService(
             }
         }
         if (allowedIps.isEmpty()) {
-            throw SoracomArcError.InvalidConfiguration("soratun 形式の JSON を libsoratun 形式に変換できませんでした")
+            throw SoracomArcError.InvalidConfiguration(MessageI18n.soratunConversionFailed())
         }
 
         return JSONObject(
@@ -215,24 +215,24 @@ class LibsoratunArcService(
 
     private fun requireValidResponse(response: String) {
         if (response.isBlank()) {
-            throw SoracomArcError.SendFailed("レスポンスが空でした。")
+            throw SoracomArcError.SendFailed(MessageI18n.emptyResponse())
         }
         val firstCharacter = response.firstOrNull()
         if (firstCharacter != '2' && firstCharacter != '{') {
-            throw SoracomArcError.SendFailed("不正なレスポンス: $response")
+            throw SoracomArcError.SendFailed(MessageI18n.invalidResponse(response))
         }
     }
 
     private fun requireClientIpAddress(address: String): String {
         if (!address.contains('/')) {
-            throw SoracomArcError.InvalidConfiguration("Address は CIDR 形式で指定してください。")
+            throw SoracomArcError.InvalidConfiguration(MessageI18n.addressMustBeCidr())
         }
         return address.substringBefore("/")
     }
 
     private companion object {
         const val DEFAULT_LOG_LEVEL = 1
-        const val WIRE_GUARD_PARSE_ERROR =
-            "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
+        val WIRE_GUARD_PARSE_ERROR: String
+            get() = MessageI18n.wireGuardParseError()
     }
 }

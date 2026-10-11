@@ -31,9 +31,9 @@ class UdpSendingService(
                 .copyOf(responsePacket.length)
                 .toString(Charsets.UTF_8)
 
-            require(response.isNotBlank()) { "レスポンスが空でした。" }
+            require(response.isNotBlank()) { MessageI18n.emptyResponse() }
             require(response.first() == '2' || response.first() == '{') {
-                "不正なレスポンス: $response"
+                MessageI18n.invalidResponse(response)
             }
             response
         }

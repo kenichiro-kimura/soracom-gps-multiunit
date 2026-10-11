@@ -317,7 +317,7 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        "最終送信: ${uiState.lastSentAtLabel ?: "未送信"}",
+                        MessageI18n.lastSentText(uiState.lastSentAtLabel),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -342,7 +342,7 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
             )
             StatusValue(
                 label = "GPS",
-                value = sensorData?.lat?.let { lat -> "%.6f, %.6f".format(lat, sensorData.lon ?: 0.0) } ?: "信号なし",
+                value = sensorData?.lat?.let { lat -> "%.6f, %.6f".format(lat, sensorData.lon ?: 0.0) } ?: MessageI18n.noSignal(),
             )
         }
     }
@@ -360,7 +360,7 @@ private fun StatusValue(label: String, value: String, modifier: Modifier = Modif
 private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
     if (uiState.sendLogs.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("送信ログはまだありません")
+            Text(MessageI18n.sendLogsEmpty())
         }
         return
     }
@@ -410,7 +410,7 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                         }
                     }
                     Text(
-                        if (log.success) "センサー値を送信しました" else log.message,
+                        if (log.success) MessageI18n.sentSensorValuesMessage() else log.message,
                         style = MaterialTheme.typography.labelSmall,
                         color = if (log.success) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                     )
@@ -457,20 +457,9 @@ private fun LogMetric(label: String, value: String, modifier: Modifier) {
     }
 }
 
-private fun sendTypeLabel(type: SendType): String = when (type) {
-    SendType.MANUAL -> "手動"
-    SendType.PERIODIC -> "定期"
-    SendType.ACCELERATION_ALERT -> "加速度"
-}
+private fun sendTypeLabel(type: SendType): String = MessageI18n.sendTypeLabel(type)
 
-private fun sendStatusLabel(type: SendType?, isSending: Boolean): String {
-    val label = when (type) {
-        SendType.PERIODIC -> "自動送信"
-        SendType.MANUAL, null -> "手動送信"
-        SendType.ACCELERATION_ALERT -> "加速度送信"
-    }
-    return if (isSending) "${label}中…" else label
-}
+private fun sendStatusLabel(type: SendType?, isSending: Boolean): String = MessageI18n.sendStatusLabel(type, isSending)
 
 @Composable
 private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -> Unit) {
@@ -728,12 +717,7 @@ private fun SmallActionButton(text: String, enabled: Boolean, onClick: () -> Uni
     }
 }
 
-private fun connectionStatusLabel(status: ConnectionStatus): String = when (status) {
-    ConnectionStatus.DISCONNECTED -> "送信待機"
-    ConnectionStatus.SENDING -> "送信中"
-    ConnectionStatus.CONNECTED -> "送信成功"
-    ConnectionStatus.FAILED -> "送信失敗"
-}
+private fun connectionStatusLabel(status: ConnectionStatus): String = MessageI18n.connectionStatusLabel(status)
 
 private fun statusColor(status: ConnectionStatus): Color = when (status) {
     ConnectionStatus.DISCONNECTED -> Color.LightGray

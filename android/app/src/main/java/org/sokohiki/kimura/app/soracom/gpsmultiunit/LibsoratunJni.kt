@@ -18,7 +18,7 @@ internal object LibsoratunJni : LibsoratunNativeBridge {
         System.loadLibrary("soratunbridge")
         null
     } catch (_: UnsatisfiedLinkError) {
-        "soratunbridge の読み込みに失敗しました。JNI ラッパーまたは依存する `libsoratun.so` を確認し、`android/app/src/main/jniLibs/` に配置して再ビルドしてください。"
+        MessageI18n.jniLoadFailed()
     }
 
     override fun isLibsoratunAvailable(): Boolean = loadErrorMessage == null && nativeIsLibsoratunAvailable()
