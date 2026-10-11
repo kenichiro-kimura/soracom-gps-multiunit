@@ -297,12 +297,13 @@ final class SoracomGPSMultiunitTests: XCTestCase {
         XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "de_DE")), "Sendeprotokoll")
         XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "es_ES")), "Registros de envío")
         XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "it_IT")), "Log di invio")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "fr_FR")), "Journaux d'envoi")
         XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "ko_KR")), "전송 로그")
         XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "zh_CN")), "发送日志")
         XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "ja_JP")), "送信ログ")
     }
 
     func testMessageI18nFallsBackToJapaneseForUnsupportedLanguage() {
-        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "fr_FR")), "送信ログ")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "pt_BR")), "送信ログ")
     }
 }
