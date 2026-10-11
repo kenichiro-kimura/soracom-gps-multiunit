@@ -68,9 +68,9 @@ enum MetadataServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidResponse:
-            return "メタデータサービスから無効なレスポンスを受信しました。"
+            return MessageI18n.metadataInvalidResponse()
         case .decodingFailed(let detail):
-            return "メタデータの解析に失敗しました: \(detail)"
+            return MessageI18n.metadataDecodingFailed(detail)
         }
     }
 }

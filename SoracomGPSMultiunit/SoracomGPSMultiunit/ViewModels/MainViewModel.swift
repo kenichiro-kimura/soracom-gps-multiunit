@@ -406,10 +406,10 @@ enum ConnectionStatus: Equatable {
 
     var displayText: String {
         switch self {
-        case .disconnected: return "未接続"
-        case .connecting: return "接続中..."
-        case .connected: return "接続済み"
-        case .failed: return "接続失敗"
+        case .disconnected: return MessageI18n.connectionDisconnected()
+        case .connecting: return MessageI18n.connectionConnecting()
+        case .connected: return MessageI18n.connectionConnected()
+        case .failed: return MessageI18n.connectionFailed()
         }
     }
 
@@ -419,6 +419,667 @@ enum ConnectionStatus: Equatable {
         case .connecting: return "yellow"
         case .connected: return "green"
         case .failed: return "red"
+        }
+    }
+}
+
+enum MessageI18n {
+    private enum Language {
+        case ja
+        case en
+        case de
+        case es
+        case it
+        case ko
+        case zh
+    }
+
+    private static func language(for locale: Locale = .current) -> Language {
+        let code = locale.language.languageCode?.identifier ?? locale.identifier.lowercased()
+        switch code {
+        case "en": return .en
+        case "de": return .de
+        case "es": return .es
+        case "it": return .it
+        case "ko": return .ko
+        case "zh": return .zh
+        default: return .ja
+        }
+    }
+
+    static func appTitle(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "GPS Tracker Simulator"
+        case .de: return "GPS-Tracker-Simulator"
+        case .es: return "Simulador de rastreador GPS"
+        case .it: return "Simulatore tracker GPS"
+        case .ko: return "GPS 트래커 시뮬레이터"
+        case .zh: return "GPS 跟踪器模拟器"
+        case .ja: return "GPSトラッカーシミュレーター"
+        }
+    }
+
+    static func tabDevice(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Device"
+        case .de: return "Gerät"
+        case .es: return "Dispositivo"
+        case .it: return "Dispositivo"
+        case .ko: return "디바이스"
+        case .zh: return "设备"
+        case .ja: return "デバイス"
+        }
+    }
+
+    static func tabLog(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Logs"
+        case .de: return "Protokoll"
+        case .es: return "Registro"
+        case .it: return "Log"
+        case .ko: return "로그"
+        case .zh: return "日志"
+        case .ja: return "ログ"
+        }
+    }
+
+    static func statusTitle(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Status"
+        case .de: return "Status"
+        case .es: return "Estado"
+        case .it: return "Stato"
+        case .ko: return "상태"
+        case .zh: return "状态"
+        case .ja: return "ステータス"
+        }
+    }
+
+    static func autoSendLabel(interval: Int, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Auto send: every \(interval)s"
+        case .de: return "Automatisches Senden: alle \(interval)s"
+        case .es: return "Envío automático: cada \(interval)s"
+        case .it: return "Invio automatico: ogni \(interval)s"
+        case .ko: return "자동 전송: \(interval)초 간격"
+        case .zh: return "自动发送：每 \(interval) 秒"
+        case .ja: return "自動送信: \(interval)秒間隔"
+        }
+    }
+
+    static func manualSendLabel(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Manual send"
+        case .de: return "Manuelles Senden"
+        case .es: return "Envío manual"
+        case .it: return "Invio manuale"
+        case .ko: return "수동 전송"
+        case .zh: return "手动发送"
+        case .ja: return "手動送信"
+        }
+    }
+
+    static func lastSent(at: Date, locale: Locale = .current) -> String {
+        let time = at.formatted(date: .omitted, time: .standard)
+        switch language(for: locale) {
+        case .en: return "Last sent: \(time)"
+        case .de: return "Letzte Übertragung: \(time)"
+        case .es: return "Último envío: \(time)"
+        case .it: return "Ultimo invio: \(time)"
+        case .ko: return "마지막 전송: \(time)"
+        case .zh: return "最后发送：\(time)"
+        case .ja: return "最終送信: \(time)"
+        }
+    }
+
+    static func temperature(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Temp"
+        case .de: return "Temperatur"
+        case .es: return "Temperatura"
+        case .it: return "Temperatura"
+        case .ko: return "온도"
+        case .zh: return "温度"
+        case .ja: return "温度"
+        }
+    }
+
+    static func humidity(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Humidity"
+        case .de: return "Luftfeuchte"
+        case .es: return "Humedad"
+        case .it: return "Umidità"
+        case .ko: return "습도"
+        case .zh: return "湿度"
+        case .ja: return "湿度"
+        }
+    }
+
+    static func acceleration(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Acceleration"
+        case .de: return "Beschleunigung"
+        case .es: return "Aceleración"
+        case .it: return "Accelerazione"
+        case .ko: return "가속도"
+        case .zh: return "加速度"
+        case .ja: return "加速度"
+        }
+    }
+
+    static func gps(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "GPS"
+        case .de: return "GPS"
+        case .es: return "GPS"
+        case .it: return "GPS"
+        case .ko: return "GPS"
+        case .zh: return "GPS"
+        case .ja: return "GPS"
+        }
+    }
+
+    static func invalid(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Invalid"
+        case .de: return "Ungültig"
+        case .es: return "No válido"
+        case .it: return "Non valido"
+        case .ko: return "무효"
+        case .zh: return "无效"
+        case .ja: return "無効"
+        }
+    }
+
+    static func noSignal(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "No signal"
+        case .de: return "Kein Signal"
+        case .es: return "Sin señal"
+        case .it: return "Nessun segnale"
+        case .ko: return "신호 없음"
+        case .zh: return "无信号"
+        case .ja: return "信号なし"
+        }
+    }
+
+    static func sendLogTitle(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Send Logs"
+        case .de: return "Sendeprotokoll"
+        case .es: return "Registros de envío"
+        case .it: return "Log di invio"
+        case .ko: return "전송 로그"
+        case .zh: return "发送日志"
+        case .ja: return "送信ログ"
+        }
+    }
+
+    static func clear(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Clear"
+        case .de: return "Löschen"
+        case .es: return "Borrar"
+        case .it: return "Cancella"
+        case .ko: return "삭제"
+        case .zh: return "清除"
+        case .ja: return "消去"
+        }
+    }
+
+    static func noSendLogTitle(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "No send logs"
+        case .de: return "Keine Sendeprotokolle"
+        case .es: return "Sin registros de envío"
+        case .it: return "Nessun log di invio"
+        case .ko: return "전송 로그 없음"
+        case .zh: return "没有发送日志"
+        case .ja: return "送信ログなし"
+        }
+    }
+
+    static func noSendLogDescription(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Logs will appear here after sending data."
+        case .de: return "Nach dem Senden von Daten werden hier Protokolle angezeigt."
+        case .es: return "Los registros se mostrarán aquí después de enviar datos."
+        case .it: return "I log verranno mostrati qui dopo l'invio dei dati."
+        case .ko: return "데이터를 전송하면 여기에 로그가 표시됩니다."
+        case .zh: return "发送数据后，日志将显示在这里。"
+        case .ja: return "データを送信するとここにログが表示されます。"
+        }
+    }
+
+    static func sensorValuesToggle(expanded: Bool, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return expanded ? "Hide sensor values" : "Show sensor values"
+        case .de: return expanded ? "Sensorwerte ausblenden" : "Sensorwerte anzeigen"
+        case .es: return expanded ? "Ocultar valores del sensor" : "Mostrar valores del sensor"
+        case .it: return expanded ? "Nascondi valori sensore" : "Mostra valori sensore"
+        case .ko: return expanded ? "센서 값 닫기" : "센서 값 표시"
+        case .zh: return expanded ? "隐藏传感器值" : "显示传感器值"
+        case .ja: return expanded ? "センサー値を閉じる" : "センサー値を表示"
+        }
+    }
+
+    static func latitude(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Latitude"
+        case .de: return "Breitengrad"
+        case .es: return "Latitud"
+        case .it: return "Latitudine"
+        case .ko: return "위도"
+        case .zh: return "纬度"
+        case .ja: return "緯度"
+        }
+    }
+
+    static func longitude(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Longitude"
+        case .de: return "Längengrad"
+        case .es: return "Longitud"
+        case .it: return "Longitudine"
+        case .ko: return "경도"
+        case .zh: return "经度"
+        case .ja: return "経度"
+        }
+    }
+
+    static func sendType(_ type: SendType, locale: Locale = .current) -> String {
+        switch type {
+        case .periodic:
+            switch language(for: locale) {
+            case .en: return "Auto"
+            case .de: return "Automatisch"
+            case .es: return "Automático"
+            case .it: return "Automatico"
+            case .ko: return "자동"
+            case .zh: return "自动"
+            case .ja: return "自動"
+            }
+        case .manual:
+            switch language(for: locale) {
+            case .en: return "Manual"
+            case .de: return "Manuell"
+            case .es: return "Manual"
+            case .it: return "Manuale"
+            case .ko: return "수동"
+            case .zh: return "手动"
+            case .ja: return "手動"
+            }
+        case .accelerationAlert:
+            switch language(for: locale) {
+            case .en: return "Acceleration"
+            case .de: return "Beschleunigung"
+            case .es: return "Aceleración"
+            case .it: return "Accelerazione"
+            case .ko: return "가속도"
+            case .zh: return "加速度"
+            case .ja: return "加速度"
+            }
+        }
+    }
+
+    static func connectionDisconnected(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Disconnected"
+        case .de: return "Getrennt"
+        case .es: return "Desconectado"
+        case .it: return "Disconnesso"
+        case .ko: return "연결 안 됨"
+        case .zh: return "未连接"
+        case .ja: return "未接続"
+        }
+    }
+
+    static func connectionConnecting(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Connecting..."
+        case .de: return "Verbinden..."
+        case .es: return "Conectando..."
+        case .it: return "Connessione..."
+        case .ko: return "연결 중..."
+        case .zh: return "连接中..."
+        case .ja: return "接続中..."
+        }
+    }
+
+    static func connectionConnected(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Connected"
+        case .de: return "Verbunden"
+        case .es: return "Conectado"
+        case .it: return "Connesso"
+        case .ko: return "연결됨"
+        case .zh: return "已连接"
+        case .ja: return "接続済み"
+        }
+    }
+
+    static func connectionFailed(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Connection failed"
+        case .de: return "Verbindung fehlgeschlagen"
+        case .es: return "Conexión fallida"
+        case .it: return "Connessione non riuscita"
+        case .ko: return "연결 실패"
+        case .zh: return "连接失败"
+        case .ja: return "接続失敗"
+        }
+    }
+
+    static func arcNotConfigured(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "SORACOM Arc is not configured. Enter WireGuard settings from Settings."
+        case .de: return "SORACOM Arc ist nicht konfiguriert. Geben Sie die WireGuard-Einstellungen in den Einstellungen ein."
+        case .es: return "SORACOM Arc no está configurado. Introduce la configuración de WireGuard desde Ajustes."
+        case .it: return "SORACOM Arc non è configurato. Inserisci le impostazioni WireGuard da Impostazioni."
+        case .ko: return "SORACOM Arc가 설정되지 않았습니다. 설정 화면에서 WireGuard 정보를 입력하세요."
+        case .zh: return "SORACOM Arc 尚未配置。请在设置中输入 WireGuard 配置。"
+        case .ja: return "SORACOM Arc が設定されていません。設定画面から WireGuard 接続情報を入力してください。"
+        }
+    }
+
+    static func invalidConfiguration(_ message: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Invalid configuration: \(message)"
+        case .de: return "Ungültige Konfiguration: \(message)"
+        case .es: return "Configuración no válida: \(message)"
+        case .it: return "Configurazione non valida: \(message)"
+        case .ko: return "설정이 유효하지 않습니다: \(message)"
+        case .zh: return "配置无效：\(message)"
+        case .ja: return "設定が無効です: \(message)"
+        }
+    }
+
+    static func sendFailed(_ message: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Send failed: \(message)"
+        case .de: return "Senden fehlgeschlagen: \(message)"
+        case .es: return "Error al enviar: \(message)"
+        case .it: return "Invio non riuscito: \(message)"
+        case .ko: return "전송에 실패했습니다: \(message)"
+        case .zh: return "发送失败：\(message)"
+        case .ja: return "送信に失敗しました: \(message)"
+        }
+    }
+
+    static func libraryUnavailable(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "libsoratun library is unavailable."
+        case .de: return "Die libsoratun-Bibliothek ist nicht verfügbar."
+        case .es: return "La biblioteca libsoratun no está disponible."
+        case .it: return "La libreria libsoratun non è disponibile."
+        case .ko: return "libsoratun 라이브러리를 사용할 수 없습니다."
+        case .zh: return "libsoratun 库不可用。"
+        case .ja: return "libsoratun ライブラリが利用できません。"
+        }
+    }
+
+    static func wireGuardParseFailed(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Could not parse WireGuard settings. PrivateKey, Address, PublicKey, AllowedIPs and Endpoint are required."
+        case .de: return "WireGuard-Einstellungen konnten nicht analysiert werden. PrivateKey, Address, PublicKey, AllowedIPs und Endpoint sind erforderlich."
+        case .es: return "No se pudo analizar la configuración de WireGuard. Se requieren PrivateKey, Address, PublicKey, AllowedIPs y Endpoint."
+        case .it: return "Impossibile analizzare le impostazioni WireGuard. Sono richiesti PrivateKey, Address, PublicKey, AllowedIPs ed Endpoint."
+        case .ko: return "WireGuard 설정을 해석할 수 없습니다. PrivateKey, Address, PublicKey, AllowedIPs, Endpoint가 필요합니다."
+        case .zh: return "无法解析 WireGuard 设置。需要 PrivateKey、Address、PublicKey、AllowedIPs、Endpoint。"
+        case .ja: return "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
+        }
+    }
+
+    static func wireGuardOrJsonRequired(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Enter WireGuard settings or valid JSON."
+        case .de: return "Geben Sie WireGuard-Einstellungen oder gültiges JSON ein."
+        case .es: return "Introduce la configuración de WireGuard o JSON válido."
+        case .it: return "Inserisci le impostazioni WireGuard o JSON valido."
+        case .ko: return "WireGuard 설정 또는 유효한 JSON을 입력하세요."
+        case .zh: return "请输入 WireGuard 设置或有效的 JSON。"
+        case .ja: return "WireGuard 設定または有効な JSON を入力してください。"
+        }
+    }
+
+    static func soratunConversionFailed(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Could not convert soratun JSON format to libsoratun format."
+        case .de: return "Das soratun-JSON-Format konnte nicht in das libsoratun-Format konvertiert werden."
+        case .es: return "No se pudo convertir el formato JSON de soratun al formato libsoratun."
+        case .it: return "Impossibile convertire il formato JSON soratun nel formato libsoratun."
+        case .ko: return "soratun 형식 JSON을 libsoratun 형식으로 변환하지 못했습니다."
+        case .zh: return "无法将 soratun JSON 格式转换为 libsoratun 格式。"
+        case .ja: return "soratun 形式の JSON を libsoratun 形式に変換できませんでした"
+        }
+    }
+
+    static func missingArcSessionStatus(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "arcSessionStatus field is missing. Paste WireGuard settings or soratun arc.json."
+        case .de: return "Das Feld arcSessionStatus fehlt. Fügen Sie WireGuard-Einstellungen oder soratun arc.json ein."
+        case .es: return "Falta el campo arcSessionStatus. Pega la configuración de WireGuard o soratun arc.json."
+        case .it: return "Manca il campo arcSessionStatus. Incolla impostazioni WireGuard o soratun arc.json."
+        case .ko: return "arcSessionStatus 필드가 없습니다. WireGuard 설정 또는 soratun arc.json을 붙여 넣으세요."
+        case .zh: return "缺少 arcSessionStatus 字段。请粘贴 WireGuard 设置或 soratun arc.json。"
+        case .ja: return "arcSessionStatus フィールドがありません。WireGuard 設定または soratun の arc.json を貼り付けてください。"
+        }
+    }
+
+    static func responseWasNull(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Response was null."
+        case .de: return "Antwort war null."
+        case .es: return "La respuesta fue null."
+        case .it: return "La risposta era null."
+        case .ko: return "응답이 null이었습니다."
+        case .zh: return "响应为 null。"
+        case .ja: return "レスポンスが null でした"
+        }
+    }
+
+    static func emptyResponse(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Response was empty."
+        case .de: return "Antwort war leer."
+        case .es: return "La respuesta estaba vacía."
+        case .it: return "La risposta era vuota."
+        case .ko: return "응답이 비어 있었습니다."
+        case .zh: return "响应为空。"
+        case .ja: return "レスポンスが空でした"
+        }
+    }
+
+    static func utf8DecodeFailed(_ hex: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Could not decode as UTF-8: \(hex)"
+        case .de: return "Konnte nicht als UTF-8 dekodiert werden: \(hex)"
+        case .es: return "No se pudo decodificar como UTF-8: \(hex)"
+        case .it: return "Impossibile decodificare come UTF-8: \(hex)"
+        case .ko: return "UTF-8로 해석할 수 없습니다: \(hex)"
+        case .zh: return "无法按 UTF-8 解析：\(hex)"
+        case .ja: return "UTF-8 として解釈できません: \(hex)"
+        }
+    }
+
+    static func invalidResponse(_ response: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Invalid response: \(response)"
+        case .de: return "Ungültige Antwort: \(response)"
+        case .es: return "Respuesta no válida: \(response)"
+        case .it: return "Risposta non valida: \(response)"
+        case .ko: return "유효하지 않은 응답: \(response)"
+        case .zh: return "响应无效：\(response)"
+        case .ja: return "不正なレスポンス: \(response)"
+        }
+    }
+
+    static func udpMessageTooLarge(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP message is too large"
+        case .de: return "UDP-Nachricht ist zu groß"
+        case .es: return "El mensaje UDP es demasiado grande"
+        case .it: return "Il messaggio UDP è troppo grande"
+        case .ko: return "UDP 메시지가 너무 큽니다"
+        case .zh: return "UDP 消息过大"
+        case .ja: return "UDP メッセージが大きすぎます"
+        }
+    }
+
+    static func udpResponseWasNull(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP response was null."
+        case .de: return "UDP-Antwort war null."
+        case .es: return "La respuesta UDP fue null."
+        case .it: return "La risposta UDP era null."
+        case .ko: return "UDP 응답이 null이었습니다."
+        case .zh: return "UDP 响应为 null。"
+        case .ja: return "UDP レスポンスが null でした"
+        }
+    }
+
+    static func udpResponseInvalid(_ response: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP response is invalid: \(response)"
+        case .de: return "UDP-Antwort ist ungültig: \(response)"
+        case .es: return "La respuesta UDP no es válida: \(response)"
+        case .it: return "La risposta UDP non è valida: \(response)"
+        case .ko: return "UDP 응답이 올바르지 않습니다: \(response)"
+        case .zh: return "UDP 响应无效：\(response)"
+        case .ja: return "UDP レスポンスが不正です: \(response)"
+        }
+    }
+
+    static func mockError(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Mock error"
+        case .de: return "Mock-Fehler"
+        case .es: return "Error simulado"
+        case .it: return "Errore mock"
+        case .ko: return "모의 오류"
+        case .zh: return "模拟错误"
+        case .ja: return "モックエラー"
+        }
+    }
+
+    static func metadataInvalidResponse(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Received an invalid response from metadata service."
+        case .de: return "Ungültige Antwort vom Metadatendienst empfangen."
+        case .es: return "Se recibió una respuesta no válida del servicio de metadatos."
+        case .it: return "Ricevuta una risposta non valida dal servizio metadati."
+        case .ko: return "메타데이터 서비스에서 잘못된 응답을 받았습니다."
+        case .zh: return "从元数据服务收到无效响应。"
+        case .ja: return "メタデータサービスから無効なレスポンスを受信しました。"
+        }
+    }
+
+    static func metadataDecodingFailed(_ detail: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Failed to parse metadata: \(detail)"
+        case .de: return "Metadaten konnten nicht analysiert werden: \(detail)"
+        case .es: return "Error al analizar metadatos: \(detail)"
+        case .it: return "Analisi metadati non riuscita: \(detail)"
+        case .ko: return "메타데이터 분석에 실패했습니다: \(detail)"
+        case .zh: return "元数据解析失败：\(detail)"
+        case .ja: return "メタデータの解析に失敗しました: \(detail)"
+        }
+    }
+
+    static func dataEncodingFailed(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Failed to encode sensor data to JSON."
+        case .de: return "Sensor-Daten konnten nicht in JSON codiert werden."
+        case .es: return "No se pudieron convertir los datos del sensor a JSON."
+        case .it: return "Impossibile codificare i dati del sensore in JSON."
+        case .ko: return "센서 데이터를 JSON으로 변환하지 못했습니다."
+        case .zh: return "将传感器数据转换为 JSON 失败。"
+        case .ja: return "センサーデータの JSON 変換に失敗しました。"
+        }
+    }
+
+    static func arcFallbackDisabled(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Send failed because SORACOM Arc is unavailable and UDP fallback over the internet is disabled."
+        case .de: return "Senden fehlgeschlagen, da SORACOM Arc nicht verfügbar ist und der UDP-Fallback über das Internet deaktiviert ist."
+        case .es: return "Error al enviar: SORACOM Arc no está disponible y el respaldo UDP por Internet está deshabilitado."
+        case .it: return "Invio non riuscito perché SORACOM Arc non è disponibile e il fallback UDP via Internet è disabilitato."
+        case .ko: return "SORACOM Arc를 사용할 수 없고 인터넷 경유 UDP 폴백이 비활성화되어 전송에 실패했습니다."
+        case .zh: return "发送失败：SORACOM Arc 不可用，且互联网 UDP 回退已禁用。"
+        case .ja: return "SORACOM Arc を利用できず、インターネット経由 UDP のフォールバックが無効なため送信に失敗しました。"
+        }
+    }
+
+    static func dataSendFailed(_ detail: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "Data send failed: \(detail)"
+        case .de: return "Datenversand fehlgeschlagen: \(detail)"
+        case .es: return "Error al enviar datos: \(detail)"
+        case .it: return "Invio dati non riuscito: \(detail)"
+        case .ko: return "데이터 전송에 실패했습니다: \(detail)"
+        case .zh: return "数据发送失败：\(detail)"
+        case .ja: return "データ送信に失敗しました: \(detail)"
+        }
+    }
+
+    static func udpConnectionFailed(_ detail: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP connection failed: \(detail)"
+        case .de: return "UDP-Verbindung fehlgeschlagen: \(detail)"
+        case .es: return "Conexión UDP fallida: \(detail)"
+        case .it: return "Connessione UDP non riuscita: \(detail)"
+        case .ko: return "UDP 연결에 실패했습니다: \(detail)"
+        case .zh: return "UDP 连接失败：\(detail)"
+        case .ja: return "UDP 接続に失敗しました: \(detail)"
+        }
+    }
+
+    static func udpSendFailed(_ detail: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP send failed: \(detail)"
+        case .de: return "UDP-Senden fehlgeschlagen: \(detail)"
+        case .es: return "Error al enviar UDP: \(detail)"
+        case .it: return "Invio UDP non riuscito: \(detail)"
+        case .ko: return "UDP 전송에 실패했습니다: \(detail)"
+        case .zh: return "UDP 发送失败：\(detail)"
+        case .ja: return "UDP 送信に失敗しました: \(detail)"
+        }
+    }
+
+    static func udpReceiveFailed(_ detail: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP response receive failed: \(detail)"
+        case .de: return "Empfang der UDP-Antwort fehlgeschlagen: \(detail)"
+        case .es: return "Error al recibir respuesta UDP: \(detail)"
+        case .it: return "Ricezione risposta UDP non riuscita: \(detail)"
+        case .ko: return "UDP 응답 수신에 실패했습니다: \(detail)"
+        case .zh: return "UDP 响应接收失败：\(detail)"
+        case .ja: return "UDP レスポンス受信に失敗しました: \(detail)"
+        }
+    }
+
+    static func udpInvalidResponse(_ detail: String, locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP response is invalid: \(detail)"
+        case .de: return "UDP-Antwort ist ungültig: \(detail)"
+        case .es: return "La respuesta UDP no es válida: \(detail)"
+        case .it: return "La risposta UDP non è valida: \(detail)"
+        case .ko: return "UDP 응답이 올바르지 않습니다: \(detail)"
+        case .zh: return "UDP 响应无效：\(detail)"
+        case .ja: return "UDP レスポンスが不正です: \(detail)"
+        }
+    }
+
+    static func udpTimeout(locale: Locale = .current) -> String {
+        switch language(for: locale) {
+        case .en: return "UDP communication timed out"
+        case .de: return "UDP-Kommunikation hat Zeitüberschreitung"
+        case .es: return "Se agotó el tiempo de espera de la comunicación UDP"
+        case .it: return "Timeout della comunicazione UDP"
+        case .ko: return "UDP 통신이 시간 초과되었습니다"
+        case .zh: return "UDP 通信超时"
+        case .ja: return "UDP 通信がタイムアウトしました"
         }
     }
 }

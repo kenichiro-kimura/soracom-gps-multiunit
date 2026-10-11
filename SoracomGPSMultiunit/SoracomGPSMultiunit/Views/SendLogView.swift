@@ -13,12 +13,12 @@ struct SendLogView: View {
                     logList
                 }
             }
-            .navigationTitle("送信ログ")
+            .navigationTitle(MessageI18n.sendLogTitle())
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 if !viewModel.sendLogs.isEmpty {
                     ToolbarItem(placement: .destructiveAction) {
-                        Button("消去", role: .destructive) {
+                        Button(MessageI18n.clear(), role: .destructive) {
                             viewModel.sendLogs.removeAll()
                         }
                     }
@@ -29,9 +29,9 @@ struct SendLogView: View {
 
     private var emptyState: some View {
         ContentUnavailableView(
-            "送信ログなし",
+            MessageI18n.noSendLogTitle(),
             systemImage: "doc.text",
-            description: Text("データを送信するとここにログが表示されます。")
+            description: Text(MessageI18n.noSendLogDescription())
         )
     }
 
@@ -80,7 +80,7 @@ struct SendLogRow: View {
                 withAnimation { isExpanded.toggle() }
             } label: {
                 HStack {
-                    Text("センサー値を\(isExpanded ? "閉じる" : "表示")")
+                    Text(MessageI18n.sensorValuesToggle(expanded: isExpanded))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
@@ -102,8 +102,8 @@ struct SendLogRow: View {
         VStack(alignment: .leading, spacing: 4) {
             if let temp = log.data.temp, let humi = log.data.humi {
                 HStack(spacing: 16) {
-                    DataCell(label: "温度", value: String(format: "%.1f°C", temp))
-                    DataCell(label: "湿度", value: String(format: "%.1f%%", humi))
+                    DataCell(label: MessageI18n.temperature(), value: String(format: "%.1f°C", temp))
+                    DataCell(label: MessageI18n.humidity(), value: String(format: "%.1f%%", humi))
                 }
             }
             if let x = log.data.x, let y = log.data.y, let z = log.data.z {
@@ -115,8 +115,8 @@ struct SendLogRow: View {
             }
             // GPS未取得時も送信ログに項目を表示し、値なしはnullで示す。
             HStack(spacing: 16) {
-                DataCell(label: "緯度", value: gpsValue(log.data.lat))
-                DataCell(label: "経度", value: gpsValue(log.data.lon))
+                DataCell(label: MessageI18n.latitude(), value: gpsValue(log.data.lat))
+                DataCell(label: MessageI18n.longitude(), value: gpsValue(log.data.lon))
             }
         }
         .padding(8)
@@ -130,11 +130,7 @@ struct SendLogRow: View {
     }
 
     private func sendTypeLabel(_ type: SendType) -> String {
-        switch type {
-        case .periodic: return "自動"
-        case .manual: return "手動"
-        case .accelerationAlert: return "加速度"
-        }
+        MessageI18n.sendType(type)
     }
 }
 

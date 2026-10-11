@@ -66,18 +66,18 @@ class UDPSendingService {
                                 return
                             }
                             guard let responseData = content, !responseData.isEmpty else {
-                                resumeOnce(.failure(UDPSendingError.invalidResponse("レスポンスが空でした")))
+                                resumeOnce(.failure(UDPSendingError.invalidResponse(MessageI18n.emptyResponse())))
                                 return
                             }
                             guard let response = String(data: responseData, encoding: .utf8) else {
                                 let responseHex = responseData.map { String(format: "%02x", $0) }.joined()
-                                resumeOnce(.failure(UDPSendingError.invalidResponse("UTF-8 として解釈できません: \(responseHex)")))
+                                resumeOnce(.failure(UDPSendingError.invalidResponse(MessageI18n.utf8DecodeFailed(responseHex))))
                                 return
                             }
                             // 先頭が "2" (HTTP 2xx 相当) または "{" (JSON) で始まる場合は成功
                             guard response.first == "2" || response.first == "{" else {
                                 let responseStr = response
-                                resumeOnce(.failure(UDPSendingError.invalidResponse("不正なレスポンス: \(responseStr)")))
+                                resumeOnce(.failure(UDPSendingError.invalidResponse(MessageI18n.invalidResponse(responseStr))))
                                 return
                             }
                             resumeOnce(.success(response))
@@ -108,15 +108,15 @@ enum UDPSendingError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .connectionFailed(let detail):
-            return "UDP 接続に失敗しました: \(detail)"
+            return MessageI18n.udpConnectionFailed(detail)
         case .sendFailed(let detail):
-            return "UDP 送信に失敗しました: \(detail)"
+            return MessageI18n.udpSendFailed(detail)
         case .receiveFailed(let detail):
-            return "UDP レスポンス受信に失敗しました: \(detail)"
+            return MessageI18n.udpReceiveFailed(detail)
         case .invalidResponse(let detail):
-            return "UDP レスポンスが不正です: \(detail)"
+            return MessageI18n.udpInvalidResponse(detail)
         case .timeout:
-            return "UDP 通信がタイムアウトしました"
+            return MessageI18n.udpTimeout()
         }
     }
 }
