@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "GPSトラッカーシミュレーター";
+"NSLocationWhenInUseUsageDescription" = "GPSトラッカーシミュレーターは、アプリの使用中に位置情報を取得して画面表示やデータ送信に使用します。";
+"NSMotionUsageDescription" = "GPSトラッカーシミュレーターは、アプリの使用中に加速度センサーデータを取得してデータ送信に使用します。";

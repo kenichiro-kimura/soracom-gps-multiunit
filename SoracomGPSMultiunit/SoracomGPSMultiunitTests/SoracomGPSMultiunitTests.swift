@@ -306,4 +306,27 @@ final class SoracomGPSMultiunitTests: XCTestCase {
     func testMessageI18nFallsBackToJapaneseForUnsupportedLanguage() {
         XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "pt_BR")), "送信ログ")
     }
+
+    func testAppBundleContainsSupportedLocalizations() throws {
+        let bundle = Bundle(for: MainViewModel.self)
+        let languages = ["ja", "en", "de", "es", "it", "fr", "ko", "zh"]
+        let declaredLanguages = try XCTUnwrap(bundle.object(forInfoDictionaryKey: "CFBundleLocalizations") as? [String])
+        XCTAssertEqual(Set(declaredLanguages), Set(languages))
+
+        for language in languages {
+            XCTAssertTrue(bundle.localizations.contains(language), language)
+            XCTAssertEqual(
+                Bundle.preferredLocalizations(from: bundle.localizations, forPreferences: [language]).first,
+                language
+            )
+            let path = try XCTUnwrap(bundle.path(forResource: language, ofType: "lproj"))
+            let localizedBundle = try XCTUnwrap(Bundle(path: path))
+            for key in ["settings_title", "settings_save_failed", "settings_arc_help", "settings_udp_fallback_help"] {
+                XCTAssertNotEqual(localizedBundle.localizedString(forKey: key, value: nil, table: nil), key)
+            }
+            for key in ["CFBundleDisplayName", "NSLocationWhenInUseUsageDescription", "NSMotionUsageDescription"] {
+                XCTAssertNotEqual(localizedBundle.localizedString(forKey: key, value: nil, table: "InfoPlist"), key)
+            }
+        }
+    }
 }

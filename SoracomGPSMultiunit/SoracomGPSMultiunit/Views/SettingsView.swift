@@ -25,15 +25,15 @@ struct SettingsView: View {
                 arcConfigSection
                 aboutSection
             }
-            .navigationTitle("設定")
+            .navigationTitle("settings_title")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完了", action: saveAndDismiss)
+                    Button("settings_done", action: saveAndDismiss)
                 }
             }
         }
-        .alert("保存できませんでした", isPresented: Binding(
+        .alert("settings_save_failed", isPresented: Binding(
             get: { arcConfigSaveError != nil },
             set: { if !$0 { arcConfigSaveError = nil } }
         )) {
@@ -50,7 +50,7 @@ struct SettingsView: View {
     private var temperatureSection: some View {
         Section {
             VStack(alignment: .leading, spacing: 8) {
-                Text("ベース温度: \(settings.temperatureBase, specifier: "%.1f") °C")
+                Text(formattedSetting("settings_base_temperature", decimal(settings.temperatureBase)))
                     .font(.subheadline)
                 Slider(
                     value: $settings.temperatureBase,
@@ -62,7 +62,7 @@ struct SettingsView: View {
             .padding(.vertical, 4)
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("変動幅: ± \(settings.temperatureVariation, specifier: "%.1f") °C")
+                Text(formattedSetting("settings_temperature_variation", decimal(settings.temperatureVariation)))
                     .font(.subheadline)
                 Slider(
                     value: $settings.temperatureVariation,
@@ -73,9 +73,9 @@ struct SettingsView: View {
             }
             .padding(.vertical, 4)
         } header: {
-            Label("温度設定", systemImage: "thermometer")
+            Label("settings_temperature", systemImage: "thermometer")
         } footer: {
-            Text("iPhoneには温度センサーがないため、ベース値にランダムな変動を加えた値を送信します。")
+            Text("settings_temperature_help")
                 .font(.caption)
         }
     }
@@ -85,7 +85,7 @@ struct SettingsView: View {
     private var humiditySection: some View {
         Section {
             VStack(alignment: .leading, spacing: 8) {
-                Text("ベース湿度: \(settings.humidityBase, specifier: "%.1f") %")
+                Text(formattedSetting("settings_base_humidity", decimal(settings.humidityBase)))
                     .font(.subheadline)
                 Slider(
                     value: $settings.humidityBase,
@@ -97,7 +97,7 @@ struct SettingsView: View {
             .padding(.vertical, 4)
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("変動幅: ± \(settings.humidityVariation, specifier: "%.1f") %")
+                Text(formattedSetting("settings_humidity_variation", decimal(settings.humidityVariation)))
                     .font(.subheadline)
                 Slider(
                     value: $settings.humidityVariation,
@@ -108,9 +108,9 @@ struct SettingsView: View {
             }
             .padding(.vertical, 4)
         } header: {
-            Label("湿度設定", systemImage: "humidity")
+            Label("settings_humidity", systemImage: "humidity")
         } footer: {
-            Text("iPhoneには湿度センサーがないため、ベース値にランダムな変動を加えた値を送信します。")
+            Text("settings_humidity_help")
                 .font(.caption)
         }
     }
@@ -120,19 +120,19 @@ struct SettingsView: View {
     private var signalBatterySection: some View {
         Section {
             Stepper(
-                "電波強度 (rs): \(settings.rsValue == -1 ? "圏外" : String(settings.rsValue))",
+                formattedSetting("settings_signal", settings.rsValue == -1 ? String(localized: "settings_no_service") : String(settings.rsValue)),
                 value: $settings.rsValue,
                 in: -1...4
             )
             Stepper(
-                "バッテリー (bat): \(settings.batValue == -1 ? "充電中" : String(settings.batValue))",
+                formattedSetting("settings_battery", settings.batValue == -1 ? String(localized: "settings_charging") : String(settings.batValue)),
                 value: $settings.batValue,
                 in: -1...3
             )
         } header: {
-            Label("電波強度・バッテリー設定", systemImage: "antenna.radiowaves.left.and.right")
+            Label("settings_signal_battery", systemImage: "antenna.radiowaves.left.and.right")
         } footer: {
-            Text("送信する電波強度と電池残量の値を設定します。rs: -1 (圏外) 〜 4、bat: -1 (充電中) / 1 〜 3 (電池残量)。")
+            Text("settings_signal_battery_help")
                 .font(.caption)
         }
     }
@@ -143,22 +143,22 @@ struct SettingsView: View {
 
     private var fixedLocationSection: some View {
         Section {
-            Toggle("固定位置情報送信", isOn: $settings.useFixedLocation)
+            Toggle("settings_fixed_location", isOn: $settings.useFixedLocation)
         } header: {
-            Label("位置情報設定", systemImage: "location.fill")
+            Label("settings_location", systemImage: "location.fill")
         } footer: {
-            Text("オンにすると、実際の位置情報の代わりに東京駅（35.681236, 139.767125）の固定位置を送信します。")
+            Text("settings_fixed_location_help")
                 .font(.caption)
         }
     }
 
     private var autoSendSection: some View {
         Section {
-            Toggle("自動送信", isOn: $settings.defaultAutoSend)
+            Toggle("settings_auto_send", isOn: $settings.defaultAutoSend)
 
             if settings.defaultAutoSend {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("送信間隔: \(settings.defaultSendingInterval) 秒")
+                    Text(formattedSetting("settings_interval", String(settings.defaultSendingInterval)))
                         .font(.subheadline)
                     Slider(
                         value: Binding(
@@ -173,9 +173,9 @@ struct SettingsView: View {
                 .padding(.vertical, 4)
             }
         } header: {
-            Label("自動送信設定", systemImage: "clock.arrow.circlepath")
+            Label("settings_auto_send_title", systemImage: "clock.arrow.circlepath")
         } footer: {
-            Text("指定した間隔でセンサーデータを自動送信します。")
+            Text("settings_auto_send_help")
                 .font(.caption)
         }
     }
@@ -186,7 +186,7 @@ struct SettingsView: View {
         Section {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("WireGuard 設定")
+                    Text("settings_wireguard")
                         .font(.subheadline.monospaced())
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -206,60 +206,86 @@ struct SettingsView: View {
                     .background(Color(.systemGray6))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                Toggle("インターネット経由 UDP にフォールバック", isOn: $settings.arcUdpFallbackEnabled)
+                Toggle("settings_udp_fallback", isOn: $settings.arcUdpFallbackEnabled)
                     .padding(.top, 4)
             }
             .padding(.vertical, 4)
         } header: {
-            Label("SORACOM Arc 設定", systemImage: "lock.shield")
+            Label("settings_arc", systemImage: "lock.shield")
         } footer: {
-            Text("SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。Arc 設定が未入力・無効、または libsoratun が利用できない場合、ONなら uni.soracom.io へ UDP 送信します。OFFの場合は送信に失敗します。")
+            Text(String(localized: "settings_arc_help") + "\n\n" + String(localized: "settings_udp_fallback_help"))
                 .font(.caption)
         }
-        .alert("WireGuard 設定について", isPresented: $showArcConfigInfo) {
+        .alert("settings_wireguard_about", isPresented: $showArcConfigInfo) {
             Button("OK") { }
         } message: {
-            Text("SORACOM Arc (WireGuard VPN) への接続設定を WireGuard 形式で入力します。\n\n[Interface]\nPrivateKey = ...\nAddress = ...\n\n[Peer]\nPublicKey = ...\nAllowedIPs = ...\nEndpoint = ...\n\nSORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得してください。\n\n詳細: https://users.soracom.io/ja-jp/docs/arc/")
+            Text(wireGuardInfo)
         }
+    }
+
+    private var wireGuardInfo: String {
+        [
+            String(localized: "settings_wireguard_intro"),
+            """
+            [Interface]
+            PrivateKey = ...
+            Address = ...
+
+            [Peer]
+            PublicKey = ...
+            AllowedIPs = ...
+            Endpoint = ...
+            """,
+            String(localized: "settings_arc_help"),
+            String(localized: "settings_details") + ": https://users.soracom.io/ja-jp/docs/arc/"
+        ].joined(separator: "\n\n")
     }
 
     // MARK: - About Section
 
     private var aboutSection: some View {
-        Section("アプリについて") {
-            LabeledContent("バージョン") {
+        Section("settings_about") {
+            LabeledContent("settings_version") {
                 Text(Bundle.main.appVersion)
                     .foregroundStyle(.secondary)
             }
-            LabeledContent("ビルド") {
+            LabeledContent("settings_build") {
                 Text(Bundle.main.buildNumber)
                     .foregroundStyle(.secondary)
             }
             Link(
                 destination: URL(string: "https://github.com/kenichiro-kimura/soracom-gps-multiunit")!
             ) {
-                Label("GitHub リポジトリ", systemImage: "arrow.up.right.square")
+                Label("settings_github", systemImage: "arrow.up.right.square")
             }
         }
     }
     
     private var licenseSeciton: some View {
-        Section("ライセンス") {
-            Text("SORACOM UGロゴを使用しています。")
+        Section("settings_license") {
+            Text("settings_logo_notice")
                 .font(.caption)
 
             Link(
                 destination: URL(string: "https://github.com/soracomug/logo")!
             ) {
-                Label("ロゴの配布元", systemImage: "arrow.up.right.square")
+                Label("settings_logo_source", systemImage: "arrow.up.right.square")
             }
 
             Link(
                 destination: URL(string: "https://creativecommons.org/licenses/by/4.0/")!
             ) {
-                Label("CC BY 4.0 ライセンス", systemImage: "arrow.up.right.square")
+                Label("settings_cc_license", systemImage: "arrow.up.right.square")
             }
         }
+    }
+
+    private func decimal(_ value: Double) -> String {
+        String(format: "%.1f", locale: Locale.current, value)
+    }
+
+    private func formattedSetting(_ key: String, _ value: String) -> String {
+        String(format: NSLocalizedString(key, comment: ""), locale: Locale.current, value)
     }
 
     private func saveAndDismiss() {

@@ -70,6 +70,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -147,7 +148,7 @@ private fun App(
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            TopAppBar(title = { Text("GPSトラッカーシミュレーター") })
+            TopAppBar(title = { Text(stringResource(R.string.app_name)) })
         },
         bottomBar = {
             NavigationBar {
@@ -155,19 +156,19 @@ private fun App(
                     selected = currentTab == AppTab.DEVICE,
                     onClick = { currentTab = AppTab.DEVICE },
                     icon = { Icon(Icons.Default.DataUsage, contentDescription = null) },
-                    label = { Text("デバイス") },
+                    label = { Text(stringResource(R.string.tab_device)) },
                 )
                 NavigationBarItem(
                     selected = currentTab == AppTab.LOGS,
                     onClick = { currentTab = AppTab.LOGS },
                     icon = { Icon(Icons.AutoMirrored.Outlined.List, contentDescription = null) },
-                    label = { Text("ログ") },
+                    label = { Text(stringResource(R.string.tab_logs)) },
                 )
                 NavigationBarItem(
                     selected = currentTab == AppTab.SETTINGS,
                     onClick = { currentTab = AppTab.SETTINGS },
                     icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                    label = { Text("設定") },
+                    label = { Text(stringResource(R.string.settings_title)) },
                 )
             }
         },
@@ -239,7 +240,7 @@ private fun DeviceCard(uiState: MainUiState, onManualSend: () -> Unit) {
         Box(modifier = Modifier.size(width = 320.dp, height = 202.dp)) {
             Image(
                 painter = painterResource(R.drawable.device_background),
-                contentDescription = "GPSトラッカー本体",
+                contentDescription = stringResource(R.string.tracker_description),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.FillBounds,
             )
@@ -275,7 +276,7 @@ private fun DeviceCard(uiState: MainUiState, onManualSend: () -> Unit) {
                             .border(1.dp, Color(0xFF8A8A8A), CircleShape),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(Icons.Default.ArrowUpward, contentDescription = "手動送信", modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.ArrowUpward, contentDescription = MessageI18n.manualSend(), modifier = Modifier.size(18.dp))
                     }
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -460,8 +461,8 @@ private fun LogSensorPanel(sensorData: SensorData) {
             verticalArrangement = Arrangement.spacedBy(7.dp),
         ) {
             Row {
-                LogMetric("温度", sensorData.temp?.let { "%.1f°C".format(it) } ?: "--", Modifier.weight(1f))
-                LogMetric("湿度", sensorData.humi?.let { "%.1f%%".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric(MessageI18n.temperature(), sensorData.temp?.let { "%.1f°C".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric(MessageI18n.humidity(), sensorData.humi?.let { "%.1f%%".format(it) } ?: "--", Modifier.weight(1f))
             }
             Row {
                 LogMetric("X", sensorData.x?.let { "%.0f mG".format(it) } ?: "--", Modifier.weight(1f))
@@ -469,8 +470,8 @@ private fun LogSensorPanel(sensorData: SensorData) {
                 LogMetric("Z", sensorData.z?.let { "%.0f mG".format(it) } ?: "--", Modifier.weight(1f))
             }
             Row {
-                LogMetric("緯度", sensorData.lat?.let { "%.6f".format(it) } ?: "--", Modifier.weight(1f))
-                LogMetric("経度", sensorData.lon?.let { "%.6f".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric(stringResource(R.string.latitude), sensorData.lat?.let { "%.6f".format(it) } ?: "--", Modifier.weight(1f))
+                LogMetric(stringResource(R.string.longitude), sensorData.lon?.let { "%.6f".format(it) } ?: "--", Modifier.weight(1f))
             }
         }
     }
@@ -499,8 +500,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         SettingsSliderCard(
-            title = "温度設定",
-            valueText = "ベース温度: %.1f °C".format(currentSettings.temperatureBase),
+            title = stringResource(R.string.settings_temperature),
+            valueText = stringResource(R.string.settings_base_temperature, "%.1f".format(currentSettings.temperatureBase)),
             value = currentSettings.temperatureBase,
             range = -40f..85f,
             steps = 249,
@@ -509,8 +510,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         SettingsSliderCard(
-            title = "温度設定",
-            valueText = "変動幅: ± %.1f °C".format(currentSettings.temperatureVariation),
+            title = stringResource(R.string.settings_temperature),
+            valueText = stringResource(R.string.settings_temperature_variation, "%.1f".format(currentSettings.temperatureVariation)),
             value = currentSettings.temperatureVariation,
             range = 0f..10f,
             steps = 19,
@@ -519,8 +520,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         SettingsSliderCard(
-            title = "湿度設定",
-            valueText = "ベース湿度: %.1f %%".format(currentSettings.humidityBase),
+            title = stringResource(R.string.settings_humidity),
+            valueText = stringResource(R.string.settings_base_humidity, "%.1f".format(currentSettings.humidityBase)),
             value = currentSettings.humidityBase,
             range = 0f..100f,
             steps = 99,
@@ -529,8 +530,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         SettingsSliderCard(
-            title = "湿度設定",
-            valueText = "変動幅: ± %.1f %%".format(currentSettings.humidityVariation),
+            title = stringResource(R.string.settings_humidity),
+            valueText = stringResource(R.string.settings_humidity_variation, "%.1f".format(currentSettings.humidityVariation)),
             value = currentSettings.humidityVariation,
             range = 0f..20f,
             steps = 19,
@@ -539,7 +540,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         StepperCard(
-            title = "電波強度 (rs): ${if (currentSettings.rsValue == -1) "圏外" else currentSettings.rsValue}",
+            title = stringResource(R.string.settings_signal, if (currentSettings.rsValue == -1) stringResource(R.string.settings_no_service) else currentSettings.rsValue.toString()),
             value = currentSettings.rsValue,
             range = -1..4,
         ) {
@@ -547,7 +548,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             onUpdateSettings(currentSettings)
         }
         StepperCard(
-            title = "バッテリー (bat): ${if (currentSettings.batValue == -1) "充電中" else currentSettings.batValue}",
+            title = stringResource(R.string.settings_battery, if (currentSettings.batValue == -1) stringResource(R.string.settings_charging) else currentSettings.batValue.toString()),
             value = currentSettings.batValue,
             range = -1..3,
         ) {
@@ -558,9 +559,9 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("固定位置情報送信")
+                        Text(stringResource(R.string.settings_fixed_location))
                         Text(
-                            "オンにすると、実際の位置情報の代わりに東京駅（35.681236, 139.767125）の固定位置を送信します。",
+                            stringResource(R.string.settings_fixed_location_help),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -577,9 +578,9 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
         }
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("SORACOM Arc 設定", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.settings_arc), fontWeight = FontWeight.SemiBold)
                 Text(
-                    "SORACOM コンソールの SIM 管理 > SIM 詳細 > バーチャル SIM から WireGuard 接続情報を取得して貼り付けてください。",
+                    stringResource(R.string.settings_arc_help),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -587,7 +588,7 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                     value = arcConfigInput,
                     onValueChange = { arcConfigInput = it },
                     modifier = Modifier.fillMaxWidth().height(180.dp),
-                    label = { Text("WireGuard 設定") },
+                    label = { Text(stringResource(R.string.settings_wireguard)) },
                 )
                 Button(
                     onClick = {
@@ -597,13 +598,13 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                     enabled = arcConfigInput != settings.arcConfig,
                     modifier = Modifier.align(Alignment.End),
                 ) {
-                    Text("ARC 設定を保存")
+                    Text(stringResource(R.string.settings_save_arc))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("インターネット経由 UDP にフォールバック")
+                        Text(stringResource(R.string.settings_udp_fallback))
                         Text(
-                            "Arc 設定が未入力・無効、または libsoratun が利用できない場合に uni.soracom.io へ UDP 送信します。OFF の場合は送信に失敗します。",
+                            stringResource(R.string.settings_udp_fallback_help),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -622,9 +623,9 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("自動送信")
+                        Text(stringResource(R.string.settings_auto_send))
                         Text(
-                            "指定した間隔でセンサーデータを自動送信します。",
+                            stringResource(R.string.settings_auto_send_help),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -639,8 +640,8 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
                 }
                 if (currentSettings.autoSendEnabled) {
                     SettingsSliderCard(
-                        title = "自動送信設定",
-                        valueText = "送信間隔: ${currentSettings.sendingIntervalSeconds} 秒",
+                        title = stringResource(R.string.settings_auto_send_title),
+                        valueText = stringResource(R.string.settings_interval, currentSettings.sendingIntervalSeconds.toString()),
                         value = currentSettings.sendingIntervalSeconds.toFloat(),
                         range = 5f..3600f,
                         steps = 718,
@@ -653,17 +654,17 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
         }
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("アプリについて", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.settings_about), fontWeight = FontWeight.SemiBold)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("バージョン")
+                    Text(stringResource(R.string.settings_version))
                     Text(BuildConfig.VERSION_NAME, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("ビルド")
+                    Text(stringResource(R.string.settings_build))
                     Text(BuildConfig.VERSION_CODE.toString(), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Text(
-                    "GitHub リポジトリ",
+                    stringResource(R.string.settings_github),
                     modifier = Modifier.clickable {
                         uriHandler.openUri("https://github.com/kenichiro-kimura/soracom-gps-multiunit")
                     },
@@ -674,16 +675,16 @@ private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -
         }
         Card(shape = RoundedCornerShape(16.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("ライセンス", fontWeight = FontWeight.SemiBold)
-                Text("SORACOM UGロゴを使用しています。", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.settings_license), fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.settings_logo_notice), style = MaterialTheme.typography.bodySmall)
                 Text(
-                    "ロゴの配布元",
+                    stringResource(R.string.settings_logo_source),
                     modifier = Modifier.clickable { uriHandler.openUri("https://github.com/soracomug/logo") },
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Text(
-                    "CC BY 4.0 ライセンス",
+                    stringResource(R.string.settings_cc_license),
                     modifier = Modifier.clickable { uriHandler.openUri("https://creativecommons.org/licenses/by/4.0/") },
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodySmall,

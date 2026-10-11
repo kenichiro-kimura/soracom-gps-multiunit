@@ -10,7 +10,7 @@ private enum KeychainError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unexpectedStatus(let status):
-            return "Keychain access failed with status \(status)."
+            return String(format: String(localized: "keychain_error"), locale: Locale.current, String(status))
         }
     }
 }
