@@ -3,6 +3,7 @@ package org.sokohiki.kimura.app.soracom.gpsmultiunit
 import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,11 +19,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,7 +40,7 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.LocationOff
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -78,7 +83,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // Compose のテーマは常にライトなので、端末のダークモードに依存させない。
+        // auto を使い、3 ボタンナビゲーションのコントラスト保護は維持する。
+        val systemBarStyle = SystemBarStyle.auto(
+            lightScrim = android.graphics.Color.TRANSPARENT,
+            darkScrim = android.graphics.Color.TRANSPARENT,
+            detectDarkMode = { false },
+        )
+        enableEdgeToEdge(
+            statusBarStyle = systemBarStyle,
+            navigationBarStyle = systemBarStyle,
+        )
         setContent {
             SoracomGPSMultiunitTheme {
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -130,6 +145,7 @@ private fun App(
     var currentTab by remember { mutableStateOf(AppTab.DEVICE) }
 
     Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(title = { Text("GPSトラッカーシミュレーター") })
         },
@@ -144,7 +160,7 @@ private fun App(
                 NavigationBarItem(
                     selected = currentTab == AppTab.LOGS,
                     onClick = { currentTab = AppTab.LOGS },
-                    icon = { Icon(Icons.Outlined.List, contentDescription = null) },
+                    icon = { Icon(Icons.AutoMirrored.Outlined.List, contentDescription = null) },
                     label = { Text("ログ") },
                 )
                 NavigationBarItem(
@@ -156,7 +172,14 @@ private fun App(
             }
         },
     ) { innerPadding ->
-        Surface(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        // AppBar / NavigationBar の余白を消費し、IME 分だけ追加する。
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .imePadding(),
+        ) {
             when (currentTab) {
                 AppTab.DEVICE -> DeviceTab(uiState = uiState, onManualSend = onManualSend)
                 AppTab.LOGS -> LogsTab(uiState = uiState, onClearLogs = onClearLogs)
