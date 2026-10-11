@@ -188,7 +188,11 @@ private fun DeviceTab(
                     shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                 ) {
-                    Text(error, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onErrorContainer)
+                    Text(
+                        MessageI18n.text(error),
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                    )
                 }
             }
         }
@@ -286,7 +290,7 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("ステータス", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(MessageI18n.status(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.weight(1f))
                 Surface(
                     shape = RoundedCornerShape(12.dp),
@@ -306,7 +310,7 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
             ) {
                 Icon(
                     Icons.Default.ArrowUpward,
-                    contentDescription = "手動送信",
+                    contentDescription = MessageI18n.manualSend(),
                     modifier = Modifier.size(18.dp),
                     tint = SoracomTeal,
                 )
@@ -317,7 +321,7 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        "最終送信: ${uiState.lastSentAtLabel ?: "未送信"}",
+                        MessageI18n.lastSentText(uiState.lastSentAtLabel),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -326,23 +330,23 @@ private fun StatusCard(uiState: MainUiState, onManualSend: () -> Unit) {
             HorizontalDivider(color = Color(0xFFD6D6D6))
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                 StatusValue(
-                    label = "温度",
+                    label = MessageI18n.temperature(),
                     value = sensorData?.temp?.let { "%.1f°C".format(it) } ?: "--",
                     modifier = Modifier.weight(1f),
                 )
                 StatusValue(
-                    label = "湿度",
+                    label = MessageI18n.humidity(),
                     value = sensorData?.humi?.let { "%.1f%%".format(it) } ?: "--",
                     modifier = Modifier.weight(1f),
                 )
             }
             StatusValue(
-                label = "加速度",
+                label = MessageI18n.acceleration(),
                 value = sensorData?.let { "X:%.1f  Y:%.1f  Z:%.1f mG".format(it.x ?: 0.0, it.y ?: 0.0, it.z ?: 0.0) } ?: "--",
             )
             StatusValue(
                 label = "GPS",
-                value = sensorData?.lat?.let { lat -> "%.6f, %.6f".format(lat, sensorData.lon ?: 0.0) } ?: "信号なし",
+                value = sensorData?.lat?.let { lat -> "%.6f, %.6f".format(lat, sensorData.lon ?: 0.0) } ?: MessageI18n.noSignal(),
             )
         }
     }
@@ -360,7 +364,7 @@ private fun StatusValue(label: String, value: String, modifier: Modifier = Modif
 private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
     if (uiState.sendLogs.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("送信ログはまだありません")
+            Text(MessageI18n.sendLogsEmpty())
         }
         return
     }
@@ -374,9 +378,9 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("送信ログ", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Text(MessageI18n.sendLogs(), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.weight(1f))
-                FilterChip(selected = false, onClick = onClearLogs, label = { Text("消去") })
+                FilterChip(selected = false, onClick = onClearLogs, label = { Text(MessageI18n.clear()) })
             }
         }
         items(uiState.sendLogs) { log ->
@@ -410,7 +414,7 @@ private fun LogsTab(uiState: MainUiState, onClearLogs: () -> Unit) {
                         }
                     }
                     Text(
-                        if (log.success) "センサー値を送信しました" else log.message,
+                        if (log.success) MessageI18n.sentSensorValuesMessage() else MessageI18n.text(log.message),
                         style = MaterialTheme.typography.labelSmall,
                         color = if (log.success) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                     )
@@ -457,20 +461,9 @@ private fun LogMetric(label: String, value: String, modifier: Modifier) {
     }
 }
 
-private fun sendTypeLabel(type: SendType): String = when (type) {
-    SendType.MANUAL -> "手動"
-    SendType.PERIODIC -> "定期"
-    SendType.ACCELERATION_ALERT -> "加速度"
-}
+private fun sendTypeLabel(type: SendType): String = MessageI18n.sendTypeLabel(type)
 
-private fun sendStatusLabel(type: SendType?, isSending: Boolean): String {
-    val label = when (type) {
-        SendType.PERIODIC -> "自動送信"
-        SendType.MANUAL, null -> "手動送信"
-        SendType.ACCELERATION_ALERT -> "加速度送信"
-    }
-    return if (isSending) "${label}中…" else label
-}
+private fun sendStatusLabel(type: SendType?, isSending: Boolean): String = MessageI18n.sendStatusLabel(type, isSending)
 
 @Composable
 private fun SettingsTab(settings: AppSettings, onUpdateSettings: (AppSettings) -> Unit) {
@@ -728,12 +721,7 @@ private fun SmallActionButton(text: String, enabled: Boolean, onClick: () -> Uni
     }
 }
 
-private fun connectionStatusLabel(status: ConnectionStatus): String = when (status) {
-    ConnectionStatus.DISCONNECTED -> "送信待機"
-    ConnectionStatus.SENDING -> "送信中"
-    ConnectionStatus.CONNECTED -> "送信成功"
-    ConnectionStatus.FAILED -> "送信失敗"
-}
+private fun connectionStatusLabel(status: ConnectionStatus): String = MessageI18n.connectionStatusLabel(status)
 
 private fun statusColor(status: ConnectionStatus): Color = when (status) {
     ConnectionStatus.DISCONNECTED -> Color.LightGray

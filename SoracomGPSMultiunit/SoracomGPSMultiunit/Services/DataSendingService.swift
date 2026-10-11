@@ -53,11 +53,11 @@ enum DataSendingError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .encodingFailed:
-            return "センサーデータの JSON 変換に失敗しました。"
+            return MessageI18n.dataEncodingFailed()
         case .arcFallbackDisabled:
-            return "SORACOM Arc を利用できず、インターネット経由 UDP のフォールバックが無効なため送信に失敗しました。"
+            return MessageI18n.arcFallbackDisabled()
         case .sendFailed(let detail):
-            return "データ送信に失敗しました: \(detail)"
+            return MessageI18n.dataSendFailed(detail)
         }
     }
 }

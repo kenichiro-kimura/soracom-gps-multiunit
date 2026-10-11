@@ -1,4 +1,5 @@
 import XCTest
+import Foundation
 @testable import SoracomGPSMultiunit
 
 final class SoracomGPSMultiunitTests: XCTestCase {
@@ -285,9 +286,24 @@ final class SoracomGPSMultiunitTests: XCTestCase {
     // MARK: - ConnectionStatus Tests
 
     func testConnectionStatusDisplayText() {
-        XCTAssertEqual(ConnectionStatus.disconnected.displayText, "未接続")
-        XCTAssertEqual(ConnectionStatus.connecting.displayText, "接続中...")
-        XCTAssertEqual(ConnectionStatus.connected.displayText, "接続済み")
-        XCTAssertEqual(ConnectionStatus.failed("err").displayText, "接続失敗")
+        XCTAssertEqual(ConnectionStatus.disconnected.displayText, MessageI18n.connectionDisconnected())
+        XCTAssertEqual(ConnectionStatus.connecting.displayText, MessageI18n.connectionConnecting())
+        XCTAssertEqual(ConnectionStatus.connected.displayText, MessageI18n.connectionConnected())
+        XCTAssertEqual(ConnectionStatus.failed("err").displayText, MessageI18n.connectionFailed())
+    }
+
+    func testMessageI18nSupportsRequestedLanguages() {
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "en_US")), "Send Logs")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "de_DE")), "Sendeprotokoll")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "es_ES")), "Registros de envío")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "it_IT")), "Log di invio")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "fr_FR")), "Journaux d'envoi")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "ko_KR")), "전송 로그")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "zh_CN")), "发送日志")
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "ja_JP")), "送信ログ")
+    }
+
+    func testMessageI18nFallsBackToJapaneseForUnsupportedLanguage() {
+        XCTAssertEqual(MessageI18n.sendLogTitle(locale: Locale(identifier: "pt_BR")), "送信ログ")
     }
 }

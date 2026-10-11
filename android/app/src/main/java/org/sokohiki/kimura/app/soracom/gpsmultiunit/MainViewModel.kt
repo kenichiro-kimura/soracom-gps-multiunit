@@ -90,7 +90,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update {
             it.copy(
                 locationPermissionGranted = granted,
-                lastError = if (granted) null else "位置情報の権限がないため GPS 値は送信されません。",
+                lastError = if (granted) null else MessageI18n.Message(MessageI18n.MessageKey.GPS_PERMISSION_DENIED),
             )
         }
         if (granted) {
@@ -118,7 +118,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val granted = hasLocationPermission()
         _uiState.update { it.copy(locationPermissionGranted = granted) }
         if (!granted) {
-            _uiState.update { it.copy(lastError = "位置情報の権限がないため GPS 値は送信されません。") }
+            _uiState.update {
+                it.copy(lastError = MessageI18n.Message(MessageI18n.MessageKey.GPS_PERMISSION_DENIED))
+            }
         }
     }
 
@@ -138,7 +140,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 locationListener,
             )
         } catch (_: SecurityException) {
-            _uiState.update { it.copy(lastError = "位置情報の利用許可を確認できませんでした。") }
+            _uiState.update {
+                it.copy(lastError = MessageI18n.Message(MessageI18n.MessageKey.LOCATION_PERMISSION_CHECK_FAILED))
+            }
         } catch (_: IllegalArgumentException) {
             // Provider がない場合は無視する。
         }
@@ -195,7 +199,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 runCatching { sendResult.await() }.onSuccess {
-                    val log = SendLog(sensorData = sensorData, success = true, message = "送信成功")
+                    val log = SendLog(
+                        sensorData = sensorData,
+                        success = true,
+                        message = MessageI18n.Message(MessageI18n.MessageKey.SEND_SUCCESS),
+                    )
                     _uiState.update {
                         it.copy(
                             isSending = false,
@@ -208,7 +216,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         )
                     }
                 }.onFailure { error ->
-                    val errorMessage = error.localizedMessage ?: "送信に失敗しました。"
+                    val errorMessage = (error as? SoracomArcError)?.uiMessage
+                        ?: MessageI18n.Message(
+                            key = if (error.localizedMessage == null) {
+                                MessageI18n.MessageKey.SEND_FAILED
+                            } else {
+                                MessageI18n.MessageKey.SEND_FAILED_WITH_DETAIL
+                            },
+                            detail = error.localizedMessage,
+                        )
                     val log = SendLog(sensorData = sensorData, success = false, message = errorMessage)
                     _uiState.update {
                         it.copy(
@@ -275,7 +291,7 @@ data class MainUiState(
     val connectionStatus: ConnectionStatus = ConnectionStatus.DISCONNECTED,
     val isSending: Boolean = false,
     val ledState: LedState = LedState.OFF,
-    val lastError: String? = null,
+    val lastError: MessageI18n.Message? = null,
     val lastSensorData: SensorData? = null,
     val lastSentAtLabel: String? = null,
     val sendLogs: List<SendLog> = emptyList(),
@@ -298,7 +314,7 @@ enum class LedState {
 data class SendLog(
     val sensorData: SensorData,
     val success: Boolean,
-    val message: String,
+    val message: MessageI18n.Message,
     val timestampLabel: String = java.time.LocalDateTime.now().withNano(0).toString(),
 )
 

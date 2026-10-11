@@ -137,7 +137,7 @@ struct DeviceView: View {
     private var dataDisplayPanel: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("ステータス")
+                Text(MessageI18n.statusTitle())
                     .font(.headline)
                 Spacer()
                 StatusBadge(status: viewModel.connectionStatus)
@@ -149,8 +149,8 @@ struct DeviceView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Label(
                         viewModel.isAutoSendEnabled
-                            ? "自動送信: \(viewModel.sendingInterval)秒間隔"
-                            : "手動送信",
+                            ? MessageI18n.autoSendLabel(interval: viewModel.sendingInterval)
+                            : MessageI18n.manualSendLabel(),
                         systemImage: viewModel.isAutoSendEnabled
                             ? "clock.fill" : "hand.tap"
                     )
@@ -158,7 +158,7 @@ struct DeviceView: View {
                     .foregroundStyle(viewModel.isAutoSendEnabled ? .green : .secondary)
 
                     if let lastSent = viewModel.lastSentAt {
-                        Text("最終送信: \(lastSent.formatted(date: .omitted, time: .standard))")
+                        Text(MessageI18n.lastSent(at: lastSent))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -190,33 +190,33 @@ struct DeviceView: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 20) {
                 sensorPair(
-                    label: "温度",
-                    value: data.temp.map { String(format: "%.1f°C", $0) } ?? "無効",
+                    label: MessageI18n.temperature(),
+                    value: data.temp.map { String(format: "%.1f°C", $0) } ?? MessageI18n.invalid(),
                     icon: "thermometer.medium"
                 )
                 sensorPair(
-                    label: "湿度",
-                    value: data.humi.map { String(format: "%.1f%%", $0) } ?? "無効",
+                    label: MessageI18n.humidity(),
+                    value: data.humi.map { String(format: "%.1f%%", $0) } ?? MessageI18n.invalid(),
                     icon: "drop.fill"
                 )
             }
             if let x = data.x, let y = data.y, let z = data.z {
                 sensorPair(
-                    label: "加速度",
+                    label: MessageI18n.acceleration(),
                     value: String(format: "X:%.2f Y:%.2f Z:%.2f", x, y, z),
                     icon: "gyroscope"
                 )
             } else {
-                sensorPair(label: "加速度", value: "無効", icon: "gyroscope")
+                sensorPair(label: MessageI18n.acceleration(), value: MessageI18n.invalid(), icon: "gyroscope")
             }
             if let lat = data.lat, let lon = data.lon {
                 sensorPair(
-                    label: "GPS",
+                    label: MessageI18n.gps(),
                     value: String(format: "%.6f, %.6f", lat, lon),
                     icon: "location.fill"
                 )
             } else {
-                sensorPair(label: "GPS", value: "信号なし", icon: "location.slash")
+                sensorPair(label: MessageI18n.gps(), value: MessageI18n.noSignal(), icon: "location.slash")
             }
         }
     }

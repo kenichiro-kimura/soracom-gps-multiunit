@@ -70,7 +70,7 @@ class DataSendingServiceTest {
             service.send("""{"temp":25.0}""", AppSettings(arcConfig = VALID_ARC_JSON))
             fail("Expected SoracomArcError.SendFailed")
         } catch (error: SoracomArcError.SendFailed) {
-            assertEquals("送信に失敗しました: Arc send failed", error.message)
+            assertEquals(MessageI18n.sendFailedWithDetail("Arc send failed"), error.message)
         }
     }
 
