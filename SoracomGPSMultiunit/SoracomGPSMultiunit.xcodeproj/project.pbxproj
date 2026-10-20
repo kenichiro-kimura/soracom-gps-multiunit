@@ -18,7 +18,6 @@
 		D000000000000000000000D0 /* SoracomArcService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF00000000000000000000CF /* SoracomArcService.swift */; };
 		D200000000000000000000D2 /* MetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D100000000000000000000D1 /* MetadataService.swift */; };
 		D400000000000000000000D4 /* DataSendingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D300000000000000000000D3 /* DataSendingService.swift */; };
-		EE00000000000000000000EE /* UDPSendingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED00000000000000000000ED /* UDPSendingService.swift */; };
 		D600000000000000000000D6 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D500000000000000000000D5 /* MainViewModel.swift */; };
 		D800000000000000000000D8 /* DeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D700000000000000000000D7 /* DeviceView.swift */; };
 		DA00000000000000000000DA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D900000000000000000000D9 /* SettingsView.swift */; };
@@ -26,6 +25,7 @@
 		DE00000000000000000000DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD00000000000000000000DD /* Assets.xcassets */; };
 		E000000000000000000000E0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DF00000000000000000000DF /* Preview Assets.xcassets */; };
 		E200000000000000000000E2 /* SoracomGPSMultiunitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E100000000000000000000E1 /* SoracomGPSMultiunitTests.swift */; };
+		EE00000000000000000000EE /* UDPSendingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED00000000000000000000ED /* UDPSendingService.swift */; };
 		FB0000000000000000000000 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FA0000000000000000000000 /* Localizable.strings */; };
 		FB0000000000000000000001 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FA0000000000000000000001 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
@@ -54,7 +54,6 @@
 		CF00000000000000000000CF /* SoracomArcService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoracomArcService.swift; sourceTree = "<group>"; };
 		D100000000000000000000D1 /* MetadataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataService.swift; sourceTree = "<group>"; };
 		D300000000000000000000D3 /* DataSendingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSendingService.swift; sourceTree = "<group>"; };
-		ED00000000000000000000ED /* UDPSendingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDPSendingService.swift; sourceTree = "<group>"; };
 		D500000000000000000000D5 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		D700000000000000000000D7 /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceView.swift; sourceTree = "<group>"; };
 		D900000000000000000000D9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -62,6 +61,7 @@
 		DD00000000000000000000DD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DF00000000000000000000DF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		E100000000000000000000E1 /* SoracomGPSMultiunitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoracomGPSMultiunitTests.swift; sourceTree = "<group>"; };
+		ED00000000000000000000ED /* UDPSendingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDPSendingService.swift; sourceTree = "<group>"; };
 		F100000000000000000000F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F200000000000000000000F2 /* Libsoratun.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Libsoratun.h; sourceTree = "<group>"; };
 		F300000000000000000000F3 /* SoracomGPSMultiunit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SoracomGPSMultiunit-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -224,39 +224,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXVariantGroup section */
-		FA0000000000000000000000 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				FC0000000000000000000000 /* ja */,
-				FC0000000000000000000001 /* en */,
-				FC0000000000000000000002 /* de */,
-				FC0000000000000000000003 /* es */,
-				FC0000000000000000000004 /* it */,
-				FC0000000000000000000005 /* fr */,
-				FC0000000000000000000006 /* ko */,
-				FC0000000000000000000007 /* zh */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		FA0000000000000000000001 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				FC0000000000000000000010 /* ja */,
-				FC0000000000000000000011 /* en */,
-				FC0000000000000000000012 /* de */,
-				FC0000000000000000000013 /* es */,
-				FC0000000000000000000014 /* it */,
-				FC0000000000000000000015 /* fr */,
-				FC0000000000000000000016 /* ko */,
-				FC0000000000000000000017 /* zh */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin PBXNativeTarget section */
 		A200000000000000000000A2 /* SoracomGPSMultiunit */ = {
 			isa = PBXNativeTarget;
@@ -391,6 +358,39 @@
 			targetProxy = EC00000000000000000000EC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		FA0000000000000000000000 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FC0000000000000000000000 /* ja */,
+				FC0000000000000000000001 /* en */,
+				FC0000000000000000000002 /* de */,
+				FC0000000000000000000003 /* es */,
+				FC0000000000000000000004 /* it */,
+				FC0000000000000000000005 /* fr */,
+				FC0000000000000000000006 /* ko */,
+				FC0000000000000000000007 /* zh */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		FA0000000000000000000001 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FC0000000000000000000010 /* ja */,
+				FC0000000000000000000011 /* en */,
+				FC0000000000000000000012 /* de */,
+				FC0000000000000000000013 /* es */,
+				FC0000000000000000000014 /* it */,
+				FC0000000000000000000015 /* fr */,
+				FC0000000000000000000016 /* ko */,
+				FC0000000000000000000017 /* zh */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		AC00000000000000000000AC /* Debug */ = {
@@ -528,7 +528,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.sokohiki.kimura.app.soracom.gpsmultiunit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -557,7 +557,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = org.sokohiki.kimura.app.soracom.gpsmultiunit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
