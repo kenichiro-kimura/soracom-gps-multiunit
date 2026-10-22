@@ -3,13 +3,12 @@ package org.sokohiki.kimura.app.soracom.gpsmultiunit
 import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,17 +83,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        // Compose のテーマは常にライトなので、端末のダークモードに依存させない。
-        // auto を使い、3 ボタンナビゲーションのコントラスト保護は維持する。
-        val systemBarStyle = SystemBarStyle.auto(
-            lightScrim = android.graphics.Color.TRANSPARENT,
-            darkScrim = android.graphics.Color.TRANSPARENT,
-            detectDarkMode = { false },
-        )
-        enableEdgeToEdge(
-            statusBarStyle = systemBarStyle,
-            navigationBarStyle = systemBarStyle,
-        )
+        // enableEdgeToEdge() 内部の非推奨のバー色 API / shortEdges 設定を避ける。
+        // バーの外観はテーマ、コンテンツの安全領域は Compose の Insets で設定する。
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             SoracomGPSMultiunitTheme {
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
