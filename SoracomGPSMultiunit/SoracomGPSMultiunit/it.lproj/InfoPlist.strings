@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "Simulatore tracker GPS";
+"NSLocationWhenInUseUsageDescription" = "Simulatore tracker GPS accede alla posizione durante l’uso dell’app per visualizzarla e inviare i dati del sensore.";
+"NSMotionUsageDescription" = "Simulatore tracker GPS accede ai dati dell’accelerometro durante l’uso dell’app per inviare i dati del sensore.";

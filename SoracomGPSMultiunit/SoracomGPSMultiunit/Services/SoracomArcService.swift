@@ -10,13 +10,13 @@ enum SoracomArcError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notConfigured:
-            return "SORACOM Arc が設定されていません。設定画面から WireGuard 接続情報を入力してください。"
+            return MessageI18n.arcNotConfigured()
         case .invalidConfiguration(let message):
-            return "設定が無効です: \(message)"
+            return MessageI18n.invalidConfiguration(message)
         case .sendFailed(let message):
-            return "送信に失敗しました: \(message)"
+            return MessageI18n.sendFailed(message)
         case .libraryUnavailable:
-            return "libsoratun ライブラリが利用できません。"
+            return MessageI18n.libraryUnavailable()
         }
     }
 }
@@ -79,11 +79,11 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
 
         if trimmed.contains("[Interface]") {
             // WireGuard 設定形式
-            guard let wgDict = Self.parseWireGuardConfig(trimmed),
+                guard let wgDict = Self.parseWireGuardConfig(trimmed),
                   let data = try? JSONSerialization.data(withJSONObject: wgDict),
                   let jsonString = String(data: data, encoding: .utf8) else {
                 throw SoracomArcError.invalidConfiguration(
-                    "WireGuard 設定を解析できませんでした。PrivateKey・Address・PublicKey・AllowedIPs・Endpoint が必要です。"
+                    MessageI18n.wireGuardParseFailed()
                 )
             }
             libsoratunJSON = jsonString
@@ -91,7 +91,7 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
             // JSON 形式 (soratun arc.json または libsoratun JSON)
             guard let data = trimmed.data(using: .utf8),
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                throw SoracomArcError.invalidConfiguration("WireGuard 設定または有効な JSON を入力してください。")
+                throw SoracomArcError.invalidConfiguration(MessageI18n.wireGuardOrJsonRequired())
             }
             // soratun 形式 → libsoratun 形式へ自動変換
             let effectiveJSONString: String
@@ -99,7 +99,7 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
                 guard let converted = Self.convertSoratunFormat(json),
                       let convertedData = try? JSONSerialization.data(withJSONObject: converted),
                       let convertedString = String(data: convertedData, encoding: .utf8) else {
-                    throw SoracomArcError.invalidConfiguration("soratun 形式の JSON を libsoratun 形式に変換できませんでした")
+                    throw SoracomArcError.invalidConfiguration(MessageI18n.soratunConversionFailed())
                 }
                 effectiveJSONString = convertedString
             } else {
@@ -110,7 +110,7 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
                   let effectiveJSON = try? JSONSerialization.jsonObject(with: effectiveData) as? [String: Any],
                   effectiveJSON["arcSessionStatus"] is [String: Any] else {
                 throw SoracomArcError.invalidConfiguration(
-                    "arcSessionStatus フィールドがありません。WireGuard 設定または soratun の arc.json を貼り付けてください。"
+                    MessageI18n.missingArcSessionStatus()
                 )
             }
             libsoratunJSON = effectiveJSONString
@@ -218,14 +218,14 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
                 // Simulator・実機ともに同じコードで呼び出す
                 // タイムアウトは libsoratun 側で管理されているため Swift 側での設定は不要
                 guard let resultPtr = Send(config, method, path, body) else {
-                    continuation.resume(throwing: SoracomArcError.sendFailed("レスポンスが null でした"))
+                    continuation.resume(throwing: SoracomArcError.sendFailed(MessageI18n.responseWasNull()))
                     return
                 }
                 let result = String(cString: resultPtr)
                 free(resultPtr)
                 // 先頭が "2" (HTTP 2xx) または "{" (JSON) で始まる場合は成功
                 guard result.first == "2" || result.first == "{" else {
-                    continuation.resume(throwing: SoracomArcError.sendFailed("不正なレスポンス: \(result)"))
+                    continuation.resume(throwing: SoracomArcError.sendFailed(MessageI18n.invalidResponse(result)))
                     return
                 }
                 continuation.resume(returning: result)
@@ -243,13 +243,13 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
 
         let bodyLength = body.lengthOfBytes(using: .utf8)
         guard bodyLength <= Int(Int32.max) else {
-            throw SoracomArcError.sendFailed("UDP メッセージが大きすぎます")
+            throw SoracomArcError.sendFailed(MessageI18n.udpMessageTooLarge())
         }
 
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
                 guard let resultPtr = SendUDP(config, body, Int32(bodyLength), 23080, 6000) else {
-                    continuation.resume(throwing: SoracomArcError.sendFailed("UDP レスポンスが null でした"))
+                    continuation.resume(throwing: SoracomArcError.sendFailed(MessageI18n.udpResponseWasNull()))
                     return
                 }
                 let result = String(cString: resultPtr)
@@ -258,7 +258,7 @@ class LibsoratunArcService: SoracomArcServiceProtocol, @unchecked Sendable {
                 // SendUDP は Unified Endpoint のレスポンスを返す。HTTP 2xx 相当または
                 // JSON 以外の値（エラー文字列・空文字列）は送信失敗として扱う。
                 guard result.first == "2" || result.first == "{" else {
-                    continuation.resume(throwing: SoracomArcError.sendFailed("UDP レスポンスが不正です: \(result)"))
+                    continuation.resume(throwing: SoracomArcError.sendFailed(MessageI18n.udpResponseInvalid(result)))
                     return
                 }
                 continuation.resume(returning: result)
@@ -300,7 +300,7 @@ class MockArcService: SoracomArcServiceProtocol, @unchecked Sendable {
         let fail = shouldFail
         let response = mockResponse
         if fail {
-            throw SoracomArcError.sendFailed("モックエラー")
+            throw SoracomArcError.sendFailed(MessageI18n.mockError())
         }
         // 実際の送信をシミュレート
         try await Task.sleep(nanoseconds: 200_000_000) // 200ms
@@ -311,7 +311,7 @@ class MockArcService: SoracomArcServiceProtocol, @unchecked Sendable {
         let fail = shouldFail
         let response = mockResponse
         if fail {
-            throw SoracomArcError.sendFailed("モックエラー")
+            throw SoracomArcError.sendFailed(MessageI18n.mockError())
         }
         try await Task.sleep(nanoseconds: 200_000_000) // 200ms
         return response

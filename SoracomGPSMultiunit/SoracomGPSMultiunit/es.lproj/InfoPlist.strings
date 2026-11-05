@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "Simulador de rastreador GPS";
+"NSLocationWhenInUseUsageDescription" = "Simulador de rastreador GPS accede a tu ubicación mientras usas la aplicación para mostrarla y enviar datos del sensor.";
+"NSMotionUsageDescription" = "Simulador de rastreador GPS accede a los datos del acelerómetro mientras usas la aplicación para enviar datos del sensor.";

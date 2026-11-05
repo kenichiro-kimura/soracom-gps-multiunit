@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "GPS 跟踪器模拟器";
+"NSLocationWhenInUseUsageDescription" = "GPS 跟踪器模拟器在您使用应用时获取位置，用于显示位置和发送传感器数据。";
+"NSMotionUsageDescription" = "GPS 跟踪器模拟器在您使用应用时获取加速度传感器数据，用于发送传感器数据。";

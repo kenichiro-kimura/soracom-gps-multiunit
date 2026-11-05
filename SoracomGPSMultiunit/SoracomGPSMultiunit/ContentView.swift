@@ -45,7 +45,7 @@ struct ContentView: View {
                 .padding(.bottom, 32)
             }
             .background(Color(.systemBackground))
-            .navigationTitle("GPSトラッカーシミュレーター")
+            .navigationTitle(MessageI18n.appTitle())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -61,7 +61,7 @@ struct ContentView: View {
             }
         }
         .tabItem {
-            Label("デバイス", systemImage: "sensor.tag.radiowaves.forward")
+            Label(MessageI18n.tabDevice(), systemImage: "sensor.tag.radiowaves.forward")
         }
         .tag(0)
     }
@@ -69,7 +69,7 @@ struct ContentView: View {
     private var logTab: some View {
         SendLogView(viewModel: viewModel)
             .tabItem {
-                Label("ログ", systemImage: "list.bullet.rectangle")
+                Label(MessageI18n.tabLog(), systemImage: "list.bullet.rectangle")
             }
             .badge(viewModel.sendLogs.filter { !$0.success }.count)
             .tag(1)

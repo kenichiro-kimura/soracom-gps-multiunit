@@ -38,6 +38,7 @@ class DataSendingService(
     }
 
     companion object {
-        const val UDP_FALLBACK_SUFFIX = " (UDP フォールバック)"
+        val UDP_FALLBACK_SUFFIX: String
+            get() = MessageI18n.udpFallbackSuffix()
     }
 }

@@ -10,9 +10,9 @@ android {
     defaultConfig {
         applicationId = "org.sokohiki.kimura.app.soracom.gpsmultiunit"
         minSdk = 29
-        targetSdk = 36
-        versionCode = 4
-        versionName = "1.0"
+        targetSdk = 37
+        versionCode = 5
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
